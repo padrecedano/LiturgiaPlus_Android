@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/nav_ayuda"
+            android:icon="@drawable/ic_help"
+            android:title="Ayuda" />
+        <item
+            android:id="@+id/nav_configuracion"
+            android:icon="@drawable/ic_configuration"
+            android:title="Configuración" />
+    </group>
+
+    <item android:title="Información">
+        <menu>
+            <item
+                android:id="@+id/nav_about"
+                android:icon="@drawable/ic_about"
+                android:title="Sobre Liturgia+" />
+            <item
+                android:id="@+id/nav_author"
+                android:icon="@drawable/ic_author"
+                android:title="Autor" />
+            <item
+                android:id="@+id/nav_thanks"
+                android:icon="@drawable/ic_thanks"
+                android:title="Agradecimientos" />
+
+        </menu>
+    </item>
+
+</menu>

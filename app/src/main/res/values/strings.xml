@@ -1,0 +1,57 @@
+<resources>
+    <string name="app_name">Liturgia+</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Liturgia+</string>
+    <string name="nav_header_subtitle">padre.cedano@gmail.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+
+    <string name="e_mail">padre.cedano@gmail.com</string>
+    <string name="ol">Oficio de Lecturas</string>
+    <string name="la">Laudes</string>
+    <string name="hi">Hora Intermedia</string>
+    <string name="vi">Vísperas</string>
+    <string name="co">Completas</string>
+    <string name="lbl_misa">Misa</string>
+    <string name="lbl_misa_hoy">Misa de hoy</string>
+    <string name="lbl_homilias_hoy">Homilías para hoy</string>
+    <string name="lbl_comentarios_hoy">Comentarios Evangelio</string>
+    <string name="lbl_santo_hoy">Santo del día</string>
+    <string name="lbl_rituales">Rituales</string>
+    <string name="all_calendar">Calendario</string>
+    <string name="ot">Otras</string>
+    <string name="title_activity_misa">Misa</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="title_activity_homilias">Homilías</string>
+    <string name="title_activity_oficio">Oficio</string>
+    <string name="title_activity_laudes">Laudes</string>
+    <string name="title_activity_tercia">Tercia</string>
+    <string name="title_activity_visperas">Vísperas</string>
+    <string name="title_activity_breviario2">Breviario</string>
+    <string name="title_activity_evangelio">Comentarios Evangelio</string>
+    <string name="generic_server_down">El servidor está fuera de servicio. Intenta más tarde.</string>
+    <string name="no_internet">No estás <![CDATA[<font color="Red">conectado</font>]]> a internet</string>
+    <string name="generic_error">Ha ocurrido un error desconocido. Intenta más tarde.</string>
+    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_santo">Santo del Día</string>
+    <string name="title_activity_oraciones">Oraciones</string>
+    <string name="default_notification_channel_id">ch22</string>
+    <string name="leer">Leer</string>
+    <string name="title_activity_breviario">Breviario</string>
+    <string name="title_activity_calendario">Calendario</string>
+    <string name="title_activity_mixto">Oficio+Laudes</string>
+    <string name="title_activity_sexta">Sexta</string>
+    <string name="title_activity_nona">Nona</string>
+    <string name="title_activity_completas">Completas</string>
+    <string name="title_activity_breviario_mas">Breviario +</string>
+    <string name="title_activity_main_mas">+ ...</string>
+    <string name="title_activity_santos">Santos</string>
+    <string name="title_activity_lecturas">Lecturas</string>
+    <string name="title_activity_comentarios">Comentarios</string>
+    <string name="title_activity_menu">info</string>
+
+
+</resources>

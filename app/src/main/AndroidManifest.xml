@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.deiverbum.app">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity
+            android:name=".activities.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".activities.BreviarioActivity"
+            android:label="@string/title_activity_breviario"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.OficioActivity"
+            android:label="@string/title_activity_oficio"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.CalendarioActivity"
+            android:label="@string/title_activity_calendario"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.MisaActivity"
+            android:label="@string/title_activity_misa"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.MixtoActivity"
+            android:label="@string/title_activity_mixto"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.LaudesActivity"
+            android:label="@string/title_activity_laudes"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.TerciaActivity"
+            android:label="@string/title_activity_tercia"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.SextaActivity"
+            android:label="@string/title_activity_sexta"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.NonaActivity"
+            android:label="@string/title_activity_nona"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.VisperasActivity"
+            android:label="@string/title_activity_visperas"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.CompletasActivity"
+            android:label="@string/title_activity_completas"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.BreviarioMasActivity"
+            android:label="@string/title_activity_breviario_mas"
+            android:parentActivityName=".activities.BreviarioActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BreviarioActivity" />
+        </activity>
+        <activity
+            android:name=".activities.MainMasActivity"
+            android:label="@string/title_activity_main_mas"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.HomiliasActivity"
+            android:label="@string/title_activity_homilias"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.SantosActivity"
+            android:label="@string/title_activity_santos"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.LecturasActivity"
+            android:label="@string/title_activity_lecturas"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.ComentariosActivity"
+            android:label="@string/title_activity_comentarios"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.OracionesActivity"
+            android:label="@string/title_activity_oraciones"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
+            android:name=".activities.MenuActivity"
+            android:label="@string/title_activity_menu"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+    </application>
+
+</manifest>
