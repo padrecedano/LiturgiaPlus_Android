@@ -9,4 +9,4 @@
 /captures
 .externalNativeBuild
 *.json
-*.properties
+/app/fabric.properties
