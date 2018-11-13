@@ -8,4 +8,6 @@
     tools:context=".activities.SantosActivity"
     tools:showIn="@layout/activity_santos">
 
+    <include layout="@layout/tv_zoomable" />
+
 </android.support.constraint.ConstraintLayout>

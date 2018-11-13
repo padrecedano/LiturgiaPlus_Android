@@ -11,7 +11,7 @@ import org.deiverbum.app.R;
 import org.deiverbum.app.data.BreviarioDataModel;
 import org.deiverbum.app.data.BreviarioRecyclerAdapter;
 import org.deiverbum.app.gui.AutoFitGridLayoutManager;
-import org.deiverbum.app.utils.Utils;
+import org.deiverbum.app.utils.UtilsOld;
 
 import java.util.ArrayList;
 
@@ -20,7 +20,7 @@ public class BreviarioActivity extends AppCompatActivity
 
     private static final String TAG = "BreviarioActivity";
     //   private String sHoy = getFecha();
-    private Utils utilClass;
+    private UtilsOld utilClass;
     private String strFechaHoy;
     RecyclerView recyclerView;
     ArrayList<BreviarioDataModel> arrayList;
@@ -28,9 +28,9 @@ public class BreviarioActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        utilClass = new Utils();
+        utilClass = new UtilsOld();
         setContentView(R.layout.activity_breviario);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 

@@ -20,7 +20,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.utils.TTS;
-import org.deiverbum.app.utils.Utils;
+import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
 
@@ -33,41 +33,41 @@ public class LecturasActivity extends AppCompatActivity {
     private static final String TAG = "LecturasActivity";
     Spanned strContenido;
     ZoomTextView mTextView;
-    private Utils utilClass;
+    private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFechaHoy;
-
+    private TTS tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lecturas);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         /*Variables*/
-        utilClass = new Utils();
+        utilClass = new UtilsOld();
         requestQueue = Volley.newRequestQueue(this);
         strFechaHoy = (this.getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
         final ProgressBar progressBar = findViewById(R.id.progressBar);
 
         mTextView = findViewById(R.id.tv_Zoomable);
-        mTextView.setText(Utils.fromHtml(PACIENCIA));
+        mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
 
         StringRequest sRequest = new StringRequest(Request.Method.GET, URL_LECTURAS + strFechaHoy,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String sResponse) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        mTextView.setText(Utils.fromHtml(sResponse));
-                        strContenido = Utils.fromHtml(sResponse);
+                        mTextView.setText(UtilsOld.fromHtml(sResponse));
+                        strContenido = UtilsOld.fromHtml(sResponse);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
                 progressBar.setVisibility(View.INVISIBLE);
-                mTextView.setText(Utils.fromHtml(sError));
-                strContenido = Utils.fromHtml("Error");
+                mTextView.setText(UtilsOld.fromHtml(sError));
+                strContenido = UtilsOld.fromHtml("Error");
 
             }
         });
@@ -95,7 +95,7 @@ public class LecturasActivity extends AppCompatActivity {
             if (!strContenido.equals("Error")) {
 
                 String[] strPrimera = strContenido.toString().split(SEPARADOR);
-                new TTS(getApplicationContext(), strPrimera);
+                tts = new TTS(getApplicationContext(), strPrimera);
             }
         }
 
@@ -105,6 +105,15 @@ public class LecturasActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (tts != null) {
+            tts.cerrar();
+        }
+
     }
 
 }

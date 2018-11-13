@@ -20,7 +20,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_breviario_general" />
+    <include layout="@layout/content_santos" />
 
 
 </android.support.design.widget.CoordinatorLayout>

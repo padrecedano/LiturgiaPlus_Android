@@ -73,6 +73,7 @@
     <color name="color_fondo_grupo2">#424242</color>
     <color name="color_fondo_grupo3">#5D4037</color>
     <color name="background_material_light">#6f1919</color>
+    <color name="titleLiturgy">#A52A2A</color>
 
 
 </resources>

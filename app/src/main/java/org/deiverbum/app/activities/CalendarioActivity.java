@@ -19,7 +19,7 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import org.deiverbum.app.R;
-import org.deiverbum.app.utils.Utils;
+import org.deiverbum.app.utils.UtilsOld;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,7 +34,7 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
 
     JsonArrayRequest jsArrayRequest;
     CalendarView calendar;
-    private Utils utilClass;
+    private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFecha;
     private MaterialCalendarView mCalendarView;
@@ -46,10 +46,10 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
   //      MaterialCalendarView widget;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendario);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mCalendarView = (MaterialCalendarView) findViewById(R.id.calendarView);
+        mCalendarView = findViewById(R.id.calendarView);
         mCalendarView.setSelectionMode(SELECTION_MODE_SINGLE);
         //mCalendarView.setCurrentDate(Calendar.getInstance());
         mCalendarView.state().edit()
@@ -77,7 +77,7 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
         this.registerForContextMenu(simpleCalendarView);
 */
 
-        utilClass = new Utils();
+        utilClass = new UtilsOld();
 //        final TextView mTextView = (TextView) findViewById(R.id.txt_santo);
 //        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18)
 

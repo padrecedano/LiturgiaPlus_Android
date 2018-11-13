@@ -13,7 +13,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".activities.MainActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/app_name"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,8 +25,10 @@
         </activity>
         <activity
             android:name=".activities.BreviarioActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_breviario"
             android:parentActivityName=".activities.MainActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -32,6 +36,7 @@
         </activity>
         <activity
             android:name=".activities.OficioActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_oficio"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -41,6 +46,7 @@
         </activity>
         <activity
             android:name=".activities.CalendarioActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_calendario"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -50,6 +56,7 @@
         </activity>
         <activity
             android:name=".activities.MisaActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_misa"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -59,6 +66,7 @@
         </activity>
         <activity
             android:name=".activities.MixtoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_mixto"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -68,6 +76,7 @@
         </activity>
         <activity
             android:name=".activities.LaudesActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_laudes"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -77,6 +86,7 @@
         </activity>
         <activity
             android:name=".activities.TerciaActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_tercia"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -86,6 +96,7 @@
         </activity>
         <activity
             android:name=".activities.SextaActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_sexta"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -95,6 +106,7 @@
         </activity>
         <activity
             android:name=".activities.NonaActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_nona"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -104,6 +116,7 @@
         </activity>
         <activity
             android:name=".activities.VisperasActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_visperas"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -113,6 +126,7 @@
         </activity>
         <activity
             android:name=".activities.CompletasActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_completas"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -122,6 +136,7 @@
         </activity>
         <activity
             android:name=".activities.BreviarioMasActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_breviario_mas"
             android:parentActivityName=".activities.BreviarioActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -131,6 +146,7 @@
         </activity>
         <activity
             android:name=".activities.MainMasActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_main_mas"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -140,6 +156,7 @@
         </activity>
         <activity
             android:name=".activities.HomiliasActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_homilias"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -149,6 +166,7 @@
         </activity>
         <activity
             android:name=".activities.SantosActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_santos"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -158,6 +176,7 @@
         </activity>
         <activity
             android:name=".activities.LecturasActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_lecturas"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -167,6 +186,7 @@
         </activity>
         <activity
             android:name=".activities.ComentariosActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_comentarios"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -176,6 +196,7 @@
         </activity>
         <activity
             android:name=".activities.OracionesActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_oraciones"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
@@ -185,9 +206,27 @@
         </activity>
         <activity
             android:name=".activities.MenuActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
             android:label="@string/title_activity_menu"
             android:parentActivityName=".activities.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="ce5bc56c5381caf9528a87baaa5684e08461b836" />
+
+        <activity
+            android:name=".activities.RosarioActivity"
+            android:label="@string/title_activity_rosario"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".activities.SettingsActivity"
+            android:label="@string/title_activity_settings"
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="org.deiverbum.app.activities.MainActivity" />

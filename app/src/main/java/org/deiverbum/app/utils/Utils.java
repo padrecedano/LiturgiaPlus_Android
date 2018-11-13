@@ -1,73 +1,210 @@
 package org.deiverbum.app.utils;
+
 import android.content.Context;
-import android.graphics.drawable.ColorDrawable;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Color;
+import android.os.Build;
 import android.text.Html;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.widget.Toast;
+import android.text.SpannedString;
+import android.text.style.CharacterStyle;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
+import android.text.style.StyleSpan;
 
-import org.deiverbum.app.BuildConfig;
-import org.deiverbum.app.R;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Locale;
-
+import static android.graphics.Typeface.BOLD;
 import static org.deiverbum.app.utils.Constants.BR;
 import static org.deiverbum.app.utils.Constants.BRS;
 import static org.deiverbum.app.utils.Constants.CSS_RED_A;
 import static org.deiverbum.app.utils.Constants.CSS_RED_Z;
-import static org.deiverbum.app.utils.Constants.CSS_SM_A;
-import static org.deiverbum.app.utils.Constants.CSS_SM_Z;
 import static org.deiverbum.app.utils.Constants.ERR_RESPONSORIO;
-import static org.deiverbum.app.utils.Constants.FIN_SALMO;
 import static org.deiverbum.app.utils.Constants.NBSP_4;
 import static org.deiverbum.app.utils.Constants.NBSP_SALMOS;
 import static org.deiverbum.app.utils.Constants.OBIEN;
+import static org.deiverbum.app.utils.Constants.PADRENUESTRO;
 import static org.deiverbum.app.utils.Constants.PRECES_IL;
 import static org.deiverbum.app.utils.Constants.PRECES_R;
-import static org.deiverbum.app.utils.Constants.PRE_ANT;
 import static org.deiverbum.app.utils.Constants.RESP_A;
 import static org.deiverbum.app.utils.Constants.RESP_R;
 import static org.deiverbum.app.utils.Constants.RESP_V;
 
+public final class Utils {
 
-// Created by cedano on 14/12/16.
+    public static final String LS = System.getProperty("line.separator");
+    public static final String LS2 = LS + LS;
+    public static final String ANT = "Ant. ";
+    public static final float H3 = 1.4f;
+    public static final float H2 = 1.7f;
+    public static final float H4 = 1.1f;
+    private static Context context;
+    private static ForegroundColorSpan liturgicalRed = new ForegroundColorSpan(Color.parseColor("#A52A2A")); // from a color int
+    public static final String SALUDO_OFICIO = toRed("V.") + " Señor, abre mis labios." + LS +
+            toRed("R.") + " Y mi boca proclamará tu alabanza." + LS2;
 
+    //private static int opaqueRed2 = Color.valueOf("0xffff0000"); // from a color int
+//private Context c=getApplicationContext();
+    public Utils(Context context) {
+        Utils.context = context;
+        //stringBuilder = new StringBuilder();
+        //spanSections = new ArrayList<>();
+        //relativeSmallSpan = new RelativeSizeSpan(0.8f);
+    }
 
-public class Utils {
+    public static SpannableStringBuilder formatTitle(String sOrigen) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
+        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.setSpan(CharacterStyle.wrap(new StyleSpan(BOLD)), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ssb;
 
+    }
 
-    /**
-     * Método que obtiene info de la App
-     *
-     * @return Una cadena formateda con el salmo completo
-     */
-
-    public String getAppInfo() {
-       String appInfo = System.getProperty("line.separator")+"Liturgia+ v. "+ BuildConfig.VERSION_NAME;
-       return appInfo;
+    public static SpannableStringBuilder formatSubTitle(String sOrigen) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
+        RelativeSizeSpan textSize = new RelativeSizeSpan(H3);
+        ssb.setSpan(CharacterStyle.wrap(textSize), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.setSpan(CharacterStyle.wrap(new StyleSpan(BOLD)), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ssb;
 
     }
 
 
-    //Ojo solución a fromHTML deprecated... ver: http://stackoverflow.com/questions/37904739/html-fromhtml-deprecated-in-android-n
-    @SuppressWarnings("deprecation")
-    public static Spanned fromHtml(String html) {
-        Spanned result;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-            result = Html.fromHtml(html, Html.FROM_HTML_MODE_LEGACY);
-        } else {
-            result = Html.fromHtml(html);
-        }
-        return result;
+    public static SpannableStringBuilder ssbSmallSize(SpannableStringBuilder ssb) {
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(0.8f);
+        //SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        //SpannableString spannableString = new SpannableString(sOrigen);
+        ssb.setSpan(CharacterStyle.wrap(smallSizeText), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //ssb.append(spannableString);
+        return ssb;
+
     }
 
+    public static SpannableStringBuilder toSmallSize(String sOrigen) {
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(0.8f);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(spannableString);
+        return ssb;
+
+    }
+
+    public static SpannableStringBuilder toSmallSizes(Spanned sOrigen) {
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(0.8f);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(spannableString);
+        return ssb;
+
+    }
+
+
+    public static SpannableStringBuilder toSmallSizeRed(String sOrigen) {
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(0.8f);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(CharacterStyle.wrap(liturgicalRed), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(spannableString);
+        return ssb;
+
+    }
+
+
+    public static SpannableStringBuilder toH3(String sOrigen) {
+
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H3);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(CharacterStyle.wrap(new StyleSpan(BOLD)), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        ssb.append(spannableString);
+        return ssb;
+
+    }
+
+    public static SpannableStringBuilder toH4(String sOrigen) {
+
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H4);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(CharacterStyle.wrap(new StyleSpan(BOLD)), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        ssb.append(spannableString);
+        return ssb;
+
+    }
+
+
+    public static SpannableStringBuilder toH2(String sOrigen) {
+//        Typeface tf = ResourcesCompat.getFont(context, R.font.roboto_black);
+        //Typeface robotoRegular = Typeface.createFromAsset(ResourcesCompat.getAssets(), "fonts/Roboto-Regular.ttf");
+
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H2);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        //       spannableString.setSpan(tf, 0,spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        ssb.append(spannableString);
+        return ssb;
+
+    }
+
+    public static SpannableStringBuilder toH2Red(String sOrigen) {
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H2);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(CharacterStyle.wrap(liturgicalRed), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(spannableString);
+        return ssb;
+    }
+
+    public static SpannableStringBuilder toH3Red(String sOrigen) {
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H3);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(CharacterStyle.wrap(liturgicalRed), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(spannableString);
+        return ssb;
+    }
+
+    public static SpannableStringBuilder toRed(String sOrigen) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
+        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ssb;
+
+    }
+
+    public static SpannableStringBuilder toRedNew(SpannableStringBuilder sOrigen) {
+        //SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
+        sOrigen.setSpan(CharacterStyle.wrap(liturgicalRed), 0, sOrigen.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return sOrigen;
+
+    }
+
+    public static SpannableStringBuilder ssbRed(SpannableStringBuilder ssb) {
+        //SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
+        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ssb;
+
+    }
+
+    public static SpannableStringBuilder getSaludoOficio() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("V. Señor, abre mis labios.");
+        ssb.append(LS);
+        ssb.append("R. Y mi boca proclamará tu alabanza.");
+        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 27, 29, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return ssb;
+
+    }
 
     /**
      * Método que da formato a algunos textos recibidos desde el servidor <br />
@@ -94,11 +231,95 @@ public class Utils {
      * @return Una cadena con el salmo formateado.
      */
 
-    public String getFormato(String sOrigen) {
+    public static SpannedString doFormat(String sOrigen) {
         String sFormateado;
 //α β γ δ ε ϝ ϛ ζ η θ ι κ λ μ ν ξ ο π ϟ ϙ ρ σ τ υ φ χ ψ ω ϡ
         /*
-        u2220: ∠ ∡ ∢ ∣ ∤ ∥ ∦ ∧ ∨ ∩ ∪ ∫ ∬ ∭ ∮ ∯ ∰ ∱ ∲ ∳ ∴ ∵ ∶ ∷ ∸ ∹ ∺ ∻ ∼ ∽ ∾ ∿
+        u2220: ∠ ∡ ∢ ∣ ∤ ∥ ∦ ∧ ∨ ∩ ∪ ∫ ∭ ∮ ∯ ∰ ∱ ∲ ∳ ∴ ∵ ∶ ∷ ∸ ∹ ∺ ∻ ∼ ∽ ∾ ∿
+
+        u2240: ≀ ≁ ≂ ≃ ≄ ≅ ≆ ≇ ≈ ≉ ≊ ≋ ≌ ≍ ≎ ≏ ≐ ≑ ≒ ≓ ≔ ≕ ≖ ≗ ≘ ≙ ≚ ≛ ≜ ≝ ≞ ≟
+
+        u2260: ≠ ≡ ≢ ≣ ≤ ≥ ≦ ≧ ≨ ≩ ≪ ≫ ≬ ≭ ≮ ≯ ≰ ≱ ≲ ≳ ≴ ≵ ≶ ≷ ≸ ≹ ≺ ≻ ≼ ≽ ≾ ≿
+
+        u2280: ⊀ ⊁ ⊂ ⊃ ⊄ ⊅ ⊆ ⊇ ⊈ ⊉ ⊊ ⊋ ⊌ ⊍ ⊎ ⊏ ⊐ ⊑ ⊒ ⊓ ⊔ ⊕ ⊖ ⊗ ⊘ ⊙ ⊚ ⊛ ⊜ ⊝ ⊞ ⊟
+
+        u22A0: ⊠ ⊡ ⊢ ⊣ ⊤ ⊥ ⊦ ⊧ ⊨ ⊩ ⊪ ⊫ ⊬ ⊭ ⊮ ⊯ ⊰ ⊱ ⊲ ⊳ ⊴ ⊵ ⊶ ⊷ ⊸ ⊹ ⊺ ⊻ ⊼ ⊽ ⊾ ⊿
+
+*/
+        sFormateado = sOrigen
+                .replace("_", NBSP_SALMOS)
+                .replace("§", BRS)
+                .replace("~", BR)
+                .replace("¦", NBSP_4)
+                .replace("⊣", BR + NBSP_4)
+                .replace("≠", PRECES_R)
+                .replace("∞", PRECES_IL)
+                .replace("ℇ", OBIEN)
+                .replace("†", CSS_RED_A + " † " + CSS_RED_Z)
+                .replace("ƞ", CSS_RED_A + " N. " + CSS_RED_Z)
+                .replace("Ɽ", CSS_RED_A + " R. " + CSS_RED_Z)
+                .replace("⟨", CSS_RED_A + "(" + CSS_RED_Z)
+                .replace("⟩", CSS_RED_A + ")" + CSS_RED_Z)
+                .replace("ⱱ", CSS_RED_A + "V/." + CSS_RED_Z)
+                .replace("ⱴ", CSS_RED_A + "R/." + CSS_RED_Z)
+                .replace("Ʀ", CSS_RED_A + " R/. " + CSS_RED_Z + BRS);
+
+
+        return new SpannedString(sFormateado);
+    }
+
+    /**
+     * Método que da formato a algunos textos recibidos desde el servidor <br />
+     * He creado una especie de contrato entre la API y la APP para reducir el volúmen de datos <br />
+     * que se transmite y formatear el contenido de forma local. <br />
+     * El reemplazo de caracteres es como sigue: <br />
+     * § : salto de párrafo <br />
+     * _ : salto de línea y sangría (para los salmos y algunos himnos)
+     * ~ : salto de línea sin sangría
+     * ¦ : DIFERENCIAR UNO CON SALTO Y OTRO SIN SALTO varios espacios en blanco (una especia de tabulador), se usa en algunas referencias de textos
+     * ∞ : la rúbrica <i>Se pueden añadir algunas intenciones libres.</i>
+     * ≠ : salto de línea y sangría con un guión rojo, para las preces
+     * ℇ : rúbrica litúrgica "O bien"
+     * † : cruz en antífonas
+     * ƞ : la N. de color rojo que sustituye el nombre del Papa o del Obispo
+     * Ʀ : la R./ de color rojo (responsorio)
+     * Ɽ : la R. de color rojo (responsorio sin ./)
+     * ⟨ : paréntesis de apertura en rojo
+     * ⟩ : paréntesis de cierre en rojo
+     * ã : (T. P. Aleluya.):
+     * ≀ : NBSP4 + brs
+     * ∸ : Para cuando no se dice gloria
+     * @param sOrigen El texto del salmo como es recibido del servidor (los saltos de línea vienen indicados por '_' y de párrafo por '§'
+     * @return Una cadena con el salmo formateado.
+     */
+
+    /**
+     * Método que crea las preces *** terminar descripción luego
+     *
+     * @param precesIntro Una matriz con las diferentes partes del responsorio. Antes de pasar el parámetro evauluar que la matriz no sea nula
+     * @param precesTexto    Un valor numérico para indicar de que forma es el responsorio y actuar en consecuencia
+     * @return Una cadena con el responsorio completo, con sus respectivos V. y R.
+     */
+
+    public static String getPreces(String precesIntro, String precesTexto) {
+        String sFinal;
+        String[] introArray = precesIntro.split("\\|");
+        if (introArray.length == 3) {
+            sFinal = introArray[0] + BRS + "<i>" + introArray[1] + "</i>" + BRS + precesTexto + BR + introArray[2];
+        } else {
+            sFinal = precesIntro + BRS + precesTexto;
+
+        }
+        sFinal = getFormato(sFinal);
+        return sFinal;
+    }
+
+
+    public static String getFormato(String sOrigen) {
+        String sFormateado;
+//α β γ δ ε ϝ ϛ ζ η θ ι κ λ μ ν ξ ο π ϟ ϙ ρ σ τ υ φ χ ψ ω ϡ
+        /*
+        u2220: ∠ ∡ ∢ ∣ ∤ ∥ ∦ ∧ ∨ ∩ ∪ ∫  ∭ ∮ ∯ ∰ ∱ ∲ ∳ ∴ ∵ ∶ ∷ ∸ ∹ ∺ ∻ ∼ ∽ ∾ ∿
 
         u2240: ≀ ≁ ≂ ≃ ≄ ≅ ≆ ≇ ≈ ≉ ≊ ≋ ≌ ≍ ≎ ≏ ≐ ≑ ≒ ≓ ≔ ≕ ≖ ≗ ≘ ≙ ≚ ≛ ≜ ≝ ≞ ≟
 
@@ -131,220 +352,55 @@ public class Utils {
         return sFormateado;
     }
 
-
-    /**
-     * Método que organiza todos los componentes de un salmo dado, evaluando los que son nulos para evitar espacios vacíos
-     * En el caso de las antífonas, llama a su vez al método getAntifonaLimpia() para limpiar la segunda parte de la misma
-     *
-     * @param sOrden El orden del salmo: 1, 2, 3
-     * @param sRef   La referencia del salmo
-     * @param sTema  El tema (presente sólo en algunos salmos)
-     * @param sIntro El texto introductorio (presente sólo en algunos salmos)
-     * @param sSalmo El texto del salmo propiamente dicho
-     * @return Una cadena formateda con el salmo completo
-     */
-
-    public String getSalmoSinAntifona(String sOrden, String sRef, String sTema, String sIntro, String sParte, String sSalmo) {
-        if (sRef != null && !sRef.isEmpty()) {
-            sRef = CSS_RED_A + sRef + CSS_RED_Z + BRS;
-
+    //Ojo solución a fromHTML deprecated... ver: http://stackoverflow.com/questions/37904739/html-fromhtml-deprecated-in-android-n
+    @SuppressWarnings("deprecation")
+    public static Spanned fromHtml(String html) {
+        String s = getFormato(html);
+        Spanned result;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            result = Html.fromHtml(s, Html.FROM_HTML_MODE_LEGACY);
         } else {
-            sRef = "";
+            result = Html.fromHtml(s);
         }
-
-
-        if (sTema != null && !sTema.isEmpty()) {
-            sTema = CSS_RED_A + CSS_SM_A + sTema.toUpperCase() + CSS_SM_Z + CSS_RED_Z + BRS;
-
-        } else {
-            sTema = "";
-        }
-
-        if (sIntro != null && !sIntro.isEmpty()) {
-            sIntro = CSS_SM_A + getFormato(sIntro) + CSS_SM_Z + BRS;
-
-        } else {
-            sIntro = "";
-        }
-
-        if (sParte != null && !sParte.isEmpty()) {
-            sParte = CSS_RED_A + sParte + CSS_RED_Z + BRS;
-
-        } else {
-            sParte = "";
-        }
-
-
-        return getFormato(sRef) +
-                sTema + sIntro + sParte + getFormato(sSalmo) + BRS + FIN_SALMO + BRS;
+        return result;
     }
 
-    /**
-     * Método que organiza todos los componentes de un salmo dado, evaluando los que son nulos para evitar espacios vacíos
-     * En el caso de las antífonas, llama a su vez al método getAntifonaLimpia() para limpiar la segunda parte de la misma
-     *
-     * @param arrSalmos El array de todos los salmos
-     * @return Una cadena formateda con el salmo completo
-     */
-
-    public String getSalmos(JSONArray arrSalmos, int tipoAntifonas) {
-        StringBuilder sbSalmos = new StringBuilder();
-        int totalSalmos = arrSalmos.length();
-        String salmoAntifonaFin = "";
-
-        for (int i = 0; i < totalSalmos; i++) {
-            try {
-                JSONObject jsonSalmo = arrSalmos.getJSONObject(i);
-
-                String salmoAntifona = "";
-                String salmoAntifonaUno = "";
-                String salmoAntifonaCompleta = "";
-                String salmoTexto = "";
-                if (tipoAntifonas == 1) {
-                    if (i == 0) {
-                        salmoAntifonaUno = arrSalmos.getJSONObject(0).getString("antifona");
-                        salmoAntifonaFin = CSS_RED_A + PRE_ANT + CSS_RED_Z + getAntifonaLimpia(salmoAntifonaUno) + BRS;
-                        salmoAntifonaUno = CSS_RED_A + PRE_ANT + CSS_RED_Z + getFormato(salmoAntifonaUno) + BRS;
-
-
-                    }
-                    salmoTexto = jsonSalmo.getString("salmo");
-                    salmoTexto = (salmoTexto.equals("NULL")) ? "" : getFormato(salmoTexto) + BRS + FIN_SALMO +
-                            BRS;
-
-                } else {
-
-                    String salmoOrden = jsonSalmo.getString("orden");
-                    salmoOrden = (salmoOrden.equals("NULL")) ? "" : salmoOrden;
-
-                    salmoAntifona = jsonSalmo.getString("antifona");
-
-                    salmoAntifona = (salmoAntifona.equals("NULL")) ? "" : salmoAntifona;
-                    salmoAntifonaCompleta = CSS_RED_A + PRE_ANT + salmoOrden + ". " + CSS_RED_Z + salmoAntifona + BRS;
-
-                    //salmoAntifona=CSS_RED_A + PRE_ANT + salmoOrden + ". " + CSS_RED_Z +salmoAntifona+BRS;
-                    salmoTexto = jsonSalmo.getString("salmo");
-                    salmoTexto = (salmoTexto.equals("NULL")) ? "" : getFormato(salmoTexto) + BRS + FIN_SALMO +
-                            BRS + CSS_RED_A + PRE_ANT + CSS_RED_Z + getAntifonaLimpia(salmoAntifona) + BRS;
-
-                }
-
-                String salmoRef = jsonSalmo.getString("ref");
-                salmoRef = (salmoRef.equals("NULL")) ? "" : CSS_RED_A + getFormato(salmoRef) + CSS_RED_Z + BRS;
-
-                String salmoTema = jsonSalmo.getString("tema");
-                salmoTema = (salmoTema.equals("NULL")) ? "" : CSS_RED_A + CSS_SM_A + salmoTema.toUpperCase() + CSS_SM_Z + CSS_RED_Z + BRS;
-
-                String salmoIntro = jsonSalmo.getString("intro");
-                salmoIntro = (salmoIntro.equals("NULL")) ? "" : CSS_SM_A + getFormato(salmoIntro) + CSS_SM_Z + BRS;
-
-                String salmoParte = jsonSalmo.getString("parte");
-                salmoParte = (salmoParte.equals("NULL")) ? "" : CSS_RED_A + salmoParte + CSS_RED_Z + BRS;
-
-
-                sbSalmos.append(salmoAntifonaUno);
-                sbSalmos.append(salmoAntifonaCompleta);
-                sbSalmos.append(salmoRef);
-                sbSalmos.append(salmoTema);
-                sbSalmos.append(salmoIntro);
-                sbSalmos.append(salmoParte);
-                sbSalmos.append(salmoTexto);
-
-                if (i == totalSalmos - 1) {
-                    sbSalmos.append(salmoAntifonaFin);
-                }
-
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-        }
-        return sbSalmos.toString();
-        /*
-        if (sRef != null && !sRef.isEmpty()) {
-            sRef = CSS_RED_A + sRef + CSS_RED_Z + BRS;
-
+    public static SpannableStringBuilder fromHtmlSmall(String html) {
+        String s = getFormato(html);
+        //SpannableString ss=toSmallSizes(html);
+        Spanned result;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            result = Html.fromHtml(s, Html.FROM_HTML_MODE_LEGACY);
         } else {
-            sRef = "";
+            result = Html.fromHtml(s);
         }
+        SpannableStringBuilder ssb = new SpannableStringBuilder(result);
 
-
-        if (sTema != null && !sTema.isEmpty()) {
-            sTema = CSS_RED_A + CSS_SM_A + sTema.toUpperCase() + CSS_SM_Z + CSS_RED_Z + BRS;
-
-        } else {
-            sTema = "";
-        }
-
-        if (sIntro != null && !sIntro.isEmpty()) {
-            sIntro = CSS_SM_A + getFormato(sIntro) + CSS_SM_Z + BRS;
-
-        } else {
-            sIntro = "";
-        }
-
-        if (sParte != null && !sParte.isEmpty()) {
-            sParte = CSS_RED_A + sParte + CSS_RED_Z + BRS;
-
-        } else {
-            sParte = "";
-        }
-
-
-        return CSS_RED_A + PRE_ANT + sOrden + ". " + CSS_RED_Z + getFormato(sAntifona) + BRS + getFormato(sRef) +
-                sTema + sIntro + sParte + getFormato(sSalmo) + BRS + FIN_SALMO + BRS +
-                CSS_RED_A + PRE_ANT + CSS_RED_Z + getAntifonaLimpia(sAntifona) + BRS;
-*/
+        return toSmallSizes(ssb);
     }
 
-
-    /**
-     * Método que organiza todos los componentes de un salmo dado, evaluando los que son nulos para evitar espacios vacíos
-     * En el caso de las antífonas, llama a su vez al método getAntifonaLimpia() para limpiar la segunda parte de la misma
-     *
-     * @param sOrden    El orden del salmo: 1, 2, 3
-     * @param sAntifona El texto de la antífona
-     * @param sRef      La referencia del salmo
-     * @param sTema     El tema (presente sólo en algunos salmos)
-     * @param sIntro    El texto introductorio (presente sólo en algunos salmos)
-     * @param sSalmo    El texto del salmo propiamente dicho
-     * @return Una cadena formateda con el salmo completo
-     */
-
-    public String getSalmoCompleto(String sOrden, String sAntifona, String sRef, String sTema, String sIntro, String sParte, String sSalmo) {
-        if (sRef != null && !sRef.isEmpty()) {
-            sRef = CSS_RED_A + sRef + CSS_RED_Z + BRS;
-
-        } else {
-            sRef = "";
+    public static SpannedString toHtml(SpannedString html) {
+        String h = "";
+        SpannedString result = new SpannedString(html);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            h = Html.toHtml(result, Html.FROM_HTML_MODE_LEGACY);
         }
-
-
-        if (sTema != null && !sTema.isEmpty()) {
-            sTema = CSS_RED_A + CSS_SM_A + sTema.toUpperCase() + CSS_SM_Z + CSS_RED_Z + BRS;
-
-        } else {
-            sTema = "";
-        }
-
-        if (sIntro != null && !sIntro.isEmpty()) {
-            sIntro = CSS_SM_A + getFormato(sIntro) + CSS_SM_Z + BRS;
-
-        } else {
-            sIntro = "";
-        }
-
-        if (sParte != null && !sParte.isEmpty()) {
-            sParte = CSS_RED_A + sParte + CSS_RED_Z + BRS;
-
-        } else {
-            sParte = "";
-        }
-
-
-        return CSS_RED_A + PRE_ANT + sOrden + ". " + CSS_RED_Z + getFormato(sAntifona) + BRS + getFormato(sRef) +
-                sTema + sIntro + sParte + getFormato(sSalmo) + BRS + FIN_SALMO + BRS +
-                CSS_RED_A + PRE_ANT + CSS_RED_Z + getAntifonaLimpia(sAntifona) + BRS;
+        return result;
     }
+
+    public static SpannableStringBuilder sbHtml(SpannableStringBuilder html) {
+        Spanned result;
+        SpannableStringBuilder ssb = new SpannableStringBuilder(html);
+        String sOrigen = html.toString();
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            result = Html.fromHtml(sOrigen, Html.FROM_HTML_MODE_LEGACY);
+        } else {
+            result = Html.fromHtml(sOrigen);
+        }
+        ssb.append(result);
+        return ssb;
+    }
+
 
     /**
      * Método que limpia la segunda parte de la antífona, en el caso del símblo †
@@ -353,59 +409,8 @@ public class Utils {
      * @return La misma cadena, pero sin el referido símbolo
      */
 
-    public String getAntifonaLimpia(String sAntifona) {
+    public static String getAntifonaLimpia(String sAntifona) {
         return sAntifona.replace("†", "");
-    }
-
-    /**
-     * Método que crea las preces *** terminar descripción luego
-     *
-     * @param introArray Una matriz con las diferentes partes del responsorio. Antes de pasar el parámetro evauluar que la matriz no sea nula
-     * @param sPreces    Un valor numérico para indicar de que forma es el responsorio y actuar en consecuencia
-     * @return Una cadena con el responsorio completo, con sus respectivos V. y R.
-     */
-
-    public String getPreces(String introArray[], String sPreces) {
-        String sFinal;
-        sFinal = introArray[0] + BRS + "<i>" + introArray[1] + "</i>" + BRS + getFormato(sPreces) + BRS + introArray[2];
-        return sFinal;
-    }
-
-    /**
-     * Método que crea las preces *** terminar descripción luego
-     *
-     * @param sOrigen Un valor numérico para indicar de que forma es el responsorio y actuar en consecuencia
-     * @return Una cadena con el responsorio completo, con sus respectivos V. y R.
-     */
-
-    public String getHimnos(String sOrigen) {
-        String sFinal = "";
-        if (!isNull(sOrigen)) {
-
-            String[] himnoArray = sOrigen.split("\\|");
-            String[] himno1Array = himnoArray[0].split("\\_");
-            String[] himno2Array = himnoArray[1].split("\\_");
-            switch (Integer.parseInt(himno1Array[0])) {
-                case 0:
-                    sFinal = CSS_RED_A + "En los domingos y solemnidades:" + CSS_RED_Z +
-                            BRS + getFormato(himno1Array[1]);
-                    break;
-                default:
-                    break;
-            }
-
-            switch (Integer.parseInt(himno2Array[0])) {
-                case 2:
-                    sFinal = sFinal + BRS + CSS_RED_A + "O bien, fuera de los domingos y de las solemnidades:" + CSS_RED_Z +
-                            BRS + getFormato(himno2Array[1]);
-                    break;
-                default:
-                    break;
-            }
-        } else {
-            sFinal = "";
-        }
-        return sFinal;
     }
 
     /**
@@ -416,8 +421,10 @@ public class Utils {
      * @return Una cadena con el responsorio completo, con sus respectivos V. y R.
      */
 
-    public String getResponsorio(String respArray[], int nForma) {
-        String sResponsorio;
+    public static String getResponsorio(String respArray[], int nForma) {
+        String sResponsorio = ERR_RESPONSORIO + BR + "Tamaño del responsorio: " + respArray.length + " Código forma: " + nForma + BR;
+        String codigoForma = String.valueOf(nForma);
+        //String errMessage=ERR_RESPONSORIO + BR + "Tamaño del responsorio: " + respArray.length + " Código forma: " +nForma+ BR;
         switch (nForma) {
 // Modificar los case, usando el modelo: 6001230
             case 1:
@@ -426,16 +433,10 @@ public class Utils {
                             RESP_R + respArray[0] + RESP_A + respArray[1] + BRS +
                                     RESP_V + respArray[2] + BRS +
                                     RESP_R + Character.toUpperCase(respArray[1].charAt(0)) + respArray[1].substring(1);
-                } else {
-
-                    sResponsorio = ERR_RESPONSORIO + BRS + "Error " + respArray.length + " de responsorio en la fecha: " + getHoy() + BRS;
-
-
                 }
                 break;
 
             case 2:
-                //0-1-2-1
                 sResponsorio =
                         RESP_R + respArray[0] + RESP_A + respArray[1] + BRS +
                                 RESP_V + respArray[2] + BRS +
@@ -456,8 +457,6 @@ public class Utils {
                                     RESP_R + respArray[2] + BRS +
                                     RESP_V + respArray[3] + BR +
                                     RESP_R + respArray[0] + BRS;
-                } else {
-                    sResponsorio = ERR_RESPONSORIO + BRS + "Error " + respArray.length + " de responsorio en la fecha: " + getHoy() + BRS;
                 }
                 break;
 
@@ -474,8 +473,6 @@ public class Utils {
                                     RESP_R + respArray[0] + BRS +
                                     RESP_V + respArray[2] + BR +
                                     RESP_R + respArray[0] + BRS;
-                } else {
-                    sResponsorio = ERR_RESPONSORIO + BRS + "Error " + respArray.length + " de responsorio en la fecha: " + getHoy() + BRS;
                 }
                 break;
 
@@ -498,7 +495,7 @@ public class Utils {
 
 
             default:
-                sResponsorio = ERR_RESPONSORIO + BRS + "Error " + respArray.length + " de responsorio en la fecha: " + getHoy() + BRS;
+                //sResponsorio = ERR_RESPONSORIO + BRS + "Error " + respArray.length + " de responsorio en la fecha: " + BRS;
                 break;
         }
         return sResponsorio;
@@ -506,140 +503,115 @@ public class Utils {
 
     }
 
-    /**
-     * Método que evalua si una cadena no tiene datos <br />
-     *
-     * @param sOrigen La cadena a evaluar
-     * @return Verdadero o Falso.
-     */
-
-    public Boolean isNull(String sOrigen) {
-        return !(sOrigen != null && !sOrigen.isEmpty() && !sOrigen.equals("null"));
-    }
 
     /**
-     * Método que devuelve la fecha del sistema
+     * Método que crea la cadena completa de un responsorio dado
      *
-     * @return Una cadena con la fecha
+     * @param respArray Una matriz con las diferentes partes del responsorio. Antes de pasar el parámetro evauluar que la matriz no sea nula
+     * @param nForma    Un valor numérico para indicar de que forma es el responsorio y actuar en consecuencia
+     * @return Una cadena con el responsorio completo, con sus respectivos V. y R.
      */
 
-    public String getHoy() {
-        Date newDate = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
-        return format.format(new Date());
-    }
-
-
-    /**
-     * Método que devuelve la fecha del sistema en forma MMDD para santoral
-     *
-     * @return Una cadena con la fecha
-     */
-
-    public String getHoyMMdd() {
-        Date newDate = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("MMdd", Locale.getDefault());
-        return format.format(new Date());
-    }
-
-    /**
-     * Método que devuelve la hora del sistema <br />
-     *
-     * @param strFormato Formato de la hora deseado
-     * @return strHora Cadena con la hora formateada.
-     */
-
-    public String getHora(String strFormato) {
-
-        Calendar objCalendar = Calendar.getInstance();
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(strFormato);
-
-        return simpleDateFormat.format(objCalendar.getTime());
-
-    }
-
-
-    /**
-     * Método que devuelve la fecha del sistema en forma legible
-     *
-     * @return Una cadena con la fecha
-     */
-
-    public String getFecha() {
-        Date newDate = new Date(System.currentTimeMillis());
-        SimpleDateFormat format = new SimpleDateFormat("dd 'de' MMMM yyyy", Locale.getDefault());
-        return format.format(new Date());
-    }
-
-
-    public void mensajeTemporal(Context context) {
-//        Context context = getApplicationContext();
-        CharSequence text = "Este módulo se encuentra en fase de desarrollo... perdona las molestias.";
-        int duration = Toast.LENGTH_LONG;
-        Toast toast = Toast.makeText(context, text, duration);
-        toast.show();
-    }
-
-/*
-    public void setFabric(String strEvento, String strTag, String strFechaHoy) {
-
-        Answers.getInstance().logCustom(new CustomEvent(strEvento)
-                .putCustomAttribute(strTag, strFechaHoy));
-
-
-    }
-*/
-    /**
-     * Método que devuelve la hora del sistema <br />
-     *
-     * @param colorTiempo Formato de la hora deseado
-     * @return strHora Cadena con la hora formateada.
-     */
-
-    public  void setBarColor(AppCompatActivity a, int colorTiempo) {
-        ActionBar ab = a.getSupportActionBar();
-        //colorTiempo=5;
-        switch (colorTiempo) {
+    public static String getResponsorioForReader(String respArray[], int nForma) {
+        String sResponsorio = ERR_RESPONSORIO + BR + "Tamaño del responsorio: " + respArray.length + " Código forma: " + nForma + BR;
+        String codigoForma = String.valueOf(nForma);
+        switch (nForma) {
             case 1:
-                ab.setBackgroundDrawable(new ColorDrawable(a.getResources().getColor(R.color.color_toolbar_adviento)));
-                a.getWindow().setStatusBarColor(a.getResources().getColor(R.color.color_bar_adviento));
+                if (respArray.length == 3) {
+                    sResponsorio =
+                            respArray[0] + respArray[1] + BRS +
+                                    respArray[2] + BRS +
+                                    Character.toUpperCase(respArray[1].charAt(0)) + respArray[1].substring(1);
+                }
                 break;
+
             case 2:
-                ab.setBackgroundDrawable(new ColorDrawable(a.getResources().getColor(R.color.color_toolbar_navidad)));
-                a.getWindow().setStatusBarColor(a.getResources().getColor(R.color.color_bar_navidad));
-                break;
-            case 3:
-                ab.setBackgroundDrawable(new ColorDrawable(a.getResources().getColor(R.color.color_toolbar_cuaresma)));
-                a.getWindow().setStatusBarColor(a.getResources().getColor(R.color.color_bar_cuaresma));
-                break;
-            case 5:
-                ab.setBackgroundDrawable(new ColorDrawable(a.getResources().getColor(R.color.color_toolbar_blanco)));
-                a.getWindow().setStatusBarColor(a.getResources().getColor(R.color.color_bar_blanco));
-                break;
-            case 6:
-                ab.setBackgroundDrawable(new ColorDrawable(a.getResources().getColor(R.color.color_toolbar_pascua)));
-                a.getWindow().setStatusBarColor(a.getResources().getColor(R.color.color_bar_pascua));
-                break;
-            case 7:
-                ab.setBackgroundDrawable(new ColorDrawable(a.getResources().getColor(R.color.color_toolbar_ordinario)));
-                a.getWindow().setStatusBarColor(a.getResources().getColor(R.color.color_bar_ordinario));
+                sResponsorio =
+                        respArray[0] + respArray[1] + BRS +
+                                respArray[2] + BRS +
+                                Character.toUpperCase(respArray[1].charAt(0)) + respArray[1].substring(1);
+
                 break;
 
-            case 8:
-                ab.setBackgroundDrawable(new ColorDrawable(a.getResources().getColor(R.color.color_toolbar_rojo)));
-                a.getWindow().setStatusBarColor(a.getResources().getColor(R.color.color_bar_rojo));
+
+            case 6001230:
+
+                if (respArray.length == 4) {
+
+                    sResponsorio =
+                            respArray[0] + BR +
+                                    respArray[0] + BRS +
+                                    respArray[1] + BR +
+                                    respArray[2] + BRS +
+                                    respArray[3] + BR +
+                                    respArray[0] + BRS;
+                }
                 break;
 
-            case 9:
-                ab.setBackgroundDrawable(new ColorDrawable(a.getResources().getColor(R.color.color_toolbar_blanco)));
-                a.getWindow().setStatusBarColor(a.getResources().getColor(R.color.color_bar_blanco));
+
+            case 6001020:
+
+                if (respArray.length == 3) {
+
+                    sResponsorio =
+                            respArray[0] + BR +
+                                    respArray[0] + BRS +
+                                    respArray[1] + BR +
+                                    respArray[0] + BRS +
+                                    respArray[2] + BR +
+                                    respArray[0] + BRS;
+                }
+                break;
+
+
+            case 4:
+                sResponsorio =
+                        respArray[0] + BR +
+                                respArray[0] + BRS +
+                                respArray[1] + BR +
+                                respArray[0] + BRS +
+                                respArray[2] + BR +
+                                respArray[0] + BRS;
+                break;
+
+            case 31:
+                sResponsorio =
+                        respArray[0] + BR +
+                                respArray[1] + BRS;
                 break;
 
             default:
                 break;
         }
+        return sResponsorio;
 
 
     }
 
+    public static final Spanned getTeDeum() {
+        String teDeum = "<p>Señor, Dios eterno, alegres te cantamos, <br />a ti nuestra alabanza, <br />a ti, Padre del cielo, te aclama la creación. <br /><br />Postrados ante ti, los ángeles te adoran <br />y cantan sin cesar: <br /><br />Santo, santo, santo es el Señor, <br />Dios del universo; <br />llenos están el cielo y la tierra de tu gloria. <br /><br />A ti, Señor, te alaba el coro celestial de los apóstoles, <br />la multitud de los profetas te enaltece, <br />y el ejército glorioso de los mártires te aclama. <br /><br />A ti la Iglesia santa, <br />por todos los confines extendida, <br />con júbilo te adora y canta tu grandeza: <br /><br />Padre, infinitamente santo, <br />Hijo eterno, unigénito de Dios, <br />Santo Espíritu de amor y de consuelo. <br /><br />Oh Cristo, tú eres el Rey de la gloria, <br />tú el Hijo y Palabra del Padre, <br />tú el Rey de toda la creación. <br /><br />Tú, para salvar al hombre, <br />tomaste la condición de esclavo <br />en el seno de una virgen. <br /><br />Tú destruiste la muerte <br />y abriste a los creyentes las puertas de la gloria. <br /><br />Tú vives ahora, <br />inmortal y glorioso, en el reino del Padre. <br /><br />Tú vendrás algún día, <br />como juez universal. <br /><br />Muéstrate, pues, amigo y defensor <br />de los hombres que salvaste. <br /><br />Y recíbelos por siempre allá en tu reino, <br />con tus santos y elegidos. <br /><br />Salva a tu pueblo, Señor, <br />y bendice a tu heredad. <br /><br />Sé su pastor, <br />y guíalos por siempre. <br /><br />Día tras día te bendeciremos <br />y alabaremos tu nombre por siempre jamás. <br /><br />Dígnate, Señor, <br />guardarnos de pecado en este día. <br /><br />Ten piedad de nosotros, Señor, <br />ten piedad de nosotros. <br /><br />Que tu misericordia, Señor, venga sobre nosotros, <br />como lo esperamos de ti. <br /><br />A ti, Señor, me acojo, <br />no quede yo nunca defraudado.</p>";
+        return fromHtml(teDeum);
+    }
+
+
+    public static final SpannableStringBuilder getNoGloria() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("No se dice Gloria");
+        return toRedNew(ssb);
+    }
+
+    public static final Spanned getFinSalmo() {
+        String fin = "Gloria al Padre, y al Hijo, y al Espíritu Santo." + BR
+                + NBSP_SALMOS + "Como era en el principio ahora y siempre, "
+                + NBSP_SALMOS + "por los siglos de los siglos. Amén.";
+        return fromHtml(fin);
+    }
+
+    public static final Spanned getPadreNuestro() {
+
+        return fromHtml(PADRENUESTRO);
+    }
+
+    public static String getSaludoOficioForReader() {
+        return "Señor abre mis labios. Y mi boca proclamará tu alabanza.";
+    }
 }

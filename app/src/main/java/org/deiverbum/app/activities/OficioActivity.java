@@ -2,8 +2,10 @@ package org.deiverbum.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.util.Log;
 import android.util.TypedValue;
@@ -11,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -19,77 +22,71 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.deiverbum.app.R;
+import org.deiverbum.app.model.Biblica;
+import org.deiverbum.app.model.Breviario;
+import org.deiverbum.app.model.Himno;
+import org.deiverbum.app.model.Invitatorio;
+import org.deiverbum.app.model.MetaLiturgia;
+import org.deiverbum.app.model.Oficio;
+import org.deiverbum.app.model.OficioLecturas;
+import org.deiverbum.app.model.Patristica;
+import org.deiverbum.app.model.Salmodia;
+import org.deiverbum.app.model.Santo;
+import org.deiverbum.app.model.TeDeum;
 import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
+import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import static org.deiverbum.app.utils.Constants.BR;
-import static org.deiverbum.app.utils.Constants.BRS;
-import static org.deiverbum.app.utils.Constants.CSS_RED_A;
-import static org.deiverbum.app.utils.Constants.CSS_RED_Z;
-import static org.deiverbum.app.utils.Constants.CSS_SM_A;
-import static org.deiverbum.app.utils.Constants.CSS_SM_Z;
-import static org.deiverbum.app.utils.Constants.FIN_SALMO;
-import static org.deiverbum.app.utils.Constants.HIMNO;
-import static org.deiverbum.app.utils.Constants.INVITATORIO;
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
-import static org.deiverbum.app.utils.Constants.NBSP_2;
-import static org.deiverbum.app.utils.Constants.NBSP_4;
-import static org.deiverbum.app.utils.Constants.OL_TITULO;
 import static org.deiverbum.app.utils.Constants.OL_URL;
-import static org.deiverbum.app.utils.Constants.ORACION;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
-import static org.deiverbum.app.utils.Constants.PRE_ANT;
-import static org.deiverbum.app.utils.Constants.PRIMERA_LECTURA;
-import static org.deiverbum.app.utils.Constants.RESP_LOWER;
-import static org.deiverbum.app.utils.Constants.RESP_R;
-import static org.deiverbum.app.utils.Constants.RESP_V;
-import static org.deiverbum.app.utils.Constants.SALMODIA;
-import static org.deiverbum.app.utils.Constants.SALUDO_OFICIO;
-import static org.deiverbum.app.utils.Constants.SEGUNDA_LECTURA;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
+import static org.deiverbum.app.utils.Utils.LS2;
 
 public class OficioActivity extends AppCompatActivity {
     private static final String TAG = "OficioActivity";
     Spanned strContenido;
     JsonObjectRequest jsonObjectRequest;
     ZoomTextView mTextView;
-    private Utils utilClass;
+    private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFechaHoy;
-
+    private TTS tts;
     private int progressStatus = 0;
-
+    private StringBuilder sbReader;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_oficio);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        mTextView =  findViewById(R.id.tv_Zoomable);
+        mTextView = findViewById(R.id.tv_Zoomable);
 
-        utilClass = new Utils();
+        utilClass = new UtilsOld();
         strFechaHoy = (getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         requestQueue = Volley.newRequestQueue(this);
         final ProgressBar progressBar = findViewById(R.id.progressBar);
 
-        mTextView.setText(Utils.fromHtml(PACIENCIA));
+        mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
         jsonObjectRequest = new JsonObjectRequest(
 
-                Request.Method.GET, OL_URL + strFechaHoy,null,
+                Request.Method.GET, OL_URL + strFechaHoy, null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        String resp = getResponseData(response);
-                        strContenido = Utils.fromHtml(resp);
-                        mTextView.setText(Utils.fromHtml(resp.replaceAll(SEPARADOR, "")));
+                        SpannableStringBuilder resp = getResponseData(response);
+                        //strContenido = Utils.fromHtml(resp.toString());
+                        mTextView.setText(resp, TextView.BufferType.SPANNABLE);
                         progressBar.setVisibility(View.INVISIBLE);
                     }
                 },
@@ -99,9 +96,9 @@ public class OficioActivity extends AppCompatActivity {
                         VolleyErrorHelper errorVolley = new VolleyErrorHelper();
                         String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
                         Log.d(TAG, "Error: " + sError);
-                        mTextView.setText(Utils.fromHtml(sError));
+                        mTextView.setText(UtilsOld.fromHtml(sError));
                         progressBar.setVisibility(View.INVISIBLE);
-                        }
+                    }
                 }
         );
 
@@ -114,201 +111,216 @@ public class OficioActivity extends AppCompatActivity {
 
     }
 
-    protected String getResponseData(JSONObject jsonDatos) {
-        StringBuilder sb = new StringBuilder();
+    protected SpannableStringBuilder getResponseData(JSONObject jsonDatos) {
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        sbReader = new StringBuilder();
+        Gson gson = new Gson();
+
+
         try {
 
-            //Objetos
             JSONObject jsonBreviario = jsonDatos.getJSONObject("breviario");
-            JSONObject jsonInfo = jsonBreviario.getJSONObject("info");
-            JSONObject jsonContenido = jsonBreviario.getJSONObject("contenido");
-            JSONObject salmoUno = jsonContenido.getJSONObject("salmos").getJSONObject("s1");
-            JSONObject salmoDos = jsonContenido.getJSONObject("salmos").getJSONObject("s2");
-            JSONObject salmoTres = jsonContenido.getJSONObject("salmos").getJSONObject("s3");
-            JSONObject biblica = jsonContenido.getJSONObject("biblica");
-            JSONObject patristica = jsonContenido.getJSONObject("patristica");
+            Breviario breviario = gson.fromJson(String.valueOf(jsonBreviario), Breviario.class);
+            MetaLiturgia meta = breviario.getMetaLiturgia();
+            Santo santo = breviario.getSanto();
 
-            //Info inicial
-            int infoColor = jsonInfo.getInt("color");
+            Oficio oficio = breviario.getOficio();
+            Invitatorio invitatorio = oficio.getInvitatorio();
+            Himno himno = oficio.getHimno();
+            Salmodia salmodia = oficio.getSalmodia();
 
-            //utilClass.setBarColor(this,infoColor);
-            String infoFecha = jsonInfo.getString("fecha") + BRS;
-            String infoTiempo = "<h1>" + jsonInfo.getString("tiempo") + "</h1>";
-            String infoSemana = "<h3>" + jsonInfo.getString("semana") + "</h3>";
-            String infoSalterio = CSS_SM_A+CSS_RED_A +jsonInfo.getString("salterio") + CSS_RED_Z + CSS_SM_Z + BRS;
-            String infoMensaje = jsonInfo.getString("mensaje");
-
-            //Contenido
-
-            String txtAntifona = PRE_ANT + utilClass.getFormato(jsonContenido.getString("antifona")) + BRS;
-            String txtInvitatorio = utilClass.getFormato(jsonContenido.getString("invitatorio"));
-
-            String txtVida = "";
+            OficioLecturas lecturasOficio = oficio.getOficioLecturas();
+            Patristica patristica = lecturasOficio.getPatristica();
+            Biblica biblica = lecturasOficio.getBiblica();
+            TeDeum teDeum = lecturasOficio.getTeDeum();
+            //Oracion oracion=oficio.getOracion();
 
 
-            if (!jsonContenido.getString("vida").equals("")) {
-                txtVida = CSS_SM_A + jsonContenido.getString("vida") + CSS_SM_Z + BRS;
-            }
+            CharSequence santoNombre = (santo.getNombre().equals("")) ? "" : Utils.toH3(santo.getNombre() + LS2);
 
-            String txtSanto = "";
+            SpannableStringBuilder titleInvitatorio = Utils.formatSubTitle("invitatorio");
 
-
-            if (!jsonContenido.getString("santo").equals("")) {
-                txtSanto = CSS_SM_A + jsonContenido.getString("santo") + CSS_SM_Z + BRS;
-            }
-
-            String txtHimno = HIMNO + utilClass.getFormato(jsonContenido.getString("himno")) + BRS;
-            String salmoUnoOrden = salmoUno.getString("orden");
-            String salmoUnoAntifona = salmoUno.getString("antifona");
-            String salmoUnoRef = salmoUno.getString("ref");
-            String salmoUnoTema = salmoUno.getString("tema");
-            String salmoUnoIntro = salmoUno.getString("intro");
-            String salmoUnoParte = salmoUno.getString("parte");
-            String salmoUnoTexto = salmoUno.getString("salmo");
-            String salmoUnoCompleto;
-            salmoUnoCompleto = utilClass.getSalmoCompleto(salmoUnoOrden, salmoUnoAntifona, salmoUnoRef, salmoUnoTema, salmoUnoIntro, salmoUnoParte, salmoUnoTexto);
-
-            String salmoDosOrden = salmoDos.getString("orden");
-            String salmoDosAntifona = salmoDos.getString("antifona");
-            String salmoDosRef = salmoDos.getString("ref");
-            String salmoDosTema = salmoDos.getString("tema");
-            String salmoDosIntro = salmoDos.getString("intro");
-            String salmoDosParte = salmoDos.getString("parte");
-            String salmoDosTexto = salmoDos.getString("salmo");
-            String salmoDosCompleto;
-            salmoDosCompleto = utilClass.getSalmoCompleto(salmoDosOrden, salmoDosAntifona, salmoDosRef, salmoDosTema, salmoDosIntro, salmoDosParte, salmoDosTexto);
-
-            String salmoTresOrden = salmoTres.getString("orden");
-            String salmoTresAntifona = salmoTres.getString("antifona");
-            String salmoTresRef = salmoTres.getString("ref");
-            String salmoTresTema = salmoTres.getString("tema");
-            String salmoTresIntro = salmoTres.getString("intro");
-            String salmoTresParte = salmoTres.getString("parte");
-            String salmoTresTexto = salmoTres.getString("salmo");
-            String salmoTresCompleto;
-            salmoTresCompleto = utilClass.getSalmoCompleto(salmoTresOrden, salmoTresAntifona, salmoTresRef, salmoTresTema, salmoTresIntro, salmoTresParte, salmoTresTexto);
-
-            //Lecturas
-            String txtResponsorio = jsonContenido.getString("responsorio");
-            if (!utilClass.isNull(txtResponsorio)) {
-                String[] arrResponsorio = txtResponsorio.split("\\|");
-                txtResponsorio = RESP_V + arrResponsorio[0] + BR + RESP_R + arrResponsorio[1] + BRS;
-            }
-            //Bíblica
-            String txtBiblicaFuente = PRIMERA_LECTURA + biblica.getString("libro") +
-                    CSS_RED_A + NBSP_4 +
-                    biblica.getString("capitulo") + ", " + biblica.getString("v_inicial") + biblica.getString("v_final")
-                    + CSS_RED_Z + BRS;
-            String txtBiblicaTema = CSS_RED_A + biblica.getString("tema") + CSS_RED_Z;
-            String txtBiblicaTexto = biblica.getString("texto");
-            String txtBiblicaRef = CSS_RED_A + RESP_LOWER + NBSP_2 + biblica.getString("ref") + CSS_RED_Z + BRS;
-            String txtBiblicaResponsorio = biblica.getString("responsorio");
-
-            //Hay que construir el responsorio. Los responsorios son recibidos en forma de matriz y en base a un código son desplegados
-            String txtBiblicaResponsorioFinal = "";
-            if (txtBiblicaResponsorio != null && !txtBiblicaResponsorio.isEmpty() && !txtBiblicaResponsorio.equals("null")) {
-
-                String[] arrPartes = txtBiblicaResponsorio.split("\\|");
-                txtBiblicaResponsorioFinal = utilClass.getResponsorio(arrPartes, 1);
-            }
+            CharSequence santoVida = (santo.getVida().equals("")) ? "" : Utils.toSmallSize(santo.getVida() + Utils.LS);
+            CharSequence metaSalterio = (meta.getSalterio().equals("")) ? "" : Utils.toSmallSizeRed(Utils.fromHtml(meta.getSalterio()) + Utils.LS);
+            String ant = getString(R.string.ant);
 
 
-            //Patrística
-            String txtPadres;
+            sb.append(Utils.toH2(meta.getTiempo()));
+            sb.append(Utils.LS);
+            sb.append(Utils.toH3(meta.getSemana()));
+            sb.append(Utils.LS2);
 
-            String txtPadresObra = patristica.getString("padre") + ", " +
-                    patristica.getString("obra");
-            String txtPadresFuente = BR + CSS_RED_A + CSS_SM_A + "(" + patristica.getString("fuente") + ")" + CSS_SM_Z +
-                    BRS + patristica.getString("tema") + CSS_RED_Z;
+            //sb.append(Utils.toH3Red(hora));
+            sb.append(Utils.LS);
 
-            String txtPadresTexto = patristica.getString("texto");
-            String txtPadresRef = CSS_RED_A + RESP_LOWER + " " + patristica.getString("ref") + CSS_RED_Z + BRS;
-            String txtPadresResponsorio = patristica.getString("responsorio");
-            String txtPadresRespFinal = "";
-            if (txtPadresResponsorio != null && !txtPadresResponsorio.isEmpty() && !txtPadresResponsorio.equals("null")) {
+            sb.append(santo.getNombre());
+            sb.append(santo.getVida());
+            sb.append(metaSalterio);
 
-                String[] arrParts = txtPadresResponsorio.split("\\|");
-                txtPadresRespFinal = utilClass.getResponsorio(arrParts, 1);
-            }
+            sb.append(Utils.LS2);
+            sb.append(Utils.getSaludoOficio());
+            sb.append(Utils.LS2);
+            sb.append(titleInvitatorio);
+            sb.append(Utils.LS2);
+            sb.append(Utils.fromHtml(ant));
+            sb.append(invitatorio.getAntifona());
+            sb.append(Utils.LS2);
+            sb.append(Utils.fromHtml(invitatorio.getTexto()));
+            sb.append(Utils.LS);
+            sb.append(Utils.getFinSalmo());
+            sb.append(Utils.LS2);
+            sb.append(Utils.fromHtml(ant));
+            sb.append(invitatorio.getAntifona());
+            sb.append(Utils.LS2);
 
-            String txtOracion = ORACION + utilClass.getFormato(jsonContenido.getString("oracion"));
+            sb.append(himno.getHeader());
+            sb.append(Utils.LS2);
+            sb.append(himno.getTexto());
+            sb.append(Utils.LS2);
+
+            sb.append(salmodia.getHeader());
+            sb.append(Utils.LS2);
+            sb.append(salmodia.getSalmoCompleto());
+            sb.append(Utils.LS);
+
+            sb.append(Utils.formatSubTitle("lecturas del oficio"));
+            sb.append(Utils.LS2);
+            //sb.append(oficio.getResponsorio());
+
+            sb.append(lecturasOficio.getResponsorio());
+            sb.append(Utils.LS2);
+            sb.append(biblica.getHeader());
+            sb.append(Utils.LS2);
+            sb.append(biblica.getLibro());
+            sb.append("    ");
+
+            sb.append(Utils.toRed(biblica.getCapitulo()));
+            sb.append(", ");
+            sb.append(Utils.toRed(biblica.getInicial()));
+            sb.append(Utils.toRed(biblica.getFinal()));
+            sb.append(Utils.LS2);
+
+            sb.append(Utils.toRed(biblica.getTema()));
+
+            sb.append(Utils.LS2);
+            sb.append(biblica.getTexto());
+            sb.append(Utils.LS);
+            sb.append(Utils.toRed("Responsorio    "));
+            sb.append(Utils.toRed(biblica.getRef()));
+            sb.append(Utils.LS2);
+            sb.append(biblica.getResponsorio());
+            sb.append(Utils.LS2);
+            sb.append(Utils.LS);
+
+            sb.append(patristica.getHeader());
+            sb.append(Utils.LS2);
+            sb.append(patristica.padre);
+            sb.append(", ");
+            sb.append(patristica.obra);
+            sb.append(Utils.LS);
+            sb.append(Utils.toSmallSizeRed(patristica.fuente));
+            sb.append(Utils.LS2);
+            sb.append(Utils.toRed(patristica.tema));
+            sb.append(Utils.LS2);
+
+            sb.append(patristica.getTexto());
+
+            sb.append(Utils.LS);
+            sb.append(Utils.toRed("Responsorio    "));
+            sb.append(Utils.toRed(patristica.ref));
+
+            sb.append(Utils.LS2);
+
+            sb.append(patristica.getResponsorio());
+            sb.append(Utils.LS2);
+            sb.append(teDeum.getTexto());
+            sb.append(Utils.formatTitle("ORACIÓN"));
+            sb.append(LS2);
+
+            sb.append(oficio.getOracion());
+
+            /*Texto para TTS*/
+
+            sbReader.append("OFICIO DE LECTURA." + BR);
+            sbReader.append(SEPARADOR);
+
+            sbReader.append(santo.getNombre() + "." + BR);
+            sbReader.append(santo.getVida() + BR);
+            sbReader.append(meta.getSalterio() + BR);
+            sbReader.append(SEPARADOR);
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.getSaludoOficio());
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("Invitatorio.");
+            sbReader.append(SEPARADOR);
+            sbReader.append(invitatorio.getAntifona());
+            sbReader.append(invitatorio.getTexto());
+            sbReader.append(Utils.getFinSalmo());
+            sbReader.append(invitatorio.getAntifona());
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("HIMNO.");
+            sbReader.append(SEPARADOR);
+            sbReader.append(himno.getTexto());
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("SALMODIA.");
+            sbReader.append(salmodia.getSalmosForRead());
+
+            sbReader.append("<p>Lecturas del oficio</p>");
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("PRIMERA LECTURA.");
+            sbReader.append(SEPARADOR);
+            sbReader.append(biblica.getLibro());
+            sbReader.append(SEPARADOR);
+            sbReader.append(biblica.getTema());
+
+            sbReader.append(SEPARADOR);
+            sbReader.append(biblica.getTexto());
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("Responsorio ");
+            sbReader.append(SEPARADOR);
+            sbReader.append(biblica.getResponsorioForReader());
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("SEGUNDA LECTURA.");
+            sbReader.append(SEPARADOR);
+            sbReader.append(patristica.padre);
+            sbReader.append(", ");
+            sbReader.append(patristica.obra);
+            sbReader.append(SEPARADOR);
+            sbReader.append(patristica.tema);
+            sbReader.append(SEPARADOR);
+            sbReader.append(patristica.getTexto());
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("Responsorio ");
+            sbReader.append(SEPARADOR);
+
+            sbReader.append(patristica.getResponsorioForReader());
+            sbReader.append(SEPARADOR);
+            sbReader.append(teDeum.getTexto());
+            sbReader.append(oficio.getOracion());
 
 
-            sb.append(infoFecha);
-            sb.append(infoTiempo);
-            sb.append(infoSemana);
-            sb.append(infoMensaje);
-
-            sb.append(OL_TITULO);
-            sb.append(infoMensaje);
-
-            if (!txtSanto.equals("")) {
-                sb.append("<h3>");
-                sb.append(txtSanto);
-                sb.append("</h3>");
-            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
 
-            if (!txtVida.equals("")) {
-                sb.append(txtVida);
-                sb.append(SEPARADOR);
-            }
-            sb.append(infoSalterio);
-
-            sb.append(INVITATORIO);
-            sb.append(SALUDO_OFICIO);
-            sb.append(txtAntifona);
-            sb.append(txtInvitatorio);
-            sb.append(FIN_SALMO);
-            sb.append(BRS);
-            sb.append(utilClass.getAntifonaLimpia(txtAntifona));
-            sb.append(SEPARADOR);
-            sb.append(txtHimno);
-            sb.append(SEPARADOR);
-            sb.append(SALMODIA);
-            sb.append(salmoUnoCompleto);
-            sb.append(SEPARADOR);
-            sb.append(salmoDosCompleto);
-            sb.append(SEPARADOR);
-            sb.append(salmoTresCompleto);
-            sb.append(SEPARADOR);
-
-            sb.append("<h3>lecturas</h3>");
-            sb.append(txtResponsorio);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaFuente);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaTema);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaTexto);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaRef);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaResponsorioFinal);
-            sb.append(SEPARADOR);
-            sb.append(SEGUNDA_LECTURA);
-            sb.append(txtPadresObra);
-            sb.append(SEPARADOR);
-            sb.append(txtPadresFuente);
-            sb.append(SEPARADOR);
-            sb.append(txtPadresTexto);
-            sb.append(SEPARADOR);
-            sb.append(txtPadresRef);
-            sb.append(SEPARADOR);
-            sb.append(txtPadresRespFinal);
-
-            sb.append(SEPARADOR);
-
-            sb.append(txtOracion);
-
-            //           }
+//            Oficio oficio = breviario.oficio;
+//        sb.append(oficio.toString());
+/*
         } catch (JSONException e) {
 
             e.printStackTrace();
             Log.e(TAG, e.getMessage());
         }
-
-        return sb.toString();
+*/
+        return sb;
     }
 
 
@@ -320,22 +332,40 @@ public class OficioActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        switch (item.getItemId()) {
 
-        if (id == R.id.item_voz) {
-            String[] strPrimera = strContenido.toString().split(SEPARADOR);
-            new TTS(getApplicationContext(), strPrimera);
-        }
+            case android.R.id.home:
+                if (tts != null) {
+                    tts.cerrar();
+                }
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
 
-        if (id == R.id.item_calendario) {
-            Intent i = new Intent(this, CalendarioActivity.class);
-            startActivity(i);
+            case R.id.item_voz:
+//                String[] strPrimera = strContenido.toString().split(SEPARADOR);
+//                tts = new TTS(getApplicationContext(), strPrimera);
+                String html = String.valueOf(Utils.fromHtml(sbReader.toString()));
+                String[] strPrimera = html.split(SEPARADOR);
+                tts = new TTS(getApplicationContext(), strPrimera);
+                return true;
+
+            case R.id.item_calendario:
+                Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
 
+        if (tts != null) {
+            tts.cerrar();
+        }
+    }
 
 
 }

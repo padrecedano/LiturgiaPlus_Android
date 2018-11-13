@@ -3,83 +3,230 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.ProgressBar;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
+import org.deiverbum.app.BuildConfig;
 import org.deiverbum.app.R;
+import org.deiverbum.app.data.OracionesAdapter;
+import org.deiverbum.app.model.Oraciones;
 import org.deiverbum.app.utils.TTS;
-import org.deiverbum.app.utils.Utils;
-import org.deiverbum.app.utils.VolleyErrorHelper;
+import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.ZoomTextView;
 
-import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
-import static org.deiverbum.app.utils.Constants.PACIENCIA;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
-import static org.deiverbum.app.utils.Constants.URL_ORACIONES;
 
 public class OracionesActivity extends AppCompatActivity {
     private static final String TAG = "OracionesActivity";
     Spanned strContenido;
     ZoomTextView mTextView;
-    private Utils utilClass;
+    private static String mAPIKey = BuildConfig.mAPIKEY;
     private RequestQueue requestQueue;
     private String strFechaHoy;
+    List<Oraciones> oracionesList;
+    RecyclerView oracionesRecyclerView;
+    RecyclerView.LayoutManager layoutManager;
+    RecyclerView.Adapter oracionesAdapter;
+    private UtilsOld utilClass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_oraciones);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setContentView(R.layout.oraciones_activity);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        oracionesRecyclerView = findViewById(R.id.rv_menu);
+        createMovieList();
+        layoutManager = new LinearLayoutManager(this);
+        oracionesAdapter = new OracionesAdapter(oracionesList);
+        oracionesRecyclerView.setLayoutManager(layoutManager);
+        oracionesRecyclerView.setAdapter(oracionesAdapter);
+
+
+
+
+
         /*Variables*/
-        utilClass = new Utils();
-        requestQueue = Volley.newRequestQueue(this);
-        strFechaHoy = (this.getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
-        final ProgressBar progressBar = findViewById(R.id.progressBar);
+/*
 
         mTextView = findViewById(R.id.tv_Zoomable);
-        mTextView.setText(Utils.fromHtml(PACIENCIA));
+        final ProgressBar progressBar = findViewById(R.id.progressBar);
+
+//        mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
+/*
+        utilClass = new UtilsOld();
+        requestQueue = Volley.newRequestQueue(this);
+        strFechaHoy = (this.getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, URL_ORACIONES + strFechaHoy,null,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+
+                        progressBar.setVisibility(View.INVISIBLE);
+                        mTextView.setText(UtilsOld.fromHtml(response.toString()));
+                        //strContenido = UtilsOld.fromHtml(response);
+
+                    }
+
+
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                        String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
+                        progressBar.setVisibility(View.INVISIBLE);
+                        mTextView.setText(UtilsOld.fromHtml(sError));
+
+
+                        //Failure Callback
+                    }
+                })
+        {
+            @Override
+            public Map getHeaders() throws AuthFailureError {
+                HashMap headers = new HashMap();
+                headers.put("Content-Type", "application/json");
+                headers.put("apiKey", mAPIKey);
+                headers.put("user", "appLiturgiaPlus");
+                headers.put("pwd", "myPass");
+                headers.put("endpoint", "oraciones");
+                headers.put("fecha", strFechaHoy);
+
+                return headers;
+            }
+        };
+
+
 
         StringRequest sRequest = new StringRequest(Request.Method.GET, URL_ORACIONES + strFechaHoy,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String sResponse) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        mTextView.setText(Utils.fromHtml(sResponse));
-                        strContenido = Utils.fromHtml(sResponse);
+                        mTextView.setText(UtilsOld.fromHtml(sResponse));
+                        strContenido = UtilsOld.fromHtml(sResponse);
                     }
                 }, new Response.ErrorListener() {
+                */
+/*
             @Override
             public void onErrorResponse(VolleyError error) {
                 String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
                 progressBar.setVisibility(View.INVISIBLE);
-                mTextView.setText(Utils.fromHtml(sError));
-                strContenido = Utils.fromHtml("Error");
+                mTextView.setText(UtilsOld.fromHtml(sError));
+                strContenido = UtilsOld.fromHtml("Error");
+
 
             }
+
+
+
+
         });
 
 
-        sRequest.setRetryPolicy(new DefaultRetryPolicy(
+        jsonObjReq.setRetryPolicy(new DefaultRetryPolicy(
                 MY_DEFAULT_TIMEOUT,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        requestQueue.add(sRequest);
+        requestQueue.add(jsonObjReq);
         progressBar.setVisibility(View.VISIBLE);
+*/
+/*
+        InputStream inputStream = getResources().openRawResource(R.raw.rosario);
+
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+
+
+
+
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        int ctr;
+        try {
+            ctr = inputStream.read();
+            while (ctr != -1) {
+                byteArrayOutputStream.write(ctr);
+                ctr = inputStream.read();
+            }
+            inputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        JSONObject jsonObject;
+        try {
+            jsonObject = new JSONObject(byteArrayOutputStream.toString());
+            JSONObject jsonRosario = jsonObject.getJSONObject("rosario");
+            progressBar.setVisibility(View.INVISIBLE);
+            sb.append(jsonRosario.getString("saludo"));
+            sb.append(jsonRosario.getString("padrenuestro"));
+            Log.d("Text Data", jsonRosario.getString("saludo"));
+            mTextView.setText(UtilsOld.fromHtml(sb.toString()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+*/
+
+
+
+
+
     }
+
+
+    private void createMovieList() {
+        oracionesList = new ArrayList<Oraciones>();
+        Oraciones oracionesListItem1 = new Oraciones();
+        oracionesListItem1.setName("Misterios Gloriosos");
+        oracionesListItem1.setDescription("Domingos y Miércoles");
+        oracionesListItem1.setImageId(R.drawable.ic_calendar);
+        oracionesListItem1.setCaseID(1);
+        oracionesList.add(oracionesListItem1);
+
+        Oraciones oracionesListItem2 = new Oraciones();
+        oracionesListItem2.setName("Misterios Gozosos");
+        oracionesListItem2.setDescription("Lunes y Sábados");
+        oracionesListItem2.setImageId(R.drawable.ic_calendar);
+        oracionesList.add(oracionesListItem2);
+
+        Oraciones oracionesListItem3 = new Oraciones();
+        oracionesListItem3.setName("Misterios Dolorosos");
+        oracionesListItem3.setDescription("Martes y Viernes");
+        oracionesListItem3.setImageId(R.drawable.ic_calendar);
+        oracionesList.add(oracionesListItem3);
+
+        Oraciones oracionesListItem4 = new Oraciones();
+        oracionesListItem4.setName("Misterios Luminosos");
+        oracionesListItem4.setDescription("Jueves");
+        oracionesListItem4.setImageId(R.drawable.ic_calendar);
+        oracionesList.add(oracionesListItem4);
+
+        Oraciones oracionesListItem5 = new Oraciones();
+        oracionesListItem5.setName("Letanías");
+        oracionesListItem5.setDescription("Solamente las Letanías");
+        oracionesListItem5.setImageId(R.drawable.ic_calendar);
+        oracionesList.add(oracionesListItem5);
+
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -106,5 +253,6 @@ public class OracionesActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
 
 }

@@ -2,6 +2,7 @@ package org.deiverbum.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Spanned;
@@ -22,7 +23,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.utils.TTS;
-import org.deiverbum.app.utils.Utils;
+import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
 import org.json.JSONArray;
@@ -47,25 +48,26 @@ public class SextaActivity extends AppCompatActivity {
     Spanned strContenido;
     JsonObjectRequest jsonObjectRequest;
     ZoomTextView mTextView;
-    private Utils utilClass;
+    private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFechaHoy;
+    private TTS tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sexta);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mTextView =  findViewById(R.id.tv_Zoomable);
 
-        utilClass = new Utils();
+        utilClass = new UtilsOld();
         strFechaHoy = (getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         requestQueue = Volley.newRequestQueue(this);
         final ProgressBar progressBar = findViewById(R.id.progressBar);
 
-        mTextView.setText(Utils.fromHtml(PACIENCIA));
+        mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
         jsonObjectRequest = new JsonObjectRequest(
 
                 Request.Method.GET, URL_SEXTA + strFechaHoy,null,
@@ -73,8 +75,8 @@ public class SextaActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         String resp = getResponseData(response);
-                        strContenido = Utils.fromHtml(resp);
-                        mTextView.setText(Utils.fromHtml(resp.replaceAll(SEPARADOR, "")));
+                        strContenido = UtilsOld.fromHtml(resp);
+                        mTextView.setText(UtilsOld.fromHtml(resp.replaceAll(SEPARADOR, "")));
                         progressBar.setVisibility(View.INVISIBLE);
                     }
                 },
@@ -84,7 +86,7 @@ public class SextaActivity extends AppCompatActivity {
                         VolleyErrorHelper errorVolley = new VolleyErrorHelper();
                         String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
                         Log.d(TAG, "Error: " + sError);
-                        mTextView.setText(Utils.fromHtml(sError));
+                        mTextView.setText(UtilsOld.fromHtml(sError));
                         progressBar.setVisibility(View.INVISIBLE);
                     }
                 }
@@ -190,20 +192,39 @@ public class SextaActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        switch (item.getItemId()) {
 
-        if (id == R.id.item_voz) {
-            String[] strPrimera = strContenido.toString().split(SEPARADOR);
-            new TTS(getApplicationContext(), strPrimera);
-        }
+            case android.R.id.home:
+                if (tts != null) {
+                    tts.cerrar();
+                }
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
 
-        if (id == R.id.item_calendario) {
-            Intent i = new Intent(this, CalendarioActivity.class);
-            startActivity(i);
+            case R.id.item_voz:
+                String[] strPrimera = strContenido.toString().split(SEPARADOR);
+                tts = new TTS(getApplicationContext(), strPrimera);
+
+                return true;
+
+            case R.id.item_calendario:
+                Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if (tts != null) {
+            tts.cerrar();
+        }
+    }
+
 
 
 }

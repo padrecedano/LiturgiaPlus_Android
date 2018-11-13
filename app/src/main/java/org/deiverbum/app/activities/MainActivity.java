@@ -3,7 +3,6 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -14,13 +13,20 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreSettings;
+
 import org.deiverbum.app.R;
 import org.deiverbum.app.data.MainDataModel;
 import org.deiverbum.app.data.MainRecyclerAdapter;
 import org.deiverbum.app.gui.AutoFitGridLayoutManager;
-import org.deiverbum.app.utils.Utils;
+import org.deiverbum.app.utils.UtilsOld;
 
 import java.util.ArrayList;
+
+import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainRecyclerAdapter.ItemListener {
@@ -29,7 +35,7 @@ public class MainActivity extends AppCompatActivity
     ArrayList<MainDataModel> arrayList;
     String version;
     String strFechaHoy;
-    private Utils utilClass;
+    private UtilsOld utilClass;
     private static final String TAG = "MainActivity";
 
 /*
@@ -40,20 +46,40 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        utilClass = new Utils();
+        //Fabric.with(this, new Crashlytics());
+
+        final Fabric fabric = new Fabric.Builder(this)
+                .kits(new Crashlytics())
+                .debuggable(true)
+                .build();
+        Fabric.with(fabric);
+/*
+        DatabaseReference santosRef = FirebaseDatabase.getInstance().getReference("santos");
+        santosRef.keepSynced(true);
+*/
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference santosRef = db
+                .collection("santos");
+        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
+                .setPersistenceEnabled(true)
+                .build();
+        db.setFirestoreSettings(settings);
+
+
+        utilClass = new UtilsOld();
         version = utilClass.getAppInfo();//System.getProperty("line.separator")+"Liturgia+ v. "+ BuildConfig.VERSION_NAME;
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        recyclerView = findViewById(R.id.recyclerView);
+        //recyclerView = findViewById(R.id.recyclerView);
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
 
@@ -118,7 +144,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
@@ -147,11 +173,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        Intent i = new Intent(this, MenuActivity.class);
+        Log.d(TAG, String.valueOf(item.getTitle()));
+        Intent i = new Intent(this, SettingsActivity.class);
         i.putExtra("OPTION", item.getTitle());
         startActivity(i);
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -161,6 +187,8 @@ public class MainActivity extends AppCompatActivity
 
         Intent i;
 //        utilClass.setFabric(item.text, TAG, strFechaHoy);
+//        Log.i(TAG, item.toString());
+        utilClass.setFabric(item.text, TAG);
         Log.i(TAG, item.toString());
 
         switch (item.text) {
@@ -207,12 +235,13 @@ public class MainActivity extends AppCompatActivity
                 break;
 
             case "Más...":
-                /*
+
                 i = new Intent(MainActivity.this, MainMasActivity.class);
                 startActivity(i);
-                */
+                /*
                 Snackbar.make(getWindow().getDecorView(), "Opción disponible en una futura actualización", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
+                        */
                 break;
 
             default:

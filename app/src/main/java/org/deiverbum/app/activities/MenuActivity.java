@@ -17,7 +17,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.deiverbum.app.R;
-import org.deiverbum.app.utils.Utils;
+import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
 
@@ -29,7 +29,7 @@ public class MenuActivity extends AppCompatActivity {
     private static final String TAG = "MenuActivity";
     Spanned strContenido;
     ZoomTextView mTextView;
-    private Utils utilClass;
+    private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFechaHoy;
 
@@ -37,7 +37,7 @@ public class MenuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -50,23 +50,23 @@ Log.d(TAG, "ITem: "+menuOption);
         final ProgressBar progressBar = findViewById(R.id.progressBar);
 
         mTextView = findViewById(R.id.tv_Zoomable);
-        mTextView.setText(Utils.fromHtml(PACIENCIA));
+        mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
 
         StringRequest sRequest = new StringRequest(Request.Method.GET, URL_MENU + menuOption,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String sResponse) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        mTextView.setText(Utils.fromHtml(sResponse));
-                        strContenido = Utils.fromHtml(sResponse);
+                        mTextView.setText(UtilsOld.fromHtml(sResponse));
+                        strContenido = UtilsOld.fromHtml(sResponse);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
                 progressBar.setVisibility(View.INVISIBLE);
-                mTextView.setText(Utils.fromHtml(sError));
-                strContenido = Utils.fromHtml("Error");
+                mTextView.setText(UtilsOld.fromHtml(sError));
+                strContenido = UtilsOld.fromHtml("Error");
 
             }
         });
