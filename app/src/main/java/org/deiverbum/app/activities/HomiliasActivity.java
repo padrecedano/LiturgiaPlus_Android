@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
@@ -71,10 +72,11 @@ public class HomiliasActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.tv_Zoomable);
         mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
 
-        StringRequest sRequest = new StringRequest(Request.Method.GET, URL_HOMILIAS + strFechaHoy,
-                new Response.Listener<String>() {
+
+        JsonObjectRequest sRequest = new JsonObjectRequest(Request.Method.GET, URL_HOMILIAS + strFechaHoy, null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String sResponse) {
+                    public void onResponse(JSONObject sResponse) {
                         progressBar.setVisibility(View.INVISIBLE);
                         //String sFormateado=getResponseData(sResponse);
 
@@ -147,22 +149,23 @@ public class HomiliasActivity extends AppCompatActivity {
     }
 
 
-    protected SpannableStringBuilder getResponseData(String jsonDatos) {
+    protected SpannableStringBuilder getResponseData(JSONObject jsonDatos) {
         Gson gson = new Gson();
         String ant = getString(R.string.ant);
 
         JSONObject jsonObject = null;
         try {
-            jsonObject = new JSONObject(jsonDatos);
+            //jsonObject = new JSONObject(jsonDatos);
             ssb = new SpannableStringBuilder();
             sbReader = new StringBuilder();
+            Liturgia liturgia = gson.fromJson(String.valueOf(jsonDatos.getJSONObject("liturgia")), Liturgia.class);
 
-            Liturgia liturgia = gson.fromJson(String.valueOf(jsonObject.getJSONObject("liturgia")), Liturgia.class);
+            //Liturgia liturgia = gson.fromJson(String.valueOf(jsonObject.getJSONObject("liturgia")), Liturgia.class);
             List<HomiliaCompleta> a = liturgia.getHomiliaCompleta();//.fromJson(jsonObject.getJSONObject("homiliaCompleta").toString(), HomiliaCompleta.class);
 
             for (HomiliaCompleta s : a) {
-
-                ssb.append(Utils.toH4(s.padre));
+                Log.d(TAG, s.getPadre() + "++++");
+                ssb.append(Utils.toH3Red(s.padre));
                 ssb.append(Utils.LS2);
                 ssb.append(s.getTexto());
                 ssb.append(Utils.LS2);

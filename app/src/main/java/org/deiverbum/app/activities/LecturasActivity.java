@@ -2,27 +2,38 @@ package org.deiverbum.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.deiverbum.app.R;
+import org.deiverbum.app.model.Liturgia;
+import org.deiverbum.app.model.LiturgiaPalabra;
+import org.deiverbum.app.model.Misa;
 import org.deiverbum.app.utils.TTS;
+import org.deiverbum.app.utils.Utils;
 import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
@@ -36,6 +47,10 @@ public class LecturasActivity extends AppCompatActivity {
     private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFechaHoy;
+    JsonObjectRequest jsonObjectRequest;
+    private StringBuilder sbReader;
+
+
     private TTS tts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,32 +68,37 @@ public class LecturasActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.tv_Zoomable);
         mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
 
-        StringRequest sRequest = new StringRequest(Request.Method.GET, URL_LECTURAS + strFechaHoy,
-                new Response.Listener<String>() {
+
+        jsonObjectRequest = new JsonObjectRequest(
+
+                Request.Method.GET, URL_LECTURAS + strFechaHoy, null,
+                new Response.Listener<JSONObject>() {
                     @Override
-                    public void onResponse(String sResponse) {
+                    public void onResponse(JSONObject response) {
+                        SpannableStringBuilder resp = getResponseData(response);
+                        mTextView.setText(resp, TextView.BufferType.SPANNABLE);
                         progressBar.setVisibility(View.INVISIBLE);
-                        mTextView.setText(UtilsOld.fromHtml(sResponse));
-                        strContenido = UtilsOld.fromHtml(sResponse);
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
-                progressBar.setVisibility(View.INVISIBLE);
-                mTextView.setText(UtilsOld.fromHtml(sError));
-                strContenido = UtilsOld.fromHtml("Error");
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyErrorHelper errorVolley = new VolleyErrorHelper();
+                        String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
+                        Log.d(TAG, "Error: " + sError);
+                        mTextView.setText(UtilsOld.fromHtml(sError));
+                        progressBar.setVisibility(View.INVISIBLE);
+                    }
+                }
+        );
 
-            }
-        });
-
-
-        sRequest.setRetryPolicy(new DefaultRetryPolicy(
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 MY_DEFAULT_TIMEOUT,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        requestQueue.add(sRequest);
+        requestQueue.add(jsonObjectRequest);
         progressBar.setVisibility(View.VISIBLE);
+
     }
 
     @Override
@@ -87,33 +107,66 @@ public class LecturasActivity extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        switch (item.getItemId()) {
 
-        if (id == R.id.item_voz) {
-            if (!strContenido.equals("Error")) {
+            case android.R.id.home:
+                if (tts != null) {
+                    tts.cerrar();
+                }
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
 
-                String[] strPrimera = strContenido.toString().split(SEPARADOR);
-                tts = new TTS(getApplicationContext(), strPrimera);
-            }
-        }
+            case R.id.item_voz:
+                String html = String.valueOf(Utils.fromHtml(sbReader.toString()));
+                String[] textParts = html.split(SEPARADOR);
+                tts = new TTS(getApplicationContext(), textParts);
 
-        if (id == R.id.item_calendario) {
-            Intent i = new Intent(this, CalendarioActivity.class);
-            startActivity(i);
+                return true;
+
+            case R.id.item_calendario:
+                Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
 
+
     @Override
-    protected void onStop() {
-        super.onStop();
+    public void onBackPressed() {
+        super.onBackPressed();
+
         if (tts != null) {
             tts.cerrar();
         }
+    }
+
+    protected SpannableStringBuilder getResponseData(JSONObject jsonDatos) {
+        sbReader = new StringBuilder();
+        Gson gson = new Gson();
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        try {
+
+            JSONObject jsonLiturgia = jsonDatos.getJSONObject("liturgia");
+            Liturgia liturgia = gson.fromJson(String.valueOf(jsonLiturgia), Liturgia.class);
+            Misa misa = liturgia.getMisa();
+
+            //Misa misa = gson.fromJson(String.valueOf(jsonLiturgia), Misa.class);
+            LiturgiaPalabra lp = misa.getLiturgiaPalabra();
+
+            sb.append(lp.getLiturgiaPalabra());
+            sbReader.append(lp.getLiturgiaPalabra());
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        return sb;
 
     }
+
 
 }

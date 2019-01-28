@@ -3,6 +3,7 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.NavUtils;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,14 +30,13 @@ import com.google.gson.Gson;
 import org.deiverbum.app.R;
 import org.deiverbum.app.model.Benedictus;
 import org.deiverbum.app.model.Biblica;
-import org.deiverbum.app.model.Evangelio;
 import org.deiverbum.app.model.Himno;
 import org.deiverbum.app.model.Invitatorio;
 import org.deiverbum.app.model.Laudes;
 import org.deiverbum.app.model.LecturaBreve;
+import org.deiverbum.app.model.LiturgiaPalabra;
 import org.deiverbum.app.model.MetaLiturgia;
 import org.deiverbum.app.model.Misa;
-import org.deiverbum.app.model.MisaLecturas;
 import org.deiverbum.app.model.Mixto;
 import org.deiverbum.app.model.Oficio;
 import org.deiverbum.app.model.OficioLecturas;
@@ -80,7 +80,6 @@ public class MixtoActivity extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mTextView = findViewById(R.id.tv_Zoomable);
-        //Typeface typeface = null;
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             typeface = getResources().getFont(R.font.roboto_black);
             mTextView.setTypeface(typeface);
@@ -90,11 +89,9 @@ public class MixtoActivity extends AppCompatActivity {
             typeface = ResourcesCompat.getFont(this, R.font.roboto_black);
 
         }
-        //mTextView.setTypeface(typeface);
 
         utilClass = new UtilsOld();
         strFechaHoy = (getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
-        //mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
         requestQueue = Volley.newRequestQueue(this);
         final ProgressBar progressBar = findViewById(R.id.progressBar);
 
@@ -106,53 +103,19 @@ public class MixtoActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         SpannableStringBuilder resp = getResponseData(response);
-                        //strContenido = Utils.fromHtml(resp.toString());
-                        //mTextView.setText(UtilsOld.fromHtml(resp.replaceAll(SEPARADOR, "")));
-                        //int colorBlue = getResources().getColor(R.color.titleLiturgy);
-                        //String text = getResources().getString(R.string.himno);
-                        //TextAppearanceSpan styleGreen = new TextAppearanceSpan(getBaseContext(), R.style.CodeFont_Big);
-                        //SpannableString green = new SpannableString(getResources().getString(R.string.himno));
-                        //green.setSpan(styleGreen, 0, green.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                        //SpannableString spannable = new SpannableString(text);
-                        // here we set the color
-                        //spannable.setSpan(new ForegroundColorSpan(colorBlue), 0, text.length(), 0);
-                        //spanstr.setSpan(new StyleSpan(Color.RED), 0, spanstr.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        //spanstr.append("\n");
-                        //spanstr.append("The first line is bold. This one isn't.");
-                        //spanstr.append(spannable);
-                        //spanstr.append(green);
-
-                        //Spannable wordtoSpan = new SpannableString("I know just how to whisper, And I know just how to cry,I know just where to find the answers");
-
-                        //wordtoSpan.setSpan(new ForegroundColorSpan(Color.BLUE), 10, 30, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                         SpannableStringBuilder spanstr = new SpannableStringBuilder("");
                         CharSequence cs = "invitatorio";
                         Spannable spannable = new SpannableString(cs);
                         spannable.setSpan(typeface, 0, spannable.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-                        //SpannableString spannableString = new SpannableString("*Hello World!");
-                        //ForegroundColorSpan foregroundSpan = new ForegroundColorSpan(Color.RED);
-                        //spannableString.setSpan(foregroundSpan, 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
                         spanstr.append(spannable);
 
-                        //mTextView.setText(spanstr);
-
-//Log.d(TAG,resp);
-                        //Log.d(TAG,spanstr.toString());
                         Typeface myTypeface = Typeface.create(ResourcesCompat.getFont(getApplicationContext(), R.font.roboto_black),
                                 Typeface.BOLD);
-                        SpannableString string = new SpannableString("Text with typeface span.llllllllllllllllllllllllllllll");
-                        // string.setSpan(new TypefaceSpan("font/roboto_black"), 0, string.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-                        // string.setSpan(new TypefaceSpan("monospace"), 19, 22, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-                        //spannable.setSpan( new CustomTypefaceSpan("roboto",myTypeface), 0, string.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
                         SpannableStringBuilder SS = new SpannableStringBuilder("invitatorio");
                         SS.setSpan(new CustomTypefaceSpan("", myTypeface), 0, SS.length(), Spanned.SPAN_EXCLUSIVE_INCLUSIVE);
-
-                        //mTextView.setText(SS, TextView.BufferType.SPANNABLE);
-
                         mTextView.setText(resp, TextView.BufferType.SPANNABLE);
 
                         progressBar.setVisibility(View.INVISIBLE);
@@ -182,7 +145,6 @@ public class MixtoActivity extends AppCompatActivity {
     protected SpannableStringBuilder getResponseData(JSONObject jsonDatos) {
 
 
-        //Gson gson = new Gson();
 
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
@@ -190,12 +152,6 @@ public class MixtoActivity extends AppCompatActivity {
         try {
             Gson gson = new Gson();
             String ant = getString(R.string.ant);
-
-            //Log.d(TAG,jsonDatos.toString());
-
-            //Invitatorio restaurantObject = gson.fromJson(jsonDatos.invitario, Invitatorio.class);
-
-//sb.append("ok");
 
             /*Obtenemos o declaramos variables*/
             JSONObject jsonBreviario = jsonDatos.getJSONObject("breviario");
@@ -216,8 +172,10 @@ public class MixtoActivity extends AppCompatActivity {
             Benedictus benedictus = laudes.getBenedictus();
             Preces preces = laudes.getPreces();
             Misa misa = mixto.getMisa();
-            MisaLecturas misaLecturas = misa.getMisaLecturas();
-            Evangelio misaEvangelio = misaLecturas.getEvangelio();
+            //MisaLecturas misaLecturas = misa.getMisaLecturas();
+            //Evangelio misaEvangelio = misaLecturas.getEvangelio();
+            //Misa misa = mixto.getMisa();
+            LiturgiaPalabra lp = misa.getLiturgiaPalabra();
 
             String hora = "LAUDES y OFICIO";
 
@@ -226,7 +184,6 @@ public class MixtoActivity extends AppCompatActivity {
             SpannableStringBuilder titleInvitatorio = Utils.formatSubTitle("invitatorio");
 
             CharSequence santoVida = (santo.getVida().equals("")) ? "" : Utils.toSmallSize(santo.getVida() + Utils.LS);
-            CharSequence metaSalterio = (meta.getSalterio().equals("")) ? "" : Utils.toSmallSizeRed(Utils.fromHtml(meta.getSalterio()) + Utils.LS);
 
 
             sb.append(meta.getFecha());
@@ -243,7 +200,7 @@ public class MixtoActivity extends AppCompatActivity {
 
             sb.append(santoNombre);
             sb.append(santoVida);
-            sb.append(metaSalterio);
+            sb.append(Utils.fromHtmlToSmallRed(meta.getSalterio()));
 
             sb.append(Utils.LS2);
             sb.append(Utils.getSaludoOficio());
@@ -329,7 +286,9 @@ public class MixtoActivity extends AppCompatActivity {
 
             sb.append(Utils.formatSubTitle("evangelio del día"));
             sb.append(Utils.LS2);
+//            sb.append(lp.getEvangelio());
 
+/*
             sb.append(misaEvangelio.libro);
             sb.append("    ");
 
@@ -337,7 +296,7 @@ public class MixtoActivity extends AppCompatActivity {
 
             sb.append(Utils.LS2);
             sb.append(Utils.fromHtml(Utils.getFormato(misaEvangelio.texto)));
-
+*/
             sb.append(Utils.LS2);
             sb.append(Utils.LS);
 
@@ -370,31 +329,26 @@ public class MixtoActivity extends AppCompatActivity {
             sb.append(LS2);
 
             sb.append(Utils.fromHtml(laudes.getOracion()));
-
+            sb.append(LS2);
+            sb.append(Utils.getConclusionHorasMayores());
             /*Texto para el TTS*/
 
-/*
-            sbReader.append(meta.getFecha()+BR);
-            sbReader.append(meta.getTiempo()+BR);
-            sbReader.append(meta.getSemana()+BR);
-*/
+            sbReader.append(meta.getFecha());
             sbReader.append(hora + BR);
             sbReader.append(SEPARADOR);
 
             sbReader.append(santoNombre + BR);
             sbReader.append(santoVida + BR);
-            sbReader.append(metaSalterio + BR);
             sbReader.append(SEPARADOR);
 
-            sbReader.append(Utils.getSaludoOficio());
+            sbReader.append(Utils.getSaludoOficioForReader());
             sbReader.append(SEPARADOR);
-
-            sbReader.append(titleInvitatorio);
+            sbReader.append(Utils.fromHtml("<p>Invitatorio.</p>"));
             sbReader.append(SEPARADOR);
-            sbReader.append(invitatorio.getAntifona());
+            sbReader.append(invitatorio.getAntifonaForRead());
             sbReader.append(invitatorio.getTexto());
 
-            sbReader.append(Utils.getFinSalmo());
+            sbReader.append(Utils.getFinSalmoForRead());
             sbReader.append(invitatorio.getAntifona());
             sbReader.append(SEPARADOR);
 
@@ -403,17 +357,18 @@ public class MixtoActivity extends AppCompatActivity {
             sbReader.append(himno.getTexto());
             sbReader.append(SEPARADOR);
 
-            sbReader.append(salmodia.getHeader());
+            sbReader.append(Utils.fromHtml("<p>Salmodia.</p><br />"));
             sbReader.append(salmodia.getSalmosForRead());
 
-            sbReader.append(lecturaBreve.getHeaderLectura());
+            sbReader.append(Utils.fromHtml("<p>Lectura Breve.</p><br />"));
             sbReader.append(SEPARADOR);
             sbReader.append(lecturaBreve.getTexto());
             sbReader.append(SEPARADOR);
-            sbReader.append(lecturaBreve.getHeaderResponsorio());
+            sbReader.append(Utils.fromHtml("<p>Responsorio.</p><br />"));
             sbReader.append(SEPARADOR);
-            sbReader.append(lecturaBreve.getResponsorio());
+            sbReader.append(lecturaBreve.getResponsorioForRead());
             sbReader.append(SEPARADOR);
+
             sbReader.append("<p>Lecturas del oficio</p>");
             sbReader.append(SEPARADOR);
 
@@ -425,9 +380,10 @@ public class MixtoActivity extends AppCompatActivity {
             sbReader.append(SEPARADOR);
             sbReader.append(biblica.getTexto());
             sbReader.append(SEPARADOR);
+
             sbReader.append("Responsorio ");
             sbReader.append(SEPARADOR);
-            sbReader.append(biblica.getResponsorio());
+            sbReader.append(biblica.getResponsorioForReader());
             sbReader.append(SEPARADOR);
 
             sbReader.append(patristica.getHeader());
@@ -444,28 +400,32 @@ public class MixtoActivity extends AppCompatActivity {
             sbReader.append("Responsorio ");
             sbReader.append(SEPARADOR);
 
-            sbReader.append(patristica.getResponsorio());
+            sbReader.append(patristica.getResponsorioForReader());
             sbReader.append(SEPARADOR);
-
+/*
             sbReader.append("Evangelio del día");
             sbReader.append(SEPARADOR);
             sbReader.append(misaEvangelio.libro);
             sbReader.append(SEPARADOR);
-            sbReader.append(misaEvangelio.texto);
+            sbReader.append(misaEvangelio.getEvangelioForRead());
+*/
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>Palabra del Señor.</p><br />"));
+            sbReader.append(Utils.fromHtml("<p>Gloria a ti, Señor Jesús.</p><br />"));
             sbReader.append(SEPARADOR);
 
             sbReader.append(benedictus.getHeader());
             sbReader.append(SEPARADOR);
-            sbReader.append(benedictus.getAntifona());
+            sbReader.append(benedictus.getAntifonaForRead());
             sbReader.append(SEPARADOR);
             sbReader.append(benedictus.getTexto());
             sbReader.append(SEPARADOR);
-            sbReader.append(Utils.getFinSalmo());
+            sbReader.append(Utils.getFinSalmoForRead());
             sbReader.append(SEPARADOR);
-            sbReader.append(benedictus.getAntifona());
+            sbReader.append(benedictus.getAntifonaForRead());
             sbReader.append(SEPARADOR);
 
-            sbReader.append(preces.getHeader());
+            sbReader.append(Utils.fromHtml("<p>Preces.</p><br />"));
             sbReader.append(SEPARADOR);
             sbReader.append(preces.getPreces());
             sbReader.append(SEPARADOR);
@@ -473,184 +433,13 @@ public class MixtoActivity extends AppCompatActivity {
 
             sbReader.append(Utils.getPadreNuestro());
             sbReader.append(SEPARADOR);
-
-            sbReader.append("ORACIÓN");
+            sbReader.append(Utils.fromHtml("<p>Oración.</p><br />"));
             sbReader.append(SEPARADOR);
-
             sbReader.append(laudes.getOracion());
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.getConclusionHorasMayoresForRead());
 
 
-            //Log.d(TAG,inv.getAntifona());
-            /*
-            JSONObject jsonInfo = jsonBreviario.getJSONObject("info");
-            JSONObject jsonContenido = jsonBreviario.getJSONObject("contenido");
-            JSONObject jsonSalmodia = jsonContenido.getJSONObject("salmodia");
-            JSONObject lecturasOficio = jsonContenido.getJSONObject("lecturasOficio");
-            JSONObject biblica = lecturasOficio.getJSONObject("biblica");
-            JSONObject patristica = lecturasOficio.getJSONObject("patristica");
-            JSONObject lecturaBreve = jsonContenido.getJSONObject("lecturaBreve");
-            //JSONObject antBenedictus = jsonContenido.getJSONObject("antBenedictus");
-            JSONObject lecturaMisa = jsonContenido.getJSONObject("lecturaMisa");
-            JSONObject preces = jsonContenido.getJSONObject("preces");
-/*
-            //int tipoAntifonas=jsonSalmodia.getInt("tipo");
-            String strFecha = jsonInfo.getString("fecha") + BRS;
-            String strTiempo = "<h1>" + jsonInfo.getString("tiempo") + "</h1>";
-            String strSemana = "<h4>" + jsonInfo.getString("semana") + "</h4>";
-            String strSalterio = CSS_RED_A+jsonInfo.getString("salterio") + CSS_RED_Z+BRS;
-            String sMensaje = jsonInfo.getString("mensaje");
-
-            String sHimno = HIMNO + utilClass.getFormato(jsonContenido.getString("himno")) + BRS;
-            //JSONArray arrSalmos=jsonSalmodia.getJSONArray("salmos");
-            int tipoAntifonas=jsonSalmodia.getInt("tipo");
-            JSONArray itemsSalmos=jsonSalmodia.getJSONArray("items");
-
-            String txtResponsorio = jsonContenido.getString("responsorio");
-            if (!utilClass.isNull(txtResponsorio)) {
-                String[] arrResponsorio = txtResponsorio.split("\\|");
-                txtResponsorio = RESP_V + arrResponsorio[0] + BR + RESP_R + arrResponsorio[1] + BRS;
-            }
-
-            //Bíblica
-            String txtBiblicaFuente = PRIMERA_LECTURA + biblica.getString("libro") +
-                    CSS_RED_A + NBSP_4 +
-                    biblica.getString("capitulo") + ", " + biblica.getString("v_inicial") + biblica.getString("v_final")
-                    + CSS_RED_Z + BRS;
-            String txtBiblicaTema = CSS_RED_A + biblica.getString("tema") + CSS_RED_Z;
-            String txtBiblicaTexto = biblica.getString("texto");
-            String txtBiblicaRef = CSS_RED_A + RESP_LOWER + NBSP_2 + biblica.getString("ref") + CSS_RED_Z + BRS;
-            String txtBiblicaResponsorio = biblica.getString("responsorio");
-
-            //Hay que construir el responsorio. Los responsorios son recibidos en forma de matriz y en base a un código son desplegados
-            String txtBiblicaResponsorioFinal = "";
-            if (txtBiblicaResponsorio != null && !txtBiblicaResponsorio.isEmpty() && !txtBiblicaResponsorio.equals("null")) {
-
-                String[] arrPartes = txtBiblicaResponsorio.split("\\|");
-                txtBiblicaResponsorioFinal = utilClass.getResponsorio(arrPartes, 1);
-            }
-
-            //Patrística
-            String txtPadres;
-
-            String txtPadresObra = patristica.getString("padre") + ", " +
-                    patristica.getString("obra");
-            String txtPadresFuente = BR + CSS_RED_A + CSS_SM_A + "(" + patristica.getString("fuente") + ")" + CSS_SM_Z +
-                    BRS + patristica.getString("tema") + CSS_RED_Z;
-
-            String txtPadresTexto = patristica.getString("texto");
-            String txtPadresRef = CSS_RED_A + RESP_LOWER + " " + patristica.getString("ref") + CSS_RED_Z + BRS;
-            String txtPadresResponsorio = patristica.getString("responsorio");
-            String txtPadresRespFinal = "";
-            if (txtPadresResponsorio != null && !txtPadresResponsorio.isEmpty() && !txtPadresResponsorio.equals("null")) {
-
-                String[] arrParts = txtPadresResponsorio.split("\\|");
-                txtPadresRespFinal = utilClass.getResponsorio(arrParts, 1);
-            }
-
-
-
-
-
-            String sBiblicaResp = lecturaBreve.getString("responsorio");
-            String sResponsorio = "";
-            if (sBiblicaResp != null && !sBiblicaResp.isEmpty() && !sBiblicaResp.equals("null")) {
-
-                String[] respArray = sBiblicaResp.split("\\|");
-                sResponsorio = utilClass.getResponsorio(respArray, 31);
-            }
-
-
-            String sBiblica = CSS_RED_A + LECTURA_BREVE + NBSP_4
-                    + lecturaBreve.getString("ref") + CSS_RED_Z + BRS + lecturaBreve.getString("texto") + BRS;
-
-
-
-            String sAntifonaCE = jsonContenido.getString("antBenedictus");
-            sAntifonaCE = BRS + PRE_ANT + sAntifonaCE + BRS;
-            String sPrecesIntro = preces.getString("intro");
-            String sPreces = "";
-            if (!utilClass.isNull(sPrecesIntro)) {
-                String[] introArray = sPrecesIntro.split("\\|");
-                String sPrecesCuerpo = utilClass.getFormato(preces.getString("texto"));
-                sPreces = PRECES + utilClass.getPreces(introArray, sPrecesCuerpo);
-            }
-String evangelioMisa="<h2>evangelio</h2>"+utilClass.getFormato(lecturaMisa.getString("texto"))+BRS;
-
-
-            String sOracion = ORACION + utilClass.getFormato(jsonContenido.getString("oracion"));
-
-            */
-            /*LLenamos el sb en el orden*/
-/*
-            sb.append(strFecha);
-            sb.append(strTiempo);
-            sb.append(strSemana);
-            sb.append(HI_TITULO);
-            sb.append(strSalterio);
-            sb.append(sMensaje);
-            sb.append(SEPARADOR);
-            sb.append(INVOCACION_INICIAL);
-            sb.append(SALUDO_DIOSMIO);
-            sb.append(sHimno);
-            sb.append(SEPARADOR);
-            sb.append(utilClass.getSalmos(itemsSalmos,tipoAntifonas));
-
- */
- /*
-            sb.append(sBiblica);
-            sb.append(SEPARADOR);
-            sb.append(sResponsorio);
-            sb.append(SEPARADOR);
-
-
-            sb.append("<h3>lecturas</h3>");
-            sb.append(txtResponsorio);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaFuente);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaTema);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaTexto);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaRef);
-            sb.append(SEPARADOR);
-            sb.append(txtBiblicaResponsorioFinal);
-            sb.append(SEPARADOR);
-
-            sb.append(SEGUNDA_LECTURA);
-            sb.append(txtPadresObra);
-            sb.append(SEPARADOR);
-            sb.append(txtPadresFuente);
-            sb.append(SEPARADOR);
-            sb.append(txtPadresTexto);
-            sb.append(SEPARADOR);
-            sb.append(txtPadresRef);
-            sb.append(SEPARADOR);
-            sb.append(txtPadresRespFinal);
-            sb.append(SEPARADOR);
-
-            sb.append(evangelioMisa);
-            sb.append(SEPARADOR);
-
-            sb.append(CE);
-            sb.append(sAntifonaCE);
-            sb.append(utilClass.getFormato(BENEDICTUS));
-            sb.append(FIN_SALMO);
-            sb.append(sAntifonaCE);
-            sb.append(SEPARADOR);
-
-            sb.append(sPreces);
-            sb.append(SEPARADOR);
-            sb.append(PADRENUESTRO_TITULO);
-            sb.append(utilClass.getFormato(PADRENUESTRO));
-
-
-
-
-
-
-            sb.append(sOracion);
-            */
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -670,22 +459,30 @@ String evangelioMisa="<h2>evangelio</h2>"+utilClass.getFormato(lecturaMisa.getSt
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        switch (item.getItemId()) {
 
-        if (id == R.id.item_voz) {
-            String html = String.valueOf(Utils.fromHtml(sbReader.toString()));
-            String[] strPrimera = html.split(SEPARADOR);
-            tts = new TTS(getApplicationContext(), strPrimera);
-        }
+            case android.R.id.home:
+                if (tts != null) {
+                    tts.cerrar();
+                }
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
 
-        if (id == R.id.item_calendario) {
-            Intent i = new Intent(this, CalendarioActivity.class);
-            startActivity(i);
+            case R.id.item_voz:
+                String html = String.valueOf(Utils.fromHtml(sbReader.toString()));
+                String[] textParts = html.split(SEPARADOR);
+                tts = new TTS(getApplicationContext(), textParts);
+
+                return true;
+
+            case R.id.item_calendario:
+                Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+                return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onBackPressed() {

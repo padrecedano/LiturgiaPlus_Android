@@ -42,14 +42,9 @@ public final class Utils {
     private static ForegroundColorSpan liturgicalRed = new ForegroundColorSpan(Color.parseColor("#A52A2A")); // from a color int
     public static final String SALUDO_OFICIO = toRed("V.") + " Señor, abre mis labios." + LS +
             toRed("R.") + " Y mi boca proclamará tu alabanza." + LS2;
-
-    //private static int opaqueRed2 = Color.valueOf("0xffff0000"); // from a color int
-//private Context c=getApplicationContext();
     public Utils(Context context) {
         Utils.context = context;
-        //stringBuilder = new StringBuilder();
-        //spanSections = new ArrayList<>();
-        //relativeSmallSpan = new RelativeSizeSpan(0.8f);
+
     }
 
     public static SpannableStringBuilder formatTitle(String sOrigen) {
@@ -57,7 +52,6 @@ public final class Utils {
         ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         ssb.setSpan(CharacterStyle.wrap(new StyleSpan(BOLD)), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return ssb;
-
     }
 
     public static SpannableStringBuilder formatSubTitle(String sOrigen) {
@@ -66,18 +60,13 @@ public final class Utils {
         ssb.setSpan(CharacterStyle.wrap(textSize), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         ssb.setSpan(CharacterStyle.wrap(new StyleSpan(BOLD)), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return ssb;
-
     }
 
 
     public static SpannableStringBuilder ssbSmallSize(SpannableStringBuilder ssb) {
         RelativeSizeSpan smallSizeText = new RelativeSizeSpan(0.8f);
-        //SpannableStringBuilder ssb = new SpannableStringBuilder("");
-        //SpannableString spannableString = new SpannableString(sOrigen);
         ssb.setSpan(CharacterStyle.wrap(smallSizeText), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        //ssb.append(spannableString);
         return ssb;
-
     }
 
     public static SpannableStringBuilder toSmallSize(String sOrigen) {
@@ -97,7 +86,6 @@ public final class Utils {
         spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         ssb.append(spannableString);
         return ssb;
-
     }
 
 
@@ -109,31 +97,40 @@ public final class Utils {
         spannableString.setSpan(CharacterStyle.wrap(liturgicalRed), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         ssb.append(spannableString);
         return ssb;
+    }
+
+
+    public static SpannableStringBuilder fromHtmlToSmallRed(String sOrigen) {
+        Spanned s = fromHtml(sOrigen);
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(0.8f);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(s);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(CharacterStyle.wrap(liturgicalRed), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(spannableString);
+        return ssb;
 
     }
 
 
-    public static SpannableStringBuilder toH3(String sOrigen) {
 
+    public static SpannableStringBuilder toH3(String sOrigen) {
         RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H3);
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
         SpannableString spannableString = new SpannableString(sOrigen);
         spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableString.setSpan(CharacterStyle.wrap(new StyleSpan(BOLD)), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         ssb.append(spannableString);
         return ssb;
 
     }
 
     public static SpannableStringBuilder toH4(String sOrigen) {
-
         RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H4);
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
         SpannableString spannableString = new SpannableString(sOrigen);
         spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         spannableString.setSpan(CharacterStyle.wrap(new StyleSpan(BOLD)), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         ssb.append(spannableString);
         return ssb;
 
@@ -141,15 +138,10 @@ public final class Utils {
 
 
     public static SpannableStringBuilder toH2(String sOrigen) {
-//        Typeface tf = ResourcesCompat.getFont(context, R.font.roboto_black);
-        //Typeface robotoRegular = Typeface.createFromAsset(ResourcesCompat.getAssets(), "fonts/Roboto-Regular.ttf");
-
         RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H2);
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
         SpannableString spannableString = new SpannableString(sOrigen);
         spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        //       spannableString.setSpan(tf, 0,spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
         ssb.append(spannableString);
         return ssb;
 
@@ -175,36 +167,186 @@ public final class Utils {
         return ssb;
     }
 
+    public static SpannableStringBuilder toH4Red(String sOrigen) {
+        RelativeSizeSpan smallSizeText = new RelativeSizeSpan(H4);
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableString spannableString = new SpannableString(sOrigen);
+        spannableString.setSpan(CharacterStyle.wrap(smallSizeText), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        spannableString.setSpan(CharacterStyle.wrap(liturgicalRed), 0, spannableString.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(spannableString);
+        return ssb;
+    }
+
     public static SpannableStringBuilder toRed(String sOrigen) {
         SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
         ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return ssb;
-
     }
 
     public static SpannableStringBuilder toRedNew(SpannableStringBuilder sOrigen) {
-        //SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
         sOrigen.setSpan(CharacterStyle.wrap(liturgicalRed), 0, sOrigen.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return sOrigen;
-
     }
 
     public static SpannableStringBuilder ssbRed(SpannableStringBuilder ssb) {
-        //SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
         ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
         return ssb;
-
     }
 
     public static SpannableStringBuilder getSaludoOficio() {
-        SpannableStringBuilder ssb = new SpannableStringBuilder("V. Señor, abre mis labios.");
-        ssb.append(LS);
-        ssb.append("R. Y mi boca proclamará tu alabanza.");
-        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 27, 29, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        SpannableStringBuilder ssb = new SpannableStringBuilder(formatTitle("INVOCACIÓN INICIAL"));
+        ssb.append(LS2);
+        SpannableStringBuilder ssbPartial = new SpannableStringBuilder("V. Señor, abre mis labios.");
+        ssbPartial.append(LS);
+        ssbPartial.append("R. Y mi boca proclamará tu alabanza.");
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 27, 29, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(ssbPartial);
+        ssb.append(LS2);
+        ssb.append(Utils.getFinSalmo());
+        return ssb;
+    }
+
+    public static SpannableStringBuilder getSaludoOficioForReader() {
+        StringBuilder sb = new StringBuilder();
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append("<p>Señor abre mis labios.</p>");
+        ssb.append("<p>Y mi boca proclamará tu alabanza.</p>");
+        ssb.append("<p>Gloria al Padre, y al Hijo, y al Espíritu Santo.</p>");
+        ssb.append("<p>Como era en el principio ahora y siempre, por los siglos de los siglos. Amén.</p>");
+        return (SpannableStringBuilder) fromHtml(ssb.toString());
+    }
+
+
+    public static SpannableStringBuilder getSaludoDiosMio() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder(formatTitle("INVOCACIÓN INICIAL"));
+        ssb.append(LS2);
+        SpannableStringBuilder ssbPartial = new SpannableStringBuilder("V. Dios mío, ven en mi auxilio.");
+        ssbPartial.append(LS);
+        ssbPartial.append("R. Señor, date prisa en socorrerme.");
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 32, 34, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(ssbPartial);
+        ssb.append(LS2);
+        ssb.append(Utils.getFinSalmo());
+        return ssb;
+    }
+
+    public static SpannableStringBuilder getSaludoDiosMioForReader() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append("<p>Dios mío, ven en mi auxilio.</p>");
+        ssb.append("<p>Señor, date prisa en socorrerme.</p>");
+        ssb.append("<p>Gloria al Padre, y al Hijo, y al Espíritu Santo.</p>");
+        ssb.append("<p>Como era en el principio ahora y siempre, por los siglos de los siglos. Amén.</p>");
+        return (SpannableStringBuilder) fromHtml(ssb.toString());
+    }
+
+    public static SpannableStringBuilder getConclusionHorasMayores() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder(formatTitle("CONCLUSIÓN"));
+        ssb.append(LS2);
+        SpannableStringBuilder ssbPartial = new SpannableStringBuilder("V. El Señor nos bendiga, nos guarde de todo mal y nos lleve a la vida eterna.");
+        ssbPartial.append(LS);
+        ssbPartial.append("R. Amén.");
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 78, 80, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(ssbPartial);
+        return ssb;
+    }
+
+    public static SpannableStringBuilder getConclusionHorasMayoresForRead() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append(fromHtml("<p>El Señor nos bendiga, nos guarde de todo mal y nos lleve a la vida eterna.</p>"));
+        ssb.append(fromHtml("<p>Amén.</p>"));
+        return ssb;
+    }
+
+
+    public static SpannableStringBuilder getConclusionIntermedia() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder(formatTitle("CONCLUSIÓN"));
+        ssb.append(LS2);
+        SpannableStringBuilder ssbPartial = new SpannableStringBuilder("V. Bendigamos al Señor.");
+        ssbPartial.append(LS);
+        ssbPartial.append("R. Demos gracias a Dios.");
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 24, 26, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(ssbPartial);
+        return ssb;
+    }
+
+    public static SpannableStringBuilder getConclusionIntermediaForRead() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append("<p>Bendigamos al Señor.</p>");
+        ssb.append("<p>Demos gracias a Dios.</p>");
+        return (SpannableStringBuilder) fromHtml(ssb.toString());
+    }
+
+
+    public static SpannableStringBuilder getKyrie(int type) {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+
+        switch (type) {
+            case 1:
+                String text = "Yo confieso ante Dios todopoderoso " + LS +
+                        "y ante vosotros, hermanos " + LS +
+                        "que he pecado mucho" + LS +
+                        "de pensamiento, palabra, obra y omisión:" + LS +
+                        "por mi culpa, por mi culpa, por mi gran culpa." + LS2 +
+                        "Por eso ruego a santa María, siempre Virgen," + LS +
+                        "a los ángeles, a los santos y a vosotros, hermanos," + LS +
+                        "que intercedáis por mí ante Dios, nuestro Señor.";
+
+                ssb.append(text);
+
+                break;
+            case 2:
+                ssb.append("V. Señor, ten misericordia de nosotros.");
+                ssb.append(LS);
+                ssb.append("R. Porque hemos pecado contra ti.");
+                ssb.append(LS2);
+                ssb.append("V. Muéstranos, Señor, tu misericordia.");
+                ssb.append(LS);
+                ssb.append("R. Y danos tu salvación.");
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 39, 41, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 74, 76, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 113, 115, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                break;
+            case 3:
+                ssb.append("V. Tú que has sido enviado a sanar los corazones afligidos: Señor, ten piedad.");
+                ssb.append(LS);
+                ssb.append("R. Señor, ten piedad.");
+                ssb.append(LS2);
+
+                ssb.append("V. Tú que has venido a llamar a los pecadores: Cristo, ten piedad.");
+                ssb.append(LS);
+
+                ssb.append("R. Cristo, ten piedad.");
+                ssb.append(LS2);
+
+                ssb.append("V. Tú que estás sentado a la derecha del Padre para interceder por nosotros: Señor, ten piedad.");
+                ssb.append(LS);
+
+                ssb.append("R. Señor, ten piedad.");
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 2, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 78, 80, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 100, 103, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 169, 172, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 190, 194, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+                ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 289, 292, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+            default:
+                ssb.append("");
+                break;
+        }
+
+
         return ssb;
 
     }
+
 
     /**
      * Método que da formato a algunos textos recibidos desde el servidor <br />
@@ -346,7 +488,15 @@ public final class Utils {
                 .replace("⟩", CSS_RED_A + ")" + CSS_RED_Z)
                 .replace("ⱱ", CSS_RED_A + "V/." + CSS_RED_Z)
                 .replace("ⱴ", CSS_RED_A + "R/." + CSS_RED_Z)
-                .replace("Ʀ", CSS_RED_A + " R/. " + CSS_RED_Z + BRS);
+                .replace("Ʀ", CSS_RED_A + " R/. " + CSS_RED_Z + BRS)
+//NEW
+                .replace("℟", CSS_RED_A + " ℟ " + CSS_RED_Z)
+                .replace("℣", CSS_RED_A + " ℣ " + CSS_RED_Z)
+                .replace("≀", BR + NBSP_4 + NBSP_4)
+                .replace("~", BR)
+                .replace("§", BRS)
+                .replace("¦", NBSP_4);
+
 
 
         return sFormateado;
@@ -401,6 +551,32 @@ public final class Utils {
         return ssb;
     }
 
+    public static String stripQuotation(String sOrigen) {
+        String sFormateado;
+//α β γ δ ε ϝ ϛ ζ η θ ι κ λ μ ν ξ ο π ϟ ϙ ρ σ τ υ φ χ ψ ω ϡ
+        /*
+        u2220: ∠ ∡ ∢ ∣ ∤ ∥ ∦ ∧ ∨ ∩ ∪ ∫  ∭ ∮ ∯ ∰ ∱ ∲ ∳ ∴ ∵ ∶ ∷ ∸ ∹ ∺ ∻ ∼ ∽ ∾ ∿
+
+        u2240: ≀ ≁ ≂ ≃ ≄ ≅ ≆ ≇ ≈ ≉ ≊ ≋ ≌ ≍ ≎ ≏ ≐ ≑ ≒ ≓ ≔ ≕ ≖ ≗ ≘ ≙ ≚ ≛ ≜ ≝ ≞ ≟
+
+        u2260: ≠ ≡ ≢ ≣ ≤ ≥ ≦ ≧ ≨ ≩ ≪ ≫ ≬ ≭ ≮ ≯ ≰ ≱ ≲ ≳ ≴ ≵ ≶ ≷ ≸ ≹ ≺ ≻ ≼ ≽ ≾ ≿
+
+        u2280: ⊀ ⊁ ⊂ ⊃ ⊄ ⊅ ⊆ ⊇ ⊈ ⊉ ⊊ ⊋ ⊌ ⊍ ⊎ ⊏ ⊐ ⊑ ⊒ ⊓ ⊔ ⊕ ⊖ ⊗ ⊘ ⊙ ⊚ ⊛ ⊜ ⊝ ⊞ ⊟
+
+        u22A0: ⊠ ⊡ ⊢ ⊣ ⊤ ⊥ ⊦ ⊧ ⊨ ⊩ ⊪ ⊫ ⊬ ⊭ ⊮ ⊯ ⊰ ⊱ ⊲ ⊳ ⊴ ⊵ ⊶ ⊷ ⊸ ⊹ ⊺ ⊻ ⊼ ⊽ ⊾ ⊿
+
+*/
+        sFormateado = sOrigen
+                .replace("«", "")
+                .replace("»", "")
+                .replace("\"", "")
+                .replace("\'", "")
+                .replace("“", "")
+                .replace("”", "");
+
+
+        return sFormateado;
+    }
 
     /**
      * Método que limpia la segunda parte de la antífona, en el caso del símblo †
@@ -487,7 +663,7 @@ public final class Utils {
                                 RESP_R + respArray[0] + BRS;
                 break;
 
-            case 31:
+            case 201:
                 sResponsorio =
                         RESP_V + respArray[0] + BR +
                                 RESP_R + respArray[1] + BRS;
@@ -574,7 +750,7 @@ public final class Utils {
                                 respArray[0] + BRS;
                 break;
 
-            case 31:
+            case 201:
                 sResponsorio =
                         respArray[0] + BR +
                                 respArray[1] + BRS;
@@ -606,12 +782,17 @@ public final class Utils {
         return fromHtml(fin);
     }
 
+    public static final Spanned getFinSalmoForRead() {
+        String fin = "<p>Gloria al Padre, y al Hijo, y al Espíritu Santo.<br />" +
+                "Como era en el principio ahora y siempre, "
+                + "por los siglos de los siglos. Amén.</p>";
+        return fromHtml(fin);
+    }
+
     public static final Spanned getPadreNuestro() {
 
         return fromHtml(PADRENUESTRO);
     }
 
-    public static String getSaludoOficioForReader() {
-        return "Señor abre mis labios. Y mi boca proclamará tu alabanza.";
-    }
+
 }

@@ -41,4 +41,10 @@ public class Benedictus {
 
         return Utils.formatTitle("CÁNTICO EVANGÉLICO");
     }
+
+    public SpannableStringBuilder getAntifonaForRead() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        ssb.append(antifona);
+        return ssb;
+    }
 }

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.widget.TextView;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.data.BreviarioDataModel;
@@ -24,7 +23,6 @@ public class BreviarioActivity extends AppCompatActivity
     private String strFechaHoy;
     RecyclerView recyclerView;
     ArrayList<BreviarioDataModel> arrayList;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +32,7 @@ public class BreviarioActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        toolbar.setSubtitle(utilClass.getFecha());
 
         recyclerView = findViewById(R.id.rv_Breviario);
 
@@ -74,8 +73,8 @@ public class BreviarioActivity extends AppCompatActivity
 
         AutoFitGridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, 200);
         recyclerView.setLayoutManager(layoutManager);
-        final TextView mTextview = findViewById(R.id.txt_container);
-        mTextview.setText(utilClass.getFecha()+utilClass.getAppInfo());
+        //final TextView mTextview = findViewById(R.id.txt_container);
+        //mTextview.setText(utilClass.getFecha()+utilClass.getAppInfo());
 
 
     }

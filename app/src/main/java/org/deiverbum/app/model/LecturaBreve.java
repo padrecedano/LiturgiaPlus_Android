@@ -37,6 +37,17 @@ public class LecturaBreve {
         return Utils.fromHtml(r);
     }
 
+    public Spanned getResponsorioForRead() {
+        String r = "";
+        if (responsorio != null && !responsorio.isEmpty() && !responsorio.equals("null")) {
+
+            String[] arrPartes = responsorio.split("\\|");
+            r = Utils.getResponsorioForReader(arrPartes, forma);
+        }
+        return Utils.fromHtml(r);
+    }
+
+
     public void setResponsorio(String responsorio) {
         this.responsorio = responsorio;
     }

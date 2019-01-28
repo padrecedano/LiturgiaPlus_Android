@@ -5,13 +5,14 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.text.Spanned;
+import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -20,38 +21,39 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
 import org.deiverbum.app.R;
+import org.deiverbum.app.model.Breviario;
+import org.deiverbum.app.model.Himno;
+import org.deiverbum.app.model.Intermedia;
+import org.deiverbum.app.model.LecturaBreve;
+import org.deiverbum.app.model.MetaLiturgia;
+import org.deiverbum.app.model.Salmodia;
 import org.deiverbum.app.utils.TTS;
+import org.deiverbum.app.utils.Utils;
 import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import static org.deiverbum.app.utils.Constants.BRS;
-import static org.deiverbum.app.utils.Constants.CSS_RED_A;
-import static org.deiverbum.app.utils.Constants.CSS_RED_Z;
-import static org.deiverbum.app.utils.Constants.HIMNO;
-import static org.deiverbum.app.utils.Constants.HI_TITULO;
-import static org.deiverbum.app.utils.Constants.LECTURA_BREVE;
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
-import static org.deiverbum.app.utils.Constants.NBSP_4;
-import static org.deiverbum.app.utils.Constants.ORACION;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
 import static org.deiverbum.app.utils.Constants.URL_SEXTA;
+import static org.deiverbum.app.utils.Utils.LS2;
 
 public class SextaActivity extends AppCompatActivity {
     private static final String TAG = "SextaActivity";
-    Spanned strContenido;
     JsonObjectRequest jsonObjectRequest;
     ZoomTextView mTextView;
     private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFechaHoy;
     private TTS tts;
+    private StringBuilder sbReader;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,6 +61,7 @@ public class SextaActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mTextView =  findViewById(R.id.tv_Zoomable);
 
         utilClass = new UtilsOld();
@@ -68,15 +71,16 @@ public class SextaActivity extends AppCompatActivity {
         final ProgressBar progressBar = findViewById(R.id.progressBar);
 
         mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
+
+
         jsonObjectRequest = new JsonObjectRequest(
 
                 Request.Method.GET, URL_SEXTA + strFechaHoy,null,
                 new Response.Listener<JSONObject>() {
                     @Override
                     public void onResponse(JSONObject response) {
-                        String resp = getResponseData(response);
-                        strContenido = UtilsOld.fromHtml(resp);
-                        mTextView.setText(UtilsOld.fromHtml(resp.replaceAll(SEPARADOR, "")));
+                        SpannableStringBuilder resp = getResponseData(response);
+                        mTextView.setText(resp, TextView.BufferType.SPANNABLE);
                         progressBar.setVisibility(View.INVISIBLE);
                     }
                 },
@@ -101,87 +105,98 @@ public class SextaActivity extends AppCompatActivity {
 
     }
 
-    protected String getResponseData(JSONObject jsonDatos) {
-        StringBuilder sb = new StringBuilder();
+    protected SpannableStringBuilder getResponseData(JSONObject jsonDatos) {
+        sbReader = new StringBuilder();
+        Gson gson = new Gson();
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+
         try {
-
             JSONObject jsonBreviario = jsonDatos.getJSONObject("breviario");
-            JSONObject jsonInfo = jsonBreviario.getJSONObject("info");
-            JSONObject jsonContenido = jsonBreviario.getJSONObject("contenido");
-            JSONObject jsonSalmodia = jsonContenido.getJSONObject("salmodia");
-            JSONObject biblica = jsonContenido.getJSONObject("biblica");
-            int tipoAntifonas=jsonSalmodia.getInt("tipo");
-            String strFecha = jsonInfo.getString("fecha") + BRS;
-            String strTiempo = "<h1>" + jsonInfo.getString("tiempo") + "</h1>";
-            String strSemana = "<h4>" + jsonInfo.getString("semana") + "</h4>";
-            String strSalterio = CSS_RED_A+jsonInfo.getString("salterio") + CSS_RED_Z+BRS;
-            String sMensaje = jsonInfo.getString("mensaje");
+            Breviario breviario = gson.fromJson(String.valueOf(jsonBreviario), Breviario.class);
+            MetaLiturgia meta = breviario.getMetaLiturgia();
+            Intermedia hi = breviario.getIntermedia();
+            Himno himno = hi.getHimno();
+            Salmodia salmodia = hi.getSalmodia();
+            LecturaBreve lecturaBreve = hi.getLecturaBreve();
+            String hora = "HORA INTERMEDIA: SEXTA";
 
-            String sHimno = HIMNO + utilClass.getFormato(jsonContenido.getString("himno")) + BRS;
-            JSONArray arrSalmos=jsonSalmodia.getJSONArray("salmos");
 
-            StringBuilder sbSalmos=new StringBuilder();
-            for (int i = 0; i < arrSalmos.length(); i++) {
-                JSONObject jsonSalmo = arrSalmos.getJSONObject(i);
+            sb.append(meta.getFecha());
+            sb.append(Utils.LS2);
 
-                sbSalmos.append(jsonSalmo.getString("orden"));
-                sbSalmos.append(BRS);
-                sbSalmos.append(jsonSalmo.getString("antifona"));
-                sbSalmos.append(BRS);
-                sbSalmos.append(jsonSalmo.getString("ref"));
-                sbSalmos.append(BRS);
-                sbSalmos.append(jsonSalmo.getString("tema"));
-                sbSalmos.append(BRS);
-                sbSalmos.append(jsonSalmo.getString("intro"));
-                sbSalmos.append(BRS);
-                sbSalmos.append(jsonSalmo.getString("parte"));
-                sbSalmos.append(BRS);
-                sbSalmos.append(jsonSalmo.getString("salmo"));
-                sbSalmos.append(BRS);
-            }
+            sb.append(Utils.toH2(meta.getTiempo()));
+            sb.append(Utils.LS);
+            sb.append(Utils.toH3(meta.getSemana()));
+            sb.append(Utils.LS2);
 
-            String sBiblicaResp = biblica.getString("responsorio");
-            String sResponsorio = "";
-            if (sBiblicaResp != null && !sBiblicaResp.isEmpty() && !sBiblicaResp.equals("null")) {
+            sb.append(Utils.toH3Red(hora));
+            sb.append(Utils.LS);
+            sb.append(Utils.LS2);
+            sb.append(Utils.fromHtmlToSmallRed(meta.getSalterio()));
+            sb.append(Utils.LS2);
+            sb.append(Utils.getSaludoDiosMio());
+            sb.append(Utils.LS2);
 
-                String[] respArray = sBiblicaResp.split("\\|");
-                sResponsorio = utilClass.getResponsorio(respArray, 31);
-            }
+            sb.append(himno.getHeader());
+            sb.append(Utils.LS2);
+            sb.append(himno.getTexto());
+            sb.append(Utils.LS2);
 
-            String sBiblica = CSS_RED_A + LECTURA_BREVE + NBSP_4
-                    + biblica.getString("ref") + CSS_RED_Z + BRS + biblica.getString("texto") + BRS;
+            sb.append(salmodia.getHeader());
+            sb.append(Utils.LS2);
+            sb.append(salmodia.getSalmoCompleto(1));
 
-            String sOracion = ORACION + utilClass.getFormato(jsonContenido.getString("oracion"));
-            /*LLenamos el sb en el orden*/
-            sb.append(strFecha);
-            sb.append(strTiempo);
-            sb.append(strSemana);
-            sb.append(HI_TITULO);
-            sb.append(strSalterio);
-            sb.append(sMensaje);
-            sb.append(SEPARADOR);
+            sb.append(Utils.LS);
+            sb.append(lecturaBreve.getHeaderLectura());
+            sb.append(Utils.LS2);
+            sb.append(lecturaBreve.getTexto());
+            sb.append(Utils.LS2);
+            sb.append(lecturaBreve.getHeaderResponsorio());
+            sb.append(Utils.LS2);
+            sb.append(lecturaBreve.getResponsorio());
+            sb.append(Utils.formatTitle("ORACIÓN"));
+            sb.append(LS2);
+            sb.append(Utils.fromHtml(hi.getOracion()));
+            sb.append(LS2);
+            sb.append(Utils.getConclusionIntermedia());
+            /*For TTS*/
 
-            sb.append(sHimno);
-            sb.append(SEPARADOR);
-            //           sb.append(SALMODIA);sb.append(salmos.toString());
- /*
-            sb.append(salmoUnoCompleto);
-            sb.append(SEPARADOR);
-            sb.append(salmoDosCompleto);
-            sb.append(SEPARADOR);
-            sb.append(salmoTresCompleto);
-            sb.append(SEPARADOR);
-*/
-            sb.append(utilClass.getSalmos(arrSalmos,tipoAntifonas));
-            sb.append(sBiblica);
-            sb.append(SEPARADOR);
-            sb.append(sResponsorio);
-            sb.append(SEPARADOR);
-            sb.append(sOracion);
+            sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>" + hora + "</p>"));
+            sbReader.append(SEPARADOR);
+
+            sbReader.append(Utils.getSaludoDiosMioForReader());
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("Himno");
+            sbReader.append(SEPARADOR);
+            sbReader.append(himno.getTexto());
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("Salmodia");
+            sbReader.append(SEPARADOR);
+            sbReader.append(salmodia.getSalmoCompletoForRead(1));
+            sbReader.append(SEPARADOR);
+
+            sbReader.append("Lectura breve");
+            sbReader.append(SEPARADOR);
+            sbReader.append(lecturaBreve.getTexto());
+            sbReader.append(SEPARADOR);
+            sbReader.append("Responsorio breve");
+            sbReader.append(SEPARADOR);
+            sbReader.append(lecturaBreve.getResponsorioForRead());
+
+            sbReader.append(Utils.formatTitle("ORACIÓN"));
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml(hi.getOracion()));
+            sbReader.append(SEPARADOR);
+
+            sbReader.append(Utils.getConclusionIntermediaForRead());
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        return sb.toString();
+        return sb;
     }
 
     @Override
@@ -202,8 +217,9 @@ public class SextaActivity extends AppCompatActivity {
                 return true;
 
             case R.id.item_voz:
-                String[] strPrimera = strContenido.toString().split(SEPARADOR);
-                tts = new TTS(getApplicationContext(), strPrimera);
+                String html = String.valueOf(Utils.fromHtml(sbReader.toString()));
+                String[] textParts = html.split(SEPARADOR);
+                tts = new TTS(getApplicationContext(), textParts);
 
                 return true;
 
@@ -224,7 +240,4 @@ public class SextaActivity extends AppCompatActivity {
             tts.cerrar();
         }
     }
-
-
-
 }

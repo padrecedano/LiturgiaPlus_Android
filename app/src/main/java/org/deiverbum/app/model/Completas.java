@@ -7,7 +7,7 @@ public class Completas {
     private Salmodia salmodia;
     private LecturaBreve lecturaBreve;
     private NuncDimitis nuncDimitis;
-    private Oracion oracion;
+    private String oracion;
     private Conclusion conclusion;
 
     public RitosIniciales getRitosIniciales() {
@@ -50,11 +50,11 @@ public class Completas {
         this.nuncDimitis = nuncDimitis;
     }
 
-    public Oracion getOracion() {
+    public String getOracion() {
         return oracion;
     }
 
-    public void setOracion(Oracion oracion) {
+    public void setOracion(String oracion) {
         this.oracion = oracion;
     }
 

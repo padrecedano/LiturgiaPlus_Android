@@ -15,6 +15,7 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+    <!--
 
     <TextView
         android:id="@+id/txt_main"
@@ -24,7 +25,6 @@
         android:keepScreenOn="true"
         android:text="@string/app_name" />
 
-    <!--
      <TextView
          android:layout_width="wrap_content"
          android:layout_height="wrap_content"

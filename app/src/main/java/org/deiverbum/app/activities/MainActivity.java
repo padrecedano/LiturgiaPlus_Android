@@ -1,17 +1,21 @@
 package org.deiverbum.app.activities;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.MenuItem;
-import android.widget.TextView;
+import android.view.View;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.firebase.firestore.CollectionReference;
@@ -19,17 +23,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreSettings;
 
 import org.deiverbum.app.R;
+import org.deiverbum.app.data.AlbumsAdapter;
 import org.deiverbum.app.data.MainDataModel;
-import org.deiverbum.app.data.MainRecyclerAdapter;
-import org.deiverbum.app.gui.AutoFitGridLayoutManager;
+import org.deiverbum.app.model.Album;
 import org.deiverbum.app.utils.UtilsOld;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import io.fabric.sdk.android.Fabric;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, MainRecyclerAdapter.ItemListener {
+        implements NavigationView.OnNavigationItemSelectedListener, AlbumsAdapter.ItemListener {
 
     RecyclerView recyclerView;
     ArrayList<MainDataModel> arrayList;
@@ -37,7 +42,8 @@ public class MainActivity extends AppCompatActivity
     String strFechaHoy;
     private UtilsOld utilClass;
     private static final String TAG = "MainActivity";
-
+    private AlbumsAdapter adapter;
+    private List<Album> albumList;
 /*
     private FirebaseAnalytics mFirebaseAnalytics;
 */
@@ -67,9 +73,13 @@ public class MainActivity extends AppCompatActivity
 
 
         utilClass = new UtilsOld();
+        strFechaHoy = utilClass.getFecha();
+
         version = utilClass.getAppInfo();//System.getProperty("line.separator")+"Liturgia+ v. "+ BuildConfig.VERSION_NAME;
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setSubtitle(strFechaHoy);
+
         setSupportActionBar(toolbar);
         //recyclerView = findViewById(R.id.recyclerView);
 
@@ -84,6 +94,20 @@ public class MainActivity extends AppCompatActivity
 
 
         recyclerView = findViewById(R.id.recyclerView);
+        //final TextView mTextView = findViewById(R.id.txt_main);
+        //mTextView.setText(strFechaHoy + version);
+        albumList = new ArrayList<>();
+        adapter = new AlbumsAdapter(this, albumList, this);
+
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(-1), true));
+        //recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.setAdapter(adapter);
+        prepareAlbums();
+
+
+        /*
         arrayList = new ArrayList<>();
         int colorBreviario = getResources().getColor(R.color.colorBreviario);
         int colorMisa = getResources().getColor(R.color.colorMisa);
@@ -112,14 +136,14 @@ public class MainActivity extends AppCompatActivity
         MainRecyclerAdapter adapter = new MainRecyclerAdapter(this, arrayList, this);
         recyclerView.setAdapter(adapter);
 
-
+*/
         /*
          AutoFitGridLayoutManager that auto fits the cells by the column width defined.
          */
-
+/*
         AutoFitGridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, 200);
         recyclerView.setLayoutManager(layoutManager);
-
+*/
 
         /*
          Simple GridLayoutManager that spans two columns
@@ -129,14 +153,6 @@ public class MainActivity extends AppCompatActivity
         GridLayoutManager manager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(manager);
 */
-
-        strFechaHoy = utilClass.getFecha();
-        final TextView mTextView = findViewById(R.id.txt_main);
-        mTextView.setText(strFechaHoy + version);
-
-
-
-
 
 
 
@@ -181,75 +197,177 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
-
     @Override
-    public void onItemClick(MainDataModel item) {
-
+    public void onItemClick(Album item) {
         Intent i;
-//        utilClass.setFabric(item.text, TAG, strFechaHoy);
-//        Log.i(TAG, item.toString());
-        utilClass.setFabric(item.text, TAG);
-        Log.i(TAG, item.toString());
+        switch (item.getItemId()) {
 
-        switch (item.text) {
-
-            case "Breviario":
+            case 1:
                 i = new Intent(getApplicationContext(), BreviarioActivity.class);
                 startActivity(i);
                 break;
 
-            case "Misa":
-                i = new Intent(MainActivity.this, MisaActivity.class);
+            case 2:
+                i = new Intent(this, MisaActivity.class);
                 startActivity(i);
                 break;
 
-            case "Homilías":
-                i = new Intent(MainActivity.this, HomiliasActivity.class);
+            case 3:
+                i = new Intent(this, HomiliasActivity.class);
                 startActivity(i);
                 break;
 
 
-            case "Santo de hoy":
-                i = new Intent(MainActivity.this, SantosActivity.class);
+            case 4:
+                i = new Intent(this, SantosActivity.class);
                 startActivity(i);
                 break;
 
-            case "Lecturas de hoy":
-                i = new Intent(MainActivity.this, LecturasActivity.class);
+            case 5:
+                i = new Intent(this, LecturasActivity.class);
                 startActivity(i);
                 break;
 
-            case "Comentarios Evangelio":
-                i = new Intent(MainActivity.this, ComentariosActivity.class);
+            case 6:
+                i = new Intent(this, ComentariosActivity.class);
                 startActivity(i);
                 break;
 
-            case "Calendario":
-                i = new Intent(MainActivity.this, CalendarioActivity.class);
+            case 7:
+                i = new Intent(this, CalendarioActivity.class);
                 startActivity(i);
                 break;
 
-            case "Oraciones":
-                i = new Intent(MainActivity.this, OracionesActivity.class);
+            case 8:
+                i = new Intent(this, OracionesActivity.class);
                 startActivity(i);
                 break;
 
-            case "Más...":
-
-                i = new Intent(MainActivity.this, MainMasActivity.class);
+            case 9:
+                i = new Intent(this, MainMasActivity.class);
                 startActivity(i);
-                /*
-                Snackbar.make(getWindow().getDecorView(), "Opción disponible en una futura actualización", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                        */
                 break;
 
             default:
-
-
         }
     }
 
+
+    private void prepareAlbums() {
+        int colorBreviario = getResources().getColor(R.color.colorBreviario);
+        int colorMisa = getResources().getColor(R.color.colorMisa);
+        int colorHomilias = getResources().getColor(R.color.colorHomilias);
+
+        int colorLecturas = getResources().getColor(R.color.colorMain_lecturas_img);
+        int colorEvangelio = getResources().getColor(R.color.colorMain_evangelio_img);
+        int colorSantos = getResources().getColor(R.color.colorSantos);
+
+        int colorCalendario = getResources().getColor(R.color.colorCalendario);
+        int colorOraciones = getResources().getColor(R.color.colorOraciones);
+        int colorMas = getResources().getColor(R.color.colorMain_img_mas);
+        int colorBiblia = getResources().getColor(R.color.colorBiblia);
+        int colorPadres = getResources().getColor(R.color.colorPadres);
+        int colorSacramentos = getResources().getColor(R.color.colorSacramentos);
+
+
+        int[] covers = new int[]{
+                R.drawable.ic_breviario,
+                R.drawable.ic_misa,
+                R.drawable.ic_homilias,
+                R.drawable.ic_santos,
+                R.drawable.ic_lecturas,
+                R.drawable.ic_comentarios,
+                R.drawable.ic_calendario,
+                R.drawable.ic_oraciones,
+                R.drawable.ic_mas,
+                R.drawable.ic_comentarios,
+                R.drawable.ic_comentarios};
+
+        Album a = new Album("Breviario", 1, covers[0], colorBreviario);
+        albumList.add(a);
+
+        a = new Album("Misa", 2, covers[1], colorMisa);
+        albumList.add(a);
+
+        a = new Album("Homilías", 3, covers[2], colorHomilias);
+        albumList.add(a);
+
+        a = new Album("Santo de hoy", 4, covers[3], colorSantos);
+        albumList.add(a);
+
+        a = new Album("Lecturas de hoy", 5, covers[4], colorLecturas);
+        albumList.add(a);
+
+        a = new Album("Comentarios Evangelio", 6, covers[5], colorEvangelio);
+        albumList.add(a);
+
+        a = new Album("Calendario", 7, covers[6], colorCalendario);
+        albumList.add(a);
+
+        a = new Album("Oraciones", 8, covers[7], colorOraciones);
+        albumList.add(a);
+
+        a = new Album("Biblia", 9, covers[8], colorBiblia);
+        albumList.add(a);
+
+        a = new Album("Patrística", 10, covers[9], colorPadres);
+        albumList.add(a);
+
+        a = new Album("Sacramentos", 11, covers[9], colorSacramentos);
+        albumList.add(a);
+
+        a = new Album("Más...", 10, covers[9], colorMas);
+        albumList.add(a);
+
+
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
+     * Converting dp to pixel
+     */
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
+
+    /**
+     * RecyclerView item decoration - give equal margin around grid item
+     */
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+    }
 
 
 

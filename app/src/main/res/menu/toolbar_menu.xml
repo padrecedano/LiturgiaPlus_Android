@@ -15,7 +15,7 @@ tools:context=".activities.BreviarioActivity">
     android:id="@+id/item_calendario"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:icon="@drawable/ic_calendar"
+    android:icon="@drawable/ic_calendar_toolbar"
     android:title="@string/all_calendar"
     app:showAsAction="ifRoom" />
 </menu>

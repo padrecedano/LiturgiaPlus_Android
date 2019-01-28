@@ -1,5 +1,9 @@
 package org.deiverbum.app.model;
 
+import android.text.Spanned;
+
+import org.deiverbum.app.utils.Utils;
+
 public class Invitatorio {
     public String antifona;
     public String texto;
@@ -18,5 +22,9 @@ public class Invitatorio {
 
     public void setTexto(String texto) {
         this.texto = texto;
+    }
+
+    public Spanned getAntifonaForRead() {
+        return Utils.fromHtml("<p>" + antifona + ".</p>");
     }
 }

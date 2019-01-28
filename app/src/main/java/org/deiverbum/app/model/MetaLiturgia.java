@@ -8,6 +8,15 @@ public class MetaLiturgia {
     public String salterio;
     public String color;
     public String meta;
+    private String titulo;
+
+    public String getTitulo() {
+        return titulo;
+    }
+
+    public void setTitulo(String titulo) {
+        this.titulo = titulo;
+    }
 
     public String getFecha() {
         return fecha;
@@ -44,6 +53,7 @@ public class MetaLiturgia {
     public String getSalterio() {
         return salterio;
     }
+
 
     public void setSalterio(String salterio) {
         this.salterio = salterio;

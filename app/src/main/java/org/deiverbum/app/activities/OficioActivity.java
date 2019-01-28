@@ -85,7 +85,6 @@ public class OficioActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(JSONObject response) {
                         SpannableStringBuilder resp = getResponseData(response);
-                        //strContenido = Utils.fromHtml(resp.toString());
                         mTextView.setText(resp, TextView.BufferType.SPANNABLE);
                         progressBar.setVisibility(View.INVISIBLE);
                     }
@@ -133,7 +132,6 @@ public class OficioActivity extends AppCompatActivity {
             Patristica patristica = lecturasOficio.getPatristica();
             Biblica biblica = lecturasOficio.getBiblica();
             TeDeum teDeum = lecturasOficio.getTeDeum();
-            //Oracion oracion=oficio.getOracion();
 
 
             CharSequence santoNombre = (santo.getNombre().equals("")) ? "" : Utils.toH3(santo.getNombre() + LS2);
@@ -141,21 +139,25 @@ public class OficioActivity extends AppCompatActivity {
             SpannableStringBuilder titleInvitatorio = Utils.formatSubTitle("invitatorio");
 
             CharSequence santoVida = (santo.getVida().equals("")) ? "" : Utils.toSmallSize(santo.getVida() + Utils.LS);
-            CharSequence metaSalterio = (meta.getSalterio().equals("")) ? "" : Utils.toSmallSizeRed(Utils.fromHtml(meta.getSalterio()) + Utils.LS);
             String ant = getString(R.string.ant);
 
+            String hora = "OFICIO DE LECTURA";
+
+            sb.append(meta.getFecha());
+            sb.append(Utils.LS2);
 
             sb.append(Utils.toH2(meta.getTiempo()));
             sb.append(Utils.LS);
             sb.append(Utils.toH3(meta.getSemana()));
             sb.append(Utils.LS2);
 
-            //sb.append(Utils.toH3Red(hora));
+            sb.append(Utils.toH3Red(hora));
             sb.append(Utils.LS);
 
-            sb.append(santo.getNombre());
-            sb.append(santo.getVida());
-            sb.append(metaSalterio);
+            sb.append(santoNombre);
+            sb.append(santoVida);
+            sb.append(Utils.fromHtmlToSmallRed(meta.getSalterio()));
+
 
             sb.append(Utils.LS2);
             sb.append(Utils.getSaludoOficio());
@@ -185,7 +187,6 @@ public class OficioActivity extends AppCompatActivity {
 
             sb.append(Utils.formatSubTitle("lecturas del oficio"));
             sb.append(Utils.LS2);
-            //sb.append(oficio.getResponsorio());
 
             sb.append(lecturasOficio.getResponsorio());
             sb.append(Utils.LS2);
@@ -238,26 +239,27 @@ public class OficioActivity extends AppCompatActivity {
             sb.append(LS2);
 
             sb.append(oficio.getOracion());
-
+            sb.append(LS2);
+            sb.append(Utils.getConclusionHorasMayores());
             /*Texto para TTS*/
+            sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + "</p>"));
 
             sbReader.append("OFICIO DE LECTURA." + BR);
             sbReader.append(SEPARADOR);
 
             sbReader.append(santo.getNombre() + "." + BR);
             sbReader.append(santo.getVida() + BR);
-            sbReader.append(meta.getSalterio() + BR);
             sbReader.append(SEPARADOR);
             sbReader.append(SEPARADOR);
-            sbReader.append(Utils.getSaludoOficio());
+            sbReader.append(Utils.getSaludoOficioForReader());
             sbReader.append(SEPARADOR);
 
-            sbReader.append("Invitatorio.");
+            sbReader.append(Utils.fromHtml("<p>Invitatorio.</p>"));
             sbReader.append(SEPARADOR);
-            sbReader.append(invitatorio.getAntifona());
+            sbReader.append(invitatorio.getAntifonaForRead());
             sbReader.append(invitatorio.getTexto());
-            sbReader.append(Utils.getFinSalmo());
-            sbReader.append(invitatorio.getAntifona());
+            sbReader.append(Utils.getFinSalmoForRead());
+            sbReader.append(invitatorio.getAntifonaForRead());
             sbReader.append(SEPARADOR);
 
             sbReader.append("HIMNO.");
@@ -303,7 +305,11 @@ public class OficioActivity extends AppCompatActivity {
             sbReader.append(patristica.getResponsorioForReader());
             sbReader.append(SEPARADOR);
             sbReader.append(teDeum.getTexto());
+            sbReader.append(Utils.fromHtml("<p>Oración.</p><br />"));
+            sbReader.append(SEPARADOR);
             sbReader.append(oficio.getOracion());
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.getConclusionHorasMayoresForRead());
 
 
         } catch (JSONException e) {
@@ -311,15 +317,6 @@ public class OficioActivity extends AppCompatActivity {
         }
 
 
-//            Oficio oficio = breviario.oficio;
-//        sb.append(oficio.toString());
-/*
-        } catch (JSONException e) {
-
-            e.printStackTrace();
-            Log.e(TAG, e.getMessage());
-        }
-*/
         return sb;
     }
 
@@ -342,9 +339,9 @@ public class OficioActivity extends AppCompatActivity {
                 return true;
 
             case R.id.item_voz:
-//                String[] strPrimera = strContenido.toString().split(SEPARADOR);
-//                tts = new TTS(getApplicationContext(), strPrimera);
+
                 String html = String.valueOf(Utils.fromHtml(sbReader.toString()));
+                html = html.replaceAll("[«»\"\'“”¿?]", "");
                 String[] strPrimera = html.split(SEPARADOR);
                 tts = new TTS(getApplicationContext(), strPrimera);
                 return true;

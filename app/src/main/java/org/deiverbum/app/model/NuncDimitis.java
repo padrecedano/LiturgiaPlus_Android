@@ -1,7 +1,11 @@
 package org.deiverbum.app.model;
 
+import android.text.SpannableStringBuilder;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import org.deiverbum.app.utils.Utils;
 
 public class NuncDimitis {
 
@@ -12,21 +16,36 @@ public class NuncDimitis {
     @Expose
     private String texto;
 
-    public String getAntifona() {
-        return antifona;
-    }
+    public SpannableStringBuilder getAntifona() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
 
+        String preAnt = "Ant. ";
+        ssb.append(Utils.toRed(preAnt));
+        ssb.append(antifona);
+        return ssb;
+    }
     public void setAntifona(String antifona) {
         this.antifona = antifona;
     }
 
+    public String getAntifonaForRead() {
+        return antifona;
+
+
+    }
+
     public String getTexto() {
-        return texto;
+
+        return Utils.getFormato(texto);
     }
 
     public void setTexto(String texto) {
         this.texto = texto;
     }
 
+    public SpannableStringBuilder getHeader() {
+
+        return Utils.formatTitle("CÁNTICO EVANGÉLICO");
+    }
 }
 

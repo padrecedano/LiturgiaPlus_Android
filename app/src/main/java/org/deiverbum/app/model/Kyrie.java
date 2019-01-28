@@ -20,8 +20,28 @@ public class Kyrie {
     private String conclusion;
     private int tipo;
 
+    public SpannableStringBuilder getIntroduccionForRead() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append(Utils.fromHtml("<p>EXAMEN DE CONCIENCIA.</p>"));
+        String[] introArray = introduccion.split("\\|");
+        if (introArray.length == 3) {
+
+            ssb.append(Utils.fromHtml("<p>" + introArray[1] + "</p>"));
+
+
+        } else {
+            //ssb.append(String.valueOf(introArray.length));
+            ssb.append(introduccion);
+
+        }
+        return ssb;
+    }
+
     public SpannableStringBuilder getIntroduccion() {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append(Utils.formatTitle("EXAMEN DE CONCIENCIA."));
+        ssb.append(Utils.LS2);
+
         String[] introArray = introduccion.split("\\|");
         if (introArray.length == 3) {
             ssb.append(Utils.toSmallSizeRed(introArray[0]));
@@ -43,57 +63,49 @@ public class Kyrie {
     }
 
     public SpannableStringBuilder getTexto() {
+        return Utils.getKyrie(2);
+        /*
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         this.texto = Utils.getFormato(texto);
         switch (this.tipo) {
             case 1:
                 ssb.append(Utils.fromHtml(texto));
                 break;
+            case 2:
+
+                ssb.append(Utils.fromHtml(texto));
+                break;
             default:
                 ssb.append(texto);
                 break;
         }
-        return ssb;//texto;
+        return ssb;//texto;*/
     }
 
     public void setTexto(String texto) {
         this.texto = texto;
     }
 
+    public String getConclusionForRead() {
+        return "El Señor todopoderoso tenga misericordia de nosotros, perdone nuestros pecados y nos lleve a la vida eterna. Amén.";
+
+
+    }
     public SpannableStringBuilder getConclusion() {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
-        //this.conclusion=Utils.getFormato(conclusion);
 
-        String[] introArray = conclusion.split("\\|");
+        ssb.append(Utils.toSmallSizeRed("Pueden usarse otras invocaciones penitenciales."));
+        ssb.append(Utils.LS);
+        ssb.append(Utils.toSmallSizeRed("Si preside la celebración un ministro, él solo dice la absolución siguiente; en caso de lo contrario la dicen todos:"));
+        ssb.append(Utils.LS2);
 
-        if (introArray.length == 2) {
-            ssb.append(Utils.toSmallSizeRed(introArray[0]));
-            ssb.append(Utils.LS2);
-            ssb.append(String.valueOf(introArray.length));
-            ssb.append(Utils.LS2);
-
-            String[] str = introArray[1].split("\\∬");
-
-            if (str.length == 2) {
-                ssb.append(Utils.toRed("V. "));
-                ssb.append(str[0]);
-                ssb.append(Utils.LS);
+        ssb.append(Utils.toRed("V. "));
+        ssb.append("El Señor todopoderoso tenga misericordia de nosotros, perdone nuestros pecados y nos lleve a la vida eterna.");
+        ssb.append(Utils.LS2);
                 ssb.append(Utils.toRed("R. "));
-                ssb.append(str[1]);
+        ssb.append("Amén.");
 
-            } else {
-                ssb.append(introArray[1]);
 
-            }
-            ssb.append(Utils.LS2);
-//            ssb.append(Utils.toSmallSizeRed(introArray[2]));
-
-        } else {
-            ssb.append(Utils.LS2 + "conc");
-            ssb.append(String.valueOf(introArray.length));
-            ssb.append(conclusion);
-
-        }
         return ssb;
         //        return conclusion;
     }
@@ -105,4 +117,50 @@ public class Kyrie {
     public int getTipo() {
         return tipo;
     }
+
+    public SpannableStringBuilder getTextoForRead() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+
+        switch (3) {
+            case 1:
+                String text = "<p>Yo confieso ante Dios todopoderoso <br />" +
+                        "y ante vosotros, hermanos <br />" +
+                        "que he pecado mucho <br />" +
+                        "de pensamiento, palabra, obra y omisión: <br />" +
+                        "por mi culpa, por mi culpa, por mi gran culpa. <br /><br />" +
+                        "Por eso ruego a santa María, siempre Virgen, <br />" +
+                        "a los ángeles, a los santos y a vosotros, hermanos, <br />" +
+                        "que intercedáis por mí ante Dios, nuestro Señor.</p>";
+
+                ssb.append(Utils.fromHtml(text));
+
+                break;
+            case 2:
+                ssb.append(Utils.fromHtml("<p>Señor, ten misericordia de nosotros.</p>"));
+                ssb.append(Utils.fromHtml("<p>Porque hemos pecado contra ti.</p>"));
+                ssb.append(Utils.fromHtml("<p>Muéstranos, Señor, tu misericordia.</p>"));
+                ssb.append(Utils.fromHtml("<p>Y danos tu salvación.</p>"));
+
+                break;
+            case 3:
+                ssb.append(Utils.fromHtml("<p>Tú que has sido enviado a sanar los corazones afligidos: Señor, ten piedad.</p>"));
+                ssb.append(Utils.fromHtml("<p>Señor, ten piedad.</p>"));
+                ssb.append(Utils.fromHtml("<p>Tú que has venido a llamar a los pecadores: Cristo, ten piedad.</p>"));
+                ssb.append(Utils.fromHtml("<p>Cristo, ten piedad.</p>"));
+                ssb.append(Utils.fromHtml("<p>Tú que estás sentado a la derecha del Padre para interceder por nosotros: Señor, ten piedad.</p>"));
+                ssb.append(Utils.fromHtml("<p>Señor, ten piedad.</p>"));
+
+
+            default:
+                ssb.append("");
+                break;
+        }
+
+
+        return ssb;
+
+    }
+
+
+
 }

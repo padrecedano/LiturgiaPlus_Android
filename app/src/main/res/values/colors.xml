@@ -16,7 +16,7 @@
     <color name="tercia_boton">#66b9e78b</color>
     <color name="sexta_boton">#b38de78b</color>
     <color name="nona_boton">#897cc730</color>
-    <color name="visperas_boton">#893079c7</color>
+    <color name="visperas_boton">#c44b89ca</color>
     <color name="completas_boton">#d06a5fc9</color>
 
     <color name="black_overlay">#66000000</color>
@@ -37,6 +37,11 @@
     <color name="colorSantos">#2c3e50</color>
     <color name="colorMain_lecturas_img">#16a085</color>
     <color name="colorMain_evangelio_img">#C51162</color>
+    #283593
+    <color name="colorBiblia">#283593</color>
+    <color name="colorPadres">#c68400</color>
+    <color name="colorSacramentos">#7f0000</color>
+
 
     <color name="colorCalendario">#827717</color>
     <color name="colorOraciones">#FF6E40</color>

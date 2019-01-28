@@ -1,7 +1,11 @@
 package org.deiverbum.app.model;
 
+import android.text.SpannableStringBuilder;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+
+import org.deiverbum.app.utils.Utils;
 
 public class Breviario {
 
@@ -16,6 +20,8 @@ public class Breviario {
     private Santo santo;
     private Oficio oficio;
     private Laudes laudes;
+    private Intermedia intermedia;
+    private Visperas visperas;
 
     public MetaLiturgia getMetaLiturgia() {
         return metaLiturgia;
@@ -43,6 +49,26 @@ public class Breviario {
 
     public Laudes getLaudes() {
         return laudes;
+    }
+
+    public SpannableStringBuilder getInvocacion() {
+
+        return Utils.getSaludoOficio();
+    }
+
+    public SpannableStringBuilder getInvocacionForRead() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        ssb.append(Utils.getSaludoOficioForReader());
+        return ssb;
+    }
+
+
+    public Intermedia getIntermedia() {
+        return intermedia;
+    }
+
+    public Visperas getVisperas() {
+        return visperas;
     }
 }
 

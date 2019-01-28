@@ -2,10 +2,8 @@ package org.deiverbum.app.data;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -43,6 +41,7 @@ public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.Orac
         holder.description.setText(oraciones.getDescription());
         holder.poster.setImageResource(oraciones.getImageId());
 //        holder.ratingBar.setRating(movies.getRating());
+        /*
         holder.popmemu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,7 +64,7 @@ public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.Orac
                 });
                 popupMenu.show();
             }
-        });
+        });*/
     }
 
     @Override
@@ -85,7 +84,7 @@ public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.Orac
             description = itemView.findViewById(R.id.tv_description);
             //ratingBar = (RatingBar) itemView.findViewById(R.id.ratingBar);
             poster = itemView.findViewById(R.id.iv_poster);
-            popmemu = itemView.findViewById(R.id.iv_menu);
+            //popmemu = itemView.findViewById(R.id.iv_menu);
             view = itemView;
             final Map<String, Integer> myMap = new HashMap<>();
             myMap.put("Misterios Gloriosos", 1);

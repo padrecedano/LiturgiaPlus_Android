@@ -32,20 +32,19 @@
         >
 
 
-
-    <TextView
-        android:id="@+id/tv_Breviario"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="bottom|center"
-        android:keepScreenOn="true"
-        android:layout_below="@+id/rv_Breviario"
-        android:background="@color/colorPrimary"
-        android:text="@string/app_name"
-        android:layout_gravity="bottom"
-
-
-        />
+        <!--
+            <TextView
+                android:id="@+id/tv_Breviario"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="bottom|center"
+                android:keepScreenOn="true"
+                android:layout_below="@+id/rv_Breviario"
+                android:background="@color/colorPrimary"
+                android:text="@string/app_name"
+                android:layout_gravity="bottom"
+                />
+                -->
     </LinearLayout>
 
     <include layout="@layout/content_breviario" />

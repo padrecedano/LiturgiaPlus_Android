@@ -6,13 +6,13 @@ import android.text.Spanned;
 import org.deiverbum.app.utils.Utils;
 
 public class SalmoCompleto {
-    public String orden;
-    public String antifona;
-    public String ref;
-    public String tema;
-    public String intro;
-    public String parte;
-    public String salmo;
+    private String orden;
+    private String antifona;
+    private String ref;
+    private String tema;
+    private String intro;
+    private String parte;
+    private String salmo;
 
     public String getOrden() {
         return orden;
@@ -24,6 +24,14 @@ public class SalmoCompleto {
 
     public String getAntifona() {
         return antifona;
+    }
+
+    public String getAntifonaNew(int tipo) {
+        String ant = "a";
+        if (tipo == 1) {
+            ant = "";
+        }
+        return ant;
     }
 
     public void setAntifona(String antifona) {
@@ -40,8 +48,6 @@ public class SalmoCompleto {
     }
 
     public String getTema() {
-        //SpannableStringBuilder ssb=new SpannableStringBuilder(tema);
-        //return Utils.ssbRed(ssb);
         return tema;
 
     }
@@ -51,8 +57,6 @@ public class SalmoCompleto {
     }
 
     public String getIntro() {
-        //SpannableStringBuilder ssb=new SpannableStringBuilder(Utils.fromHtml(intro));
-        //return Utils.ssbSmallSize(ssb);//getFormato(intro);//.ssbRed(ssb);
         return intro;
     }
 
@@ -81,7 +85,6 @@ public class SalmoCompleto {
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
         Spanned str = Utils.fromHtml(Utils.getFormato(intro));
         ssb.append(str);
-        //str=Utils.toSmallSize(str);
         return Utils.ssbSmallSize(ssb);
     }
 
