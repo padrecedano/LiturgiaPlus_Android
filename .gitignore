@@ -10,3 +10,4 @@
 .externalNativeBuild
 *.json
 /app/fabric.properties
+/utils/Constants.java
