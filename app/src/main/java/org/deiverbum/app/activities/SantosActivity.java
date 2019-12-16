@@ -1,38 +1,49 @@
 package org.deiverbum.app.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.android.volley.RequestQueue;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.deiverbum.app.R;
+import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
-import org.deiverbum.app.utils.UtilsOld;
+
+import java.util.HashMap;
 
 import static org.deiverbum.app.utils.Constants.BRS;
+import static org.deiverbum.app.utils.Constants.SEPARADOR;
 
 public class SantosActivity extends AppCompatActivity {
     private static final String TAG = "SantosActivity";
-    final FirebaseDatabase database = FirebaseDatabase.getInstance();
     String strFechaHoy;
     String santoMMDD;
-
+    private TTS tts;
+    private StringBuilder sbReader;
+    private ProgressBar progressBar;
+    private String santoMM;
     String textoVida;
-    private UtilsOld utilClass;
-    private RequestQueue requestQueue;
+    private Menu menu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,88 +51,144 @@ public class SantosActivity extends AppCompatActivity {
         setContentView(R.layout.activity_santos);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        Log.i(TAG, "ok");
-
-
-        utilClass = new UtilsOld();
         final TextView mTextView = findViewById(R.id.tv_Zoomable);
-        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
-
-        //       DatabaseReference ref = database.getReference("oficio_1");
-
+        progressBar = findViewById(R.id.progressBar);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         Intent i = getIntent();
-        santoMMDD = (i.getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
+        santoMMDD = (i.getExtras() != null) ? getIntent().getStringExtra("FECHA") : Utils.getHoy();
 
-//        santoMMDD = santoMMDD.substring(santoMMDD.length() - 4);
-        String santoDD = santoMMDD.substring(santoMMDD.length() - 2);
-        String santoMM = santoMMDD.substring(4, 6);
-        Log.i(TAG, "fecha" + strFechaHoy + " mm: " + santoMM + " dd: " + santoDD);
-        strFechaHoy = utilClass.getFecha();
-// Access a Cloud Firestore instance from your Activity
+        final String santoDD = santoMMDD.substring(santoMMDD.length() - 2);
+        santoMM = santoMMDD.substring(4, 6);
+        strFechaHoy = Utils.getFecha();
+        sbReader = new StringBuilder();
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference messageRef = db
-                .collection("liturgia").document("santos")
-                .collection(santoMM).document(santoDD);
-
+                .collection("liturgia").document("santos").collection(santoMM).document(santoDD);
 
         messageRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
             public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                 SpannableStringBuilder sb = new SpannableStringBuilder();
+                Spanned err = Utils.fromHtml("No se ha introducido la  vida de este santo. <br><br>¿Quieres cooperar enviando breves biografías de santos?<br><br>Mándame un correo a la dirección: <b>padre.cedano@gmail.com</b>");
 
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        //Log.d(TAG, "DocumentSnapshot data: " + document.getMetadata());
+                        HashMap<String, String> monthNames = new HashMap<>();
+                        monthNames.put("01", "Enero");
+                        monthNames.put("02", "Febrero");
+                        monthNames.put("03", "Marzo");
+                        monthNames.put("04", "Abril");
+                        monthNames.put("05", "Mayo");
+                        monthNames.put("06", "Junio");
+                        monthNames.put("07", "Julio");
+                        monthNames.put("08", "Agosto");
+                        monthNames.put("09", "Septiembre");
+                        monthNames.put("10", "Octubre");
+                        monthNames.put("11", "Noviembre");
+                        monthNames.put("12", "Diciembre");
+                        String nombreMes = santoDD + " de " + monthNames.get(santoMM);
+
                         if (document.contains("nombre")) {
                             String nombre = document.getString("nombre");
-                            //sb.append(_H2RED);
+                            sb.append(Utils.toH3Red(nombreMes));
+                            sb.append(Utils.LS);
                             sb.append(Utils.toH2Red(nombre));
                             sb.append(Utils.LS2);
+                            sbReader.append(nombre);
+                            sbReader.append(SEPARADOR);
 
-                            //sb.append(H2RED_);
                         }
                         if (document.contains("martirologio")) {
                             String martirologio = document.getString("martirologio");
                             sb.append(Utils.toSmallSize(martirologio));
                             sb.append(Utils.LS);
                             sb.append(Utils.toSmallSize("(Martirologio Romano)"));
+                            sbReader.append(martirologio);
+                            sbReader.append("\n");
+
+                            sbReader.append("Del martirologio romano.");
                         }
                         if (document.contains("vida")) {
                             String vida = document.getString("vida");
                             sb.append(Utils.LS2);
                             sb.append(Utils.fromHtml("<hr>"));
-
                             sb.append(Utils.toH3Red("Vida"));
                             sb.append(Utils.LS2);
-
-                            sb.append(Utils.fromHtml(vida));
+                            sbReader.append(SEPARADOR);
+                            sb.append(Utils.fromHtml(vida.replaceAll(SEPARADOR, "")));
+                            sbReader.append(vida);
 
                         }
                         if (sb.toString().equals("")) {
-                            textoVida = "No se ha introducido la  vida de este santo. ¿Quieres cooperar?";
-                            sb.append("No se ha introducido la  vida de este santo. ¿Quieres cooperar?");
+                            sb.append(err);
+                            sbReader.append("No se encontró la vida del santo de hoy");
                         } else {
                             textoVida = strFechaHoy + BRS + sb.toString();
                         }
-
-                        mTextView.setText(sb);
-
+                        //mTextView.setText(textoVida);
                     } else {
-                        Log.d(TAG, "No such document");
+                        sb.append(err);
+
                     }
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    sb.append(err);
+
                 }
+                mTextView.setText(sb);
+                progressBar.setVisibility(View.INVISIBLE);
+                if (sbReader.length() > 0) {
+                    menu.findItem(R.id.item_voz).setVisible(true);
+                }
+
             }
         });
 
-
-
     }
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
+        getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                if (tts != null) {
+                    tts.cerrar();
+                }
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+
+            case R.id.item_voz:
+                String notQuotes = Utils.stripQuotation(sbReader.toString());
+                String html = String.valueOf(Utils.fromHtml(notQuotes));
+                Log.d(TAG, html);
+                String[] textParts = html.split(SEPARADOR);
+                tts = new TTS(getApplicationContext(), textParts);
+                return true;
+
+            case R.id.item_calendario:
+                Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (tts != null) {
+            tts.cerrar();
+        }
+    }
 }

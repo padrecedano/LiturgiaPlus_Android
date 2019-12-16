@@ -1,162 +1,66 @@
 package org.deiverbum.app.activities;
 
 import android.content.Intent;
+import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.crashlytics.android.Crashlytics;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreSettings;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.play.core.appupdate.AppUpdateInfo;
+import com.google.android.play.core.appupdate.AppUpdateManager;
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory;
+import com.google.android.play.core.install.InstallStateUpdatedListener;
+import com.google.android.play.core.install.model.AppUpdateType;
+import com.google.android.play.core.install.model.InstallStatus;
+import com.google.android.play.core.install.model.UpdateAvailability;
+import com.google.android.play.core.tasks.OnSuccessListener;
+import com.google.android.play.core.tasks.Task;
 
 import org.deiverbum.app.R;
-import org.deiverbum.app.data.AlbumsAdapter;
 import org.deiverbum.app.data.MainDataModel;
-import org.deiverbum.app.model.Album;
-import org.deiverbum.app.utils.UtilsOld;
+import org.deiverbum.app.data.MainItemsAdapter;
+import org.deiverbum.app.model.MainItem;
+import org.deiverbum.app.utils.Utils;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import io.fabric.sdk.android.Fabric;
-
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, AlbumsAdapter.ItemListener {
-
+        implements NavigationView.OnNavigationItemSelectedListener, MainItemsAdapter.ItemListener {
     RecyclerView recyclerView;
     ArrayList<MainDataModel> arrayList;
     String version;
     String strFechaHoy;
-    private UtilsOld utilClass;
     private static final String TAG = "MainActivity";
-    private AlbumsAdapter adapter;
-    private List<Album> albumList;
-/*
-    private FirebaseAnalytics mFirebaseAnalytics;
-*/
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //Fabric.with(this, new Crashlytics());
-
-        final Fabric fabric = new Fabric.Builder(this)
-                .kits(new Crashlytics())
-                .debuggable(true)
-                .build();
-        Fabric.with(fabric);
-/*
-        DatabaseReference santosRef = FirebaseDatabase.getInstance().getReference("santos");
-        santosRef.keepSynced(true);
-*/
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        CollectionReference santosRef = db
-                .collection("santos");
-        FirebaseFirestoreSettings settings = new FirebaseFirestoreSettings.Builder()
-                .setPersistenceEnabled(true)
-                .build();
-        db.setFirestoreSettings(settings);
-
-
-        utilClass = new UtilsOld();
-        strFechaHoy = utilClass.getFecha();
-
-        version = utilClass.getAppInfo();//System.getProperty("line.separator")+"Liturgia+ v. "+ BuildConfig.VERSION_NAME;
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        toolbar.setSubtitle(strFechaHoy);
-
-        setSupportActionBar(toolbar);
-        //recyclerView = findViewById(R.id.recyclerView);
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-
-        recyclerView = findViewById(R.id.recyclerView);
-        //final TextView mTextView = findViewById(R.id.txt_main);
-        //mTextView.setText(strFechaHoy + version);
-        albumList = new ArrayList<>();
-        adapter = new AlbumsAdapter(this, albumList, this);
-
-        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
-        recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(-1), true));
-        //recyclerView.setItemAnimator(new DefaultItemAnimator());
-        recyclerView.setAdapter(adapter);
-        prepareAlbums();
-
-
-        /*
-        arrayList = new ArrayList<>();
-        int colorBreviario = getResources().getColor(R.color.colorBreviario);
-        int colorMisa = getResources().getColor(R.color.colorMisa);
-        int colorHomilias = getResources().getColor(R.color.colorHomilias);
-
-        int colorLecturas = getResources().getColor(R.color.colorMain_lecturas_img);
-        int colorEvangelio = getResources().getColor(R.color.colorMain_evangelio_img);
-        int colorSantos = getResources().getColor(R.color.colorSantos);
-
-        int colorCalendario = getResources().getColor(R.color.colorCalendario);
-        int colorOraciones = getResources().getColor(R.color.colorOraciones);
-        int colorMas = getResources().getColor(R.color.colorMain_img_mas);
-
-        arrayList.add(new MainDataModel("Breviario", R.drawable.ic_breviario, colorBreviario));
-        arrayList.add(new MainDataModel("Misa", R.drawable.ic_misa, colorMisa));
-        arrayList.add(new MainDataModel("Homilías", R.drawable.ic_homilias, colorHomilias));
-
-        arrayList.add(new MainDataModel("Santo de hoy", R.drawable.ic_santos, colorSantos));
-        arrayList.add(new MainDataModel("Lecturas de hoy", R.drawable.ic_lecturas, colorLecturas));
-        arrayList.add(new MainDataModel("Comentarios Evangelio", R.drawable.ic_comentarios, colorEvangelio));
-
-        arrayList.add(new MainDataModel("Calendario", R.drawable.ic_calendario, colorCalendario));
-        arrayList.add(new MainDataModel("Oraciones", R.drawable.ic_oraciones, colorOraciones));
-        arrayList.add(new MainDataModel("Más...", R.drawable.ic_mas, colorMas));
-
-        MainRecyclerAdapter adapter = new MainRecyclerAdapter(this, arrayList, this);
-        recyclerView.setAdapter(adapter);
-
-*/
-        /*
-         AutoFitGridLayoutManager that auto fits the cells by the column width defined.
-         */
-/*
-        AutoFitGridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, 200);
-        recyclerView.setLayoutManager(layoutManager);
-*/
-
-        /*
-         Simple GridLayoutManager that spans two columns
-         */
-
-/*
-        GridLayoutManager manager = new GridLayoutManager(this, 2, GridLayoutManager.VERTICAL, false);
-        recyclerView.setLayoutManager(manager);
-*/
-
-
-
-    }
+    private static final int UPDATE_REQUEST_CODE = 20190200;
+    static boolean calledAlready = false;
+    private MainItemsAdapter adapter;
+    private List<MainItem> mainList;
+    private SharedPreferences prefs = null;
+    private AppUpdateManager appUpdateManager;
+    private InstallStateUpdatedListener installStateUpdatedListener = installState -> {
+        // Show module progress, log state, or install the update.
+        if (installState.installStatus() == InstallStatus.DOWNLOADED) {
+            // After the update is downloaded, show a notification
+            // and request user confirmation to restart the app.
+            popupAlerter();
+        }
+    };
 
     @Override
     public void onBackPressed() {
@@ -167,43 +71,91 @@ public class MainActivity extends AppCompatActivity
             super.onBackPressed();
         }
     }
-/*
+
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.main, menu);
-        return true;
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        strFechaHoy = Utils.getFecha();
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setSubtitle(strFechaHoy);
+        setSupportActionBar(toolbar);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        drawer.addDrawerListener(toggle);
+        toggle.syncState();
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+        recyclerView = findViewById(R.id.recyclerView);
+        mainList = new ArrayList<>();
+        adapter = new MainItemsAdapter(this, mainList, this);
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
+        recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(0), true));
+        recyclerView.setAdapter(adapter);
+        prepareItems();
+        checkAppUpdate();
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        Intent i = new Intent(this, MenuActivity.class);
-        //i.putExtra("FECHA", id);
-        startActivity(i);
-        return true;
-    }
-*/
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Log.d(TAG, String.valueOf(item.getTitle()));
-        Intent i = new Intent(this, SettingsActivity.class);
-        i.putExtra("OPTION", item.getTitle());
-        startActivity(i);
+        Intent i;
+        switch (item.getItemId()) {
+            case R.id.nav_help:
+                i = new Intent(getApplicationContext(), HelpActivity.class);
+                startActivity(i);
+                break;
+            case R.id.nav_settings:
+                i = new Intent(getApplicationContext(), SettingsActivity.class);
+                startActivity(i);
+                break;
+            case R.id.nav_about:
+                i = new Intent(getApplicationContext(), AboutActivity.class);
+                startActivity(i);
+                break;
+            case R.id.nav_author:
+                i = new Intent(getApplicationContext(), AuthorActivity.class);
+                startActivity(i);
+                break;
+
+            case R.id.nav_new:
+                i = new Intent(getApplicationContext(), WhatIsNewActivity.class);
+                startActivity(i);
+                break;
+
+            case R.id.nav_thanks:
+                i = new Intent(getApplicationContext(), ThanksActivity.class);
+                startActivity(i);
+                break;
+
+            case R.id.nav_privacy:
+                i = new Intent(getApplicationContext(), PrivacyActivity.class);
+                startActivity(i);
+                break;
+
+            case R.id.nav_terms:
+                i = new Intent(getApplicationContext(), TermsActivity.class);
+                startActivity(i);
+                break;
+
+            default:
+
+        }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
     @Override
-    public void onItemClick(Album item) {
+    public void onItemClick(MainItem item) {
         Intent i;
+
         switch (item.getItemId()) {
 
             case 1:
-                i = new Intent(getApplicationContext(), BreviarioActivity.class);
+                i = new Intent(this, BreviarioActivity.class);
                 startActivity(i);
                 break;
 
@@ -243,17 +195,30 @@ public class MainActivity extends AppCompatActivity
                 startActivity(i);
                 break;
 
-            case 9:
+            case 99:
                 i = new Intent(this, MainMasActivity.class);
                 startActivity(i);
                 break;
 
+            case 9:
+            case 10:
+            case 11:
+            case 12:
+                Snackbar.make(findViewById(android.R.id.content), "Esta opción estará disponible en próximas versiones de la Liturgia+, DM", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             default:
         }
     }
 
+    /**
+     * Converting dp to pixel
+     */
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
 
-    private void prepareAlbums() {
+    private void prepareItems() {
         int colorBreviario = getResources().getColor(R.color.colorBreviario);
         int colorMisa = getResources().getColor(R.color.colorMisa);
         int colorHomilias = getResources().getColor(R.color.colorHomilias);
@@ -280,55 +245,133 @@ public class MainActivity extends AppCompatActivity
                 R.drawable.ic_calendario,
                 R.drawable.ic_oraciones,
                 R.drawable.ic_mas,
-                R.drawable.ic_comentarios,
-                R.drawable.ic_comentarios};
+                R.drawable.ic_biblia,
+                R.drawable.ic_patristica,
+                R.drawable.ic_sacramentos
 
-        Album a = new Album("Breviario", 1, covers[0], colorBreviario);
-        albumList.add(a);
+        };
 
-        a = new Album("Misa", 2, covers[1], colorMisa);
-        albumList.add(a);
+        MainItem a = new MainItem("Breviario", 1, covers[0], colorBreviario);
+        mainList.add(a);
+        a = new MainItem("Misa", 2, covers[1], colorMisa);
+        mainList.add(a);
+        a = new MainItem("Homilías", 3, covers[2], colorHomilias);
+        mainList.add(a);
 
-        a = new Album("Homilías", 3, covers[2], colorHomilias);
-        albumList.add(a);
+        a = new MainItem("Santo de hoy", 4, covers[3], colorSantos);
+        mainList.add(a);
+        a = new MainItem("Lecturas de hoy", 5, covers[4], colorLecturas);
+        mainList.add(a);
+        a = new MainItem("Comentarios Evangelio", 6, covers[5], colorEvangelio);
+        mainList.add(a);
 
-        a = new Album("Santo de hoy", 4, covers[3], colorSantos);
-        albumList.add(a);
+        a = new MainItem("Calendario", 7, covers[6], colorCalendario);
+        mainList.add(a);
+        a = new MainItem("Oraciones", 8, covers[7], colorOraciones);
+        mainList.add(a);
+        a = new MainItem("Más...", 9, covers[8], colorMas);
+        mainList.add(a);
 
-        a = new Album("Lecturas de hoy", 5, covers[4], colorLecturas);
-        albumList.add(a);
-
-        a = new Album("Comentarios Evangelio", 6, covers[5], colorEvangelio);
-        albumList.add(a);
-
-        a = new Album("Calendario", 7, covers[6], colorCalendario);
-        albumList.add(a);
-
-        a = new Album("Oraciones", 8, covers[7], colorOraciones);
-        albumList.add(a);
-
-        a = new Album("Biblia", 9, covers[8], colorBiblia);
-        albumList.add(a);
-
-        a = new Album("Patrística", 10, covers[9], colorPadres);
-        albumList.add(a);
-
-        a = new Album("Sacramentos", 11, covers[9], colorSacramentos);
-        albumList.add(a);
-
-        a = new Album("Más...", 10, covers[9], colorMas);
-        albumList.add(a);
+        a = new MainItem("Biblia", 10, covers[9], colorBiblia);
+        mainList.add(a);
+        a = new MainItem("Patrística", 11, covers[10], colorPadres);
+        mainList.add(a);
+        a = new MainItem("Sacramentos", 12, covers[11], colorSacramentos);
+        mainList.add(a);
 
 
         adapter.notifyDataSetChanged();
     }
 
-    /**
-     * Converting dp to pixel
+    private void checkAppUpdate() {
+        // Creates instance of the manager.
+        appUpdateManager = AppUpdateManagerFactory.create(this);
+        appUpdateManager.registerListener(installStateUpdatedListener);
+        // Returns an intent object that you use to check for an update.
+        Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
+        // Checks that the platform will allow the specified type of update.
+        appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
+                    // For a flexible update, use AppUpdateType.FLEXIBLE
+                    && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
+                // Request the update.
+                try {
+                    appUpdateManager.startUpdateFlowForResult(
+                            // Pass the intent that is returned by 'getAppUpdateInfo()'.
+                            appUpdateInfo,
+                            // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
+                            AppUpdateType.FLEXIBLE,
+                            // The current activity making the update request.
+                            this,
+                            // Include a request code to later monitor this update request.
+                            UPDATE_REQUEST_CODE);
+                } catch (IntentSender.SendIntentException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterListener();
+        super.onDestroy();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        checkNewAppVersionState();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == UPDATE_REQUEST_CODE) {
+            if (resultCode != RESULT_OK) {
+                Log.d(TAG, "Update flow failed! Result code: " + resultCode);
+                // If the update is cancelled or fails,
+                // you can request to start the update again.
+            }
+        }
+    }
+
+    /*
+      You should execute this check at all app entry points.
      */
-    private int dpToPx(int dp) {
-        Resources r = getResources();
-        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    private void checkNewAppVersionState() {
+        appUpdateManager
+                .getAppUpdateInfo()
+                .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
+                    @Override
+                    public void onSuccess(AppUpdateInfo appUpdateInfo) {
+                        //FLEXIBLE:
+                        // If the update is downloaded but not installed,
+                        // notify the user to complete the update.
+                        if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
+                            popupAlerter();
+                            Log.d(TAG, "checkNewAppVersionState(): resuming flexible update. Code: " + appUpdateInfo.updateAvailability());
+                        }
+                    }
+                });
+    }
+
+    private void popupAlerter() {
+        Snackbar snackbar =
+                Snackbar.make(
+                        findViewById(android.R.id.content),
+                        "Nueva versión descargada, por favor reinicia",
+                        Snackbar.LENGTH_INDEFINITE);
+        snackbar.setAction("REINICIAR", view -> appUpdateManager.completeUpdate());
+        snackbar.setActionTextColor(
+                getResources().getColor(R.color.colorAccent));
+        snackbar.show();
+
+    }
+
+    private void unregisterListener() {
+        if (appUpdateManager != null && installStateUpdatedListener != null)
+            appUpdateManager.unregisterListener(installStateUpdatedListener);
     }
 
     /**
@@ -368,9 +411,5 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-
-
-
-
 
 }

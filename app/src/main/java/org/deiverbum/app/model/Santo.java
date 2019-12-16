@@ -19,8 +19,12 @@ public class Santo {
         this.nombre = nombre;
     }
 
-    public SpannableStringBuilder getVida() {
+    public SpannableStringBuilder getVidaSpan() {
         return Utils.fromHtmlSmall(vida);
+    }
+
+    public String getVida() {
+        return vida;
     }
 
     public void setVida(String vida) {

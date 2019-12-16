@@ -2,15 +2,16 @@ package org.deiverbum.app.data;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.deiverbum.app.R;
-import org.deiverbum.app.activities.RosarioActivity;
+import org.deiverbum.app.activities.OracionesGenericActivity;
 import org.deiverbum.app.model.Oraciones;
 
 import java.util.HashMap;
@@ -40,6 +41,8 @@ public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.Orac
         holder.oracionName.setText(oraciones.getName());
         holder.description.setText(oraciones.getDescription());
         holder.poster.setImageResource(oraciones.getImageId());
+
+
 //        holder.ratingBar.setRating(movies.getRating());
         /*
         holder.popmemu.setOnClickListener(new View.OnClickListener() {
@@ -92,15 +95,27 @@ public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.Orac
             myMap.put("Misterios Dolorosos", 3);
             myMap.put("Misterios Luminosos", 4);
             myMap.put("Letanías", 5);
+            myMap.put("Ángelus", 6);
+            myMap.put("Regina Coeli", 7);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     String misterio = oracionName.getText().toString();
                     int dayCode = myMap.get(misterio);
-                    Intent i = new Intent(context, RosarioActivity.class);
-                    i.putExtra("EXTRA_PAGE", dayCode);
-                    context.startActivity(i);
+                    if (dayCode < -1) {
+                        Intent i = new Intent(context, OracionesGenericActivity.class);
+                        i.putExtra("EXTRA_PAGE", dayCode);
+                        i.putExtra("TITLE", misterio);
+                        context.startActivity(i);
+                    } else {
+                        Intent i = new Intent(context, OracionesGenericActivity.class);
+                        i.putExtra("EXTRA_PAGE", dayCode);
+                        i.putExtra("TITLE", misterio);
+                        context.startActivity(i);
+
+
+                    }
                 }
             });
 

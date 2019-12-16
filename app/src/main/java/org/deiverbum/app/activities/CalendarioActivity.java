@@ -2,14 +2,15 @@ package org.deiverbum.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CalendarView;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.JsonArrayRequest;
@@ -19,7 +20,6 @@ import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
 import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
 
 import org.deiverbum.app.R;
-import org.deiverbum.app.utils.UtilsOld;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -34,7 +34,6 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
 
     JsonArrayRequest jsArrayRequest;
     CalendarView calendar;
-    private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFecha;
     private MaterialCalendarView mCalendarView;
@@ -42,8 +41,6 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-  //      @BindView(R.id.calendarView)
-  //      MaterialCalendarView widget;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_calendario);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -51,35 +48,13 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mCalendarView = findViewById(R.id.calendarView);
         mCalendarView.setSelectionMode(SELECTION_MODE_SINGLE);
-        //mCalendarView.setCurrentDate(Calendar.getInstance());
         mCalendarView.state().edit()
                 .setFirstDayOfWeek(Calendar.SUNDAY)
                 .commit();
 
         mCalendarView.setOnDateChangedListener(this);
-
         this.registerForContextMenu(mCalendarView);
 
-/*        final CalendarView simpleCalendarView = findViewById(R.id.calendarView);
-
-        simpleCalendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
-            @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                String sb = String.format("%04d", year) +
-                        String.format("%02d", month + 1) +
-                        String.format("%02d", dayOfMonth);
-                strFecha = sb;
-                Log.d(TAG, "Día: " + dayOfMonth + " Mes: " + month + " Año: " + year);
-                simpleCalendarView.performLongClick();
-            }
-        });
-
-        this.registerForContextMenu(simpleCalendarView);
-*/
-
-        utilClass = new UtilsOld();
-//        final TextView mTextView = (TextView) findViewById(R.id.txt_santo);
-//        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18)
 
     }
 
@@ -90,12 +65,9 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
 
     }
 
-
-
     public boolean onContextItemSelected(MenuItem item) {
         Intent i = null;
         switch (item.getItemId()) {
-
 
             case R.id.nav_misa:
                 i = new Intent(this, MisaActivity.class);
@@ -120,7 +92,6 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
                 i.putExtra("FECHA", strFecha);
                 startActivity(i);
                 return true;
-
 
             case R.id.nav_santo:
                 i = new Intent(this, SantosActivity.class);
@@ -195,10 +166,8 @@ public class CalendarioActivity extends AppCompatActivity implements OnDateSelec
 
     @Override
     public void onDateSelected(@NonNull MaterialCalendarView mCalendarView, @Nullable CalendarDay date, boolean selected) {
-        //Log.i(TAG,getSelectedDatesString()+"........++++++");
         mCalendarView.performLongClick();
         strFecha=getSelectedDatesString();
     }
-
 
 }

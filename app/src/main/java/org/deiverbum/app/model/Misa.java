@@ -1,10 +1,12 @@
 package org.deiverbum.app.model;
 
+
 public class Misa {
-    //public MisaLecturas misaLecturas;
+    private MisaLecturas misaLecturas;
     private LiturgiaPalabra liturgiaPalabra;
 
-    /*
+    public Misa() {
+    }
         public MisaLecturas getMisaLecturas() {
             return misaLecturas;
         }
@@ -12,16 +14,16 @@ public class Misa {
         public void setMisaLecturas(MisaLecturas misaLecturas) {
             this.misaLecturas = misaLecturas;
         }
-    */
+
     public LiturgiaPalabra getLiturgiaPalabra() {
         return liturgiaPalabra;
     }
 
-    /*
-        public String getLiturgiaPalabra() {
-            return "liturgiaPalabra";
-        }
-    */
+    public String toString() {
+
+        return "This is" + this.getClass();
+    }
+
     public void setLiturgiaPalabra(LiturgiaPalabra liturgiaPalabra) {
         this.liturgiaPalabra = liturgiaPalabra;
     }

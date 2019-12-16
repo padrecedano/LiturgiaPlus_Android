@@ -61,6 +61,9 @@ public class Misterios {
             case 4:
                 list = luminosos.contenido;
                 break;
+            case 5:
+                list = luminosos.contenido;
+                break;
             default:
         }
         for (String s : list) {

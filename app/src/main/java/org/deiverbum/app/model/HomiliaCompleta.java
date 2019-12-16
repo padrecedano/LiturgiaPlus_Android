@@ -5,6 +5,8 @@ import android.text.Spanned;
 
 import org.deiverbum.app.utils.Utils;
 
+import static org.deiverbum.app.utils.Constants.SEPARADOR;
+
 public class HomiliaCompleta {
     public String padre;
     public int id_homilia;
@@ -29,10 +31,13 @@ public class HomiliaCompleta {
     public Spanned getTexto() {
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
         Spanned str = Utils.fromHtml(texto);
-        //ssb.append(str);
-        //str=Utils.toSmallSize(str);
         return str;
-        //return texto;
+    }
+
+    public Spanned getTextoLimpio() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        Spanned str = Utils.fromHtml(texto.replaceAll(SEPARADOR, ""));
+        return str;
     }
 
     public void setTexto(String texto) {

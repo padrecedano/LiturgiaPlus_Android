@@ -5,8 +5,10 @@ public class Intermedia {
     private Salmodia salmodia;
     private LecturaBreve lecturaBreve;
     private String oracion;
-    private int hora;
 
+    //private int hora;
+    public Intermedia() {
+    }
     public Himno getHimno() {
         return himno;
     }
@@ -38,7 +40,7 @@ public class Intermedia {
     public void setOracion(String oracion) {
         this.oracion = oracion;
     }
-
+/*
     public int getHora() {
         return hora;
     }
@@ -46,4 +48,5 @@ public class Intermedia {
     public void setHora(int hora) {
         this.hora = hora;
     }
+    */
 }

@@ -14,6 +14,13 @@ import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.text.style.StyleSpan;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Locale;
+
 import static android.graphics.Typeface.BOLD;
 import static org.deiverbum.app.utils.Constants.BR;
 import static org.deiverbum.app.utils.Constants.BRS;
@@ -38,6 +45,7 @@ public final class Utils {
     public static final float H3 = 1.4f;
     public static final float H2 = 1.7f;
     public static final float H4 = 1.1f;
+
     private static Context context;
     private static ForegroundColorSpan liturgicalRed = new ForegroundColorSpan(Color.parseColor("#A52A2A")); // from a color int
     public static final String SALUDO_OFICIO = toRed("V.") + " Señor, abre mis labios." + LS +
@@ -46,6 +54,7 @@ public final class Utils {
         Utils.context = context;
 
     }
+
 
     public static SpannableStringBuilder formatTitle(String sOrigen) {
         SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
@@ -495,6 +504,7 @@ public final class Utils {
                 .replace("≀", BR + NBSP_4 + NBSP_4)
                 .replace("~", BR)
                 .replace("§", BRS)
+                .replace("∸", BRS)
                 .replace("¦", NBSP_4);
 
 
@@ -572,7 +582,10 @@ public final class Utils {
                 .replace("\"", "")
                 .replace("\'", "")
                 .replace("“", "")
-                .replace("”", "");
+                .replace("”", "")
+                .replace("(", "")
+                .replace(")", "")
+                .replace("[...]", "");
 
 
         return sFormateado;
@@ -597,7 +610,7 @@ public final class Utils {
      * @return Una cadena con el responsorio completo, con sus respectivos V. y R.
      */
 
-    public static String getResponsorio(String respArray[], int nForma) {
+    public static String getResponsorio(String[] respArray, int nForma) {
         String sResponsorio = ERR_RESPONSORIO + BR + "Tamaño del responsorio: " + respArray.length + " Código forma: " + nForma + BR;
         String codigoForma = String.valueOf(nForma);
         //String errMessage=ERR_RESPONSORIO + BR + "Tamaño del responsorio: " + respArray.length + " Código forma: " +nForma+ BR;
@@ -688,7 +701,7 @@ public final class Utils {
      * @return Una cadena con el responsorio completo, con sus respectivos V. y R.
      */
 
-    public static String getResponsorioForReader(String respArray[], int nForma) {
+    public static String getResponsorioForReader(String[] respArray, int nForma) {
         String sResponsorio = ERR_RESPONSORIO + BR + "Tamaño del responsorio: " + respArray.length + " Código forma: " + nForma + BR;
         String codigoForma = String.valueOf(nForma);
         switch (nForma) {
@@ -794,5 +807,71 @@ public final class Utils {
         return fromHtml(PADRENUESTRO);
     }
 
+    /**
+     * Método que devuelve la fecha del sistema
+     *
+     * @return Una cadena con la fecha
+     */
+
+    public static String getHoy() {
+        Date newDate = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        return format.format(new Date());
+    }
+
+    /**
+     * Método que devuelve la fecha del sistema en forma legible
+     *
+     * @return Una cadena con la fecha
+     */
+
+
+    public static String getFecha() {
+        Date newDate = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("dd 'de' MMMM yyyy", Locale.getDefault());
+        return format.format(new Date());
+    }
+
+
+    /**
+     * Método que devuelve la fecha del sistema en forma MMDD para santoral
+     *
+     * @return Una cadena con la fecha
+     */
+
+    public static String getHoyYYYYMM() {
+        Date newDate = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMM", Locale.getDefault());
+        int year = Calendar.getInstance().get(Calendar.YEAR);
+        return format.format(new Date());
+    }
+
+    public static int getHoyDD() {
+        Date newDate = new Date(System.currentTimeMillis());
+        SimpleDateFormat format = new SimpleDateFormat("dd", Locale.getDefault());
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        int dayOfWeek = c.get(Calendar.DAY_OF_WEEK);
+        return dayOfWeek;
+        //return LocalDate.now().getDayOfWeek().ordinal();
+        //return format.format(new Date());
+    }
+
+    public static String getLongDate(String dateString) {
+        SimpleDateFormat longFormat =
+                new SimpleDateFormat("EEEE d 'de' MMMM 'de' yyyy", new Locale("es", "ES"));
+        DateFormat df = new SimpleDateFormat("yyyyMMdd");
+        String mLongDate = "";
+        Date mDate = null;
+        try {
+            mDate = df.parse(dateString);
+            mLongDate = longFormat.format(mDate);
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return mLongDate;
+    }
 
 }

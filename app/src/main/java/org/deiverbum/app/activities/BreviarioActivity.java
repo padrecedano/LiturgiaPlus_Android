@@ -1,16 +1,23 @@
 package org.deiverbum.app.activities;
 
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.Rect;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
+import android.view.View;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.snackbar.Snackbar;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.data.BreviarioDataModel;
 import org.deiverbum.app.data.BreviarioRecyclerAdapter;
-import org.deiverbum.app.gui.AutoFitGridLayoutManager;
-import org.deiverbum.app.utils.UtilsOld;
+import org.deiverbum.app.utils.Utils;
 
 import java.util.ArrayList;
 
@@ -18,41 +25,23 @@ public class BreviarioActivity extends AppCompatActivity
         implements BreviarioRecyclerAdapter.ItemListener {
 
     private static final String TAG = "BreviarioActivity";
-    //   private String sHoy = getFecha();
-    private UtilsOld utilClass;
-    private String strFechaHoy;
     RecyclerView recyclerView;
     ArrayList<BreviarioDataModel> arrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        utilClass = new UtilsOld();
         setContentView(R.layout.activity_breviario);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        toolbar.setSubtitle(utilClass.getFecha());
+        toolbar.setSubtitle(Utils.getFecha());
 
         recyclerView = findViewById(R.id.rv_Breviario);
 
         arrayList = new ArrayList<BreviarioDataModel>();
         int colorGrupo1 = getResources().getColor(R.color.color_fondo_grupo1);
         int colorGrupo2 = getResources().getColor(R.color.color_fondo_grupo2);
-        int colorGrupo3 = getResources().getColor(R.color.color_fondo_grupo3);
-        int colorOficio = getResources().getColor(R.color.color_breviario_oficio_bg);
-        int colorLaudes = getResources().getColor(R.color.color_breviario_laudes_bg);
-
-        int colorLecturas = getResources().getColor(R.color.colorMain_lecturas_img);
-        int colorEvangelio = getResources().getColor(R.color.colorMain_evangelio_img);
-        int colorSantos = getResources().getColor(R.color.colorSantos);
-
-        int colorCalendario = getResources().getColor(R.color.colorCalendario);
-        int colorOraciones = getResources().getColor(R.color.colorOraciones);
-        int colorMas = getResources().getColor(R.color.colorMain_img_mas);
-        int colorTransparente = getResources().getColor(R.color.transparent);
-        //Drawable bg          = findViewById(R.id.bg);
-
 
         arrayList.add(new BreviarioDataModel("Oficio+Laudes", colorGrupo1, "M"));
         arrayList.add(new BreviarioDataModel("Oficio", colorGrupo1, "O"));
@@ -66,15 +55,15 @@ public class BreviarioActivity extends AppCompatActivity
         arrayList.add(new BreviarioDataModel("Completas",  colorGrupo1, "C"));
         arrayList.add(new BreviarioDataModel("Más...", colorGrupo1, "+"));
 
-
         BreviarioRecyclerAdapter adapter = new BreviarioRecyclerAdapter(this, arrayList, this);
         recyclerView.setAdapter(adapter);
 
+        RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
+        recyclerView.setLayoutManager(mLayoutManager);
 
-        AutoFitGridLayoutManager layoutManager = new AutoFitGridLayoutManager(this, 200);
-        recyclerView.setLayoutManager(layoutManager);
-        //final TextView mTextview = findViewById(R.id.txt_container);
-        //mTextview.setText(utilClass.getFecha()+utilClass.getAppInfo());
+        recyclerView.addItemDecoration(new BreviarioActivity.GridSpacingItemDecoration(3, dpToPx(-1), true));
+
+        recyclerView.setLayoutManager(mLayoutManager);
 
 
     }
@@ -83,8 +72,6 @@ public class BreviarioActivity extends AppCompatActivity
     @Override
     public void onItemClick(BreviarioDataModel item) {
         Intent i;
-        //utilClass.setFabric(item.text, TAG, strFechaHoy);
-
         switch (item.text) {
 
             case "Oficio+Laudes":
@@ -128,8 +115,8 @@ public class BreviarioActivity extends AppCompatActivity
                 break;
 
             case "Más...":
-                i = new Intent(BreviarioActivity.this, BreviarioMasActivity.class);
-                startActivity(i);
+                Snackbar.make(findViewById(android.R.id.content), "Esta opción estará disponible en próximas versiones de la Liturgia+, DM", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
                 break;
 
 
@@ -137,5 +124,49 @@ public class BreviarioActivity extends AppCompatActivity
         }
     }
 
+    /**
+     * Converting dp to pixel
+     */
+    private int dpToPx(int dp) {
+        Resources r = getResources();
+        return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics()));
+    }
 
+    /**
+     * RecyclerView item decoration - give equal margin around grid item
+     */
+    public class GridSpacingItemDecoration extends RecyclerView.ItemDecoration {
+
+        private int spanCount;
+        private int spacing;
+        private boolean includeEdge;
+
+        public GridSpacingItemDecoration(int spanCount, int spacing, boolean includeEdge) {
+            this.spanCount = spanCount;
+            this.spacing = spacing;
+            this.includeEdge = includeEdge;
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
+            int position = parent.getChildAdapterPosition(view); // item position
+            int column = position % spanCount; // item column
+
+            if (includeEdge) {
+                outRect.left = spacing - column * spacing / spanCount; // spacing - column * ((1f / spanCount) * spacing)
+                outRect.right = (column + 1) * spacing / spanCount; // (column + 1) * ((1f / spanCount) * spacing)
+
+                if (position < spanCount) { // top edge
+                    outRect.top = spacing;
+                }
+                outRect.bottom = spacing; // item bottom
+            } else {
+                outRect.left = column * spacing / spanCount; // column * ((1f / spanCount) * spacing)
+                outRect.right = spacing - (column + 1) * spacing / spanCount; // spacing - (column + 1) * ((1f /    spanCount) * spacing)
+                if (position >= spanCount) {
+                    outRect.top = spacing; // item top
+                }
+            }
+        }
+    }
 }

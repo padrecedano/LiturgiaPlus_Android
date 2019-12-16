@@ -17,7 +17,14 @@ public class Conclusion {
     @Expose
     private String antVirgen;
 
-    public SpannableStringBuilder getBendicion() {
+    public Conclusion() {
+    }
+
+    public String getBendicion() {
+        return bendicion;
+    }
+
+    public SpannableStringBuilder getBendicionSpan() {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         ssb.append(Utils.toRed("V. "));
         ssb.append("El Señor todopoderoso nos conceda una noche tranquila y una santa muerte.");
@@ -35,8 +42,12 @@ public class Conclusion {
         this.bendicion = bendicion;
     }
 
-    public Spanned getAntVirgen() {
+    public Spanned getAntVirgenSpan() {
         return Utils.fromHtml(antVirgen);
+    }
+
+    public String getAntVirgen() {
+        return antVirgen;
     }
 
     public void setAntVirgen(String antVirgen) {

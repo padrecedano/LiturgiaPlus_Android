@@ -10,6 +10,9 @@ public class Completas {
     private String oracion;
     private Conclusion conclusion;
 
+    public Completas() {
+    }
+
     public RitosIniciales getRitosIniciales() {
         return ritosIniciales;
     }
@@ -65,5 +68,6 @@ public class Completas {
     public void setConclusion(Conclusion conclusion) {
         this.conclusion = conclusion;
     }
+
 
 }

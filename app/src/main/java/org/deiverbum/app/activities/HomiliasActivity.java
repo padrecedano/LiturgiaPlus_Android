@@ -1,23 +1,24 @@
 package org.deiverbum.app.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
-import android.text.Spanned;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
@@ -25,9 +26,9 @@ import com.google.gson.Gson;
 import org.deiverbum.app.R;
 import org.deiverbum.app.model.HomiliaCompleta;
 import org.deiverbum.app.model.Liturgia;
+import org.deiverbum.app.model.MetaLiturgia;
 import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
-import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
 import org.json.JSONException;
@@ -42,16 +43,17 @@ import static org.deiverbum.app.utils.Constants.URL_HOMILIAS;
 
 public class HomiliasActivity extends AppCompatActivity {
     private static final String TAG = "HomiliasActivity";
-    Spanned strContenido;
-    String str;
     ZoomTextView mTextView;
-    private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFechaHoy;
     private TTS tts;
     private StringBuilder sbReader;
     private SpannableStringBuilder ssb;
-    private String sFormateado;
+    JsonObjectRequest jsonObjectRequest;
+    private Liturgia mLiturgia;
+    private ProgressBar progressBar;
+    private Menu menu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,58 +62,52 @@ public class HomiliasActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-
-
         /*Variables*/
-        utilClass = new UtilsOld();
         requestQueue = Volley.newRequestQueue(this);
-        strFechaHoy = (this.getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
-        final ProgressBar progressBar = findViewById(R.id.progressBar);
+        strFechaHoy = (this.getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : Utils.getHoy();
+        progressBar = findViewById(R.id.progressBar);
 
         mTextView = findViewById(R.id.tv_Zoomable);
-        mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+        mTextView.setText(Utils.fromHtml(PACIENCIA));
+        sbReader = new StringBuilder();
+        launchVolley();
+    }
 
-
-        JsonObjectRequest sRequest = new JsonObjectRequest(Request.Method.GET, URL_HOMILIAS + strFechaHoy, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject sResponse) {
-                        progressBar.setVisibility(View.INVISIBLE);
-                        //String sFormateado=getResponseData(sResponse);
-
-                        strContenido = getResponseData(sResponse);
-                        //strContenido=Utils.doFormat(strContenido);
-                        mTextView.setText(strContenido);
-
-                        //strContenido=Utils.fromHtml(sbReader.toString());//
-                        //str=strContenido.toString().replaceAll("<p>", "|<p>");
-
-                        //Log.d(TAG,URL_HOMILIAS+strFechaHoy);
-                        //strContenido = UtilsOld.fromHtml(sResponse);
+    public void launchVolley() {
+        requestQueue = Volley.newRequestQueue(this);
+        jsonObjectRequest = new JsonObjectRequest(
+                Request.Method.GET, URL_HOMILIAS + strFechaHoy, null,
+                response -> {
+                    try {
+                        Gson gson = new Gson();
+                        JSONObject mJson = response.getJSONObject("liturgia");
+                        mLiturgia = gson.fromJson(mJson.toString(), Liturgia.class);
+                        showData();
+                    } catch (JSONException e) {
+                        mTextView.setText(e.getMessage());
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
-                progressBar.setVisibility(View.INVISIBLE);
-                mTextView.setText(UtilsOld.fromHtml(sError));
-                strContenido = UtilsOld.fromHtml("Error");
+                },
+                error -> {
+                    String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
+                    mTextView.setText(Utils.fromHtml(sError));
+                    progressBar.setVisibility(View.INVISIBLE);
+                }
+        );
 
-            }
-        });
-
-
-        sRequest.setRetryPolicy(new DefaultRetryPolicy(
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
                 MY_DEFAULT_TIMEOUT,
                 DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
-        requestQueue.add(sRequest);
+        requestQueue.add(jsonObjectRequest);
         progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
     }
@@ -127,9 +123,10 @@ public class HomiliasActivity extends AppCompatActivity {
                 return true;
 
             case R.id.item_voz:
-                String html = String.valueOf(Utils.fromHtml(sbReader.toString()));
-                String[] strPrimera = html.split(SEPARADOR);
-                tts = new TTS(getApplicationContext(), strPrimera);
+                String notQuotes = Utils.stripQuotation(sbReader.toString());
+                String html = String.valueOf(Utils.fromHtml(notQuotes));
+                String[] textParts = html.split(SEPARADOR);
+                tts = new TTS(getApplicationContext(), textParts);
                 return true;
 
             case R.id.item_calendario:
@@ -139,7 +136,6 @@ public class HomiliasActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -148,45 +144,41 @@ public class HomiliasActivity extends AppCompatActivity {
         }
     }
 
+    private void showData() {
+        ssb = new SpannableStringBuilder();
+        List<HomiliaCompleta> a = mLiturgia.getHomiliaCompleta();
+        MetaLiturgia meta = mLiturgia.getMetaLiturgia();
+        sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
+        sbReader.append(SEPARADOR);
+        sbReader.append(Utils.fromHtml("<p>HOMILÍAS</p>"));
+        sbReader.append(SEPARADOR);
 
-    protected SpannableStringBuilder getResponseData(JSONObject jsonDatos) {
-        Gson gson = new Gson();
-        String ant = getString(R.string.ant);
+        ssb.append(meta.getFecha());
+        ssb.append(Utils.LS2);
+        ssb.append(Utils.toH2(meta.getTiempoNombre()));
+        ssb.append(Utils.LS);
+        ssb.append(Utils.toH3(meta.getSemana()));
+        ssb.append(Utils.LS2);
+        ssb.append(Utils.toH3Red("HOMILÍAS"));
+        ssb.append(Utils.LS2);
 
-        JSONObject jsonObject = null;
-        try {
-            //jsonObject = new JSONObject(jsonDatos);
-            ssb = new SpannableStringBuilder();
-            sbReader = new StringBuilder();
-            Liturgia liturgia = gson.fromJson(String.valueOf(jsonDatos.getJSONObject("liturgia")), Liturgia.class);
+        for (HomiliaCompleta s : a) {
+            ssb.append(Utils.toH3Red(s.padre));
+            ssb.append(Utils.LS2);
+            //String text=s.getTexto();
+            ssb.append(s.getTextoLimpio());
+            ssb.append(Utils.LS2);
+            sbReader.append(s.padre);
+            sbReader.append(SEPARADOR);
+            sbReader.append(s.getTexto());
+            sbReader.append(SEPARADOR);
 
-            //Liturgia liturgia = gson.fromJson(String.valueOf(jsonObject.getJSONObject("liturgia")), Liturgia.class);
-            List<HomiliaCompleta> a = liturgia.getHomiliaCompleta();//.fromJson(jsonObject.getJSONObject("homiliaCompleta").toString(), HomiliaCompleta.class);
-
-            for (HomiliaCompleta s : a) {
-                Log.d(TAG, s.getPadre() + "++++");
-                ssb.append(Utils.toH3Red(s.padre));
-                ssb.append(Utils.LS2);
-                ssb.append(s.getTexto());
-                ssb.append(Utils.LS2);
-                sbReader.append(s.padre);
-                sbReader.append(SEPARADOR);
-                sbReader.append(s.getTexto());
-                sbReader.append(SEPARADOR);
-
-            }
-
-            //sbReader = new StringBuilder();
-            //JSONObject jsonBreviario = jsonDatos.getJSONObject("breviario");
-            //Liturgia liturgia = gson.fromJson(String.valueOf(jsonDatos), Liturgia.class);
-            //HomiliaCompleta hom = liturgia.homiliaCompleta;//.fromJson(jsonDatos, Homilia.class);
-
-        } catch (JSONException e) {
-            e.printStackTrace();
         }
+        progressBar.setVisibility(View.INVISIBLE);
+        mTextView.setText(ssb, TextView.BufferType.SPANNABLE);
 
-        return ssb;
+        if (sbReader.length() > 0) {
+            menu.findItem(R.id.item_voz).setVisible(true);
+        }
     }
-
-
 }

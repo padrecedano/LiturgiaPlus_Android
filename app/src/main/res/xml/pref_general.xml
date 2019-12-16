@@ -1,13 +1,47 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreference
-        android:defaultValue="true"
-        android:key="example_switch"
-        android:summary="@string/pref_description_social_recommendations"
-        android:title="@string/pref_title_social_recommendations" />
+        android:defaultValue="false"
+        android:key="invitatorio"
+        android:summary="@string/pref_description_invitatorio"
+        android:title="@string/pref_title_invitatorio" />
 
+    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
+     dismiss it. -->
+    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
+    <ListPreference
+        android:defaultValue="18"
+        android:entries="@array/pref_font_size_list_titles"
+        android:entryValues="@array/pref_font_size_list_values"
+        android:key="font_size"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+        android:summary="Selecciona el tamaño de letra por defecto"
+        android:title="@string/pref_title_font_size" />
+
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:enabled="false"
+        android:key="textos_biblicos"
+        android:summary="@string/pref_description_bible"
+        android:title="@string/pref_title_bible" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:enabled="false"
+        android:key="tema_simple"
+        android:summary="@string/pref_description_theme"
+        android:title="@string/pref_title_theme" />
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:enabled="false"
+        android:key="himnos"
+        android:summary="@string/pref_description_himno"
+        android:title="@string/pref_title_himno" />
     <!-- NOTE: EditTextPreference accepts EditText attributes. -->
-    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code. -->
+    <!-- NOTE: EditTextPreference's summary should be set to its value by the activity code.
     <EditTextPreference
         android:capitalize="words"
         android:defaultValue="@string/pref_default_display_name"
@@ -17,17 +51,13 @@
         android:selectAllOnFocus="true"
         android:singleLine="true"
         android:title="@string/pref_title_display_name" />
+-->
 
-    <!-- NOTE: Hide buttons to simplify the UI. Users can touch outside the dialog to
-         dismiss it. -->
-    <!-- NOTE: ListPreference's summary should be set to its value by the activity code. -->
-    <ListPreference
-        android:defaultValue="-1"
-        android:entries="@array/pref_example_list_titles"
-        android:entryValues="@array/pref_example_list_values"
-        android:key="example_list"
-        android:negativeButtonText="@null"
-        android:positiveButtonText="@null"
-        android:title="@string/pref_title_add_friends_to_messages" />
+    <Preference
+        android:enabled="true"
+        android:key="futuro"
+        android:selectable="false"
+        android:summary="* Opciones futuras" />
+
 
 </PreferenceScreen>

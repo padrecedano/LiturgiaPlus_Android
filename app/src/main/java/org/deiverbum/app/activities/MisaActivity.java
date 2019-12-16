@@ -2,13 +2,14 @@ package org.deiverbum.app.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.text.Spanned;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
@@ -20,7 +21,7 @@ import com.android.volley.toolbox.Volley;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.utils.TTS;
-import org.deiverbum.app.utils.UtilsOld;
+import org.deiverbum.app.utils.Utils;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
 
@@ -33,7 +34,6 @@ public class MisaActivity extends AppCompatActivity {
     private static final String TAG = "MisaActivity";
     Spanned strContenido;
     ZoomTextView mTextView;
-    private UtilsOld utilClass;
     private RequestQueue requestQueue;
     private String strFechaHoy;
     private TTS tts;
@@ -45,29 +45,28 @@ public class MisaActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         /*Variables*/
-        utilClass = new UtilsOld();
         requestQueue = Volley.newRequestQueue(this);
-        strFechaHoy = (this.getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
+        strFechaHoy = (this.getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : Utils.getHoy();
         final ProgressBar progressBar = findViewById(R.id.progressBar);
 
         mTextView = findViewById(R.id.tv_Zoomable);
-        mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
+        mTextView.setText(Utils.fromHtml(PACIENCIA));
 
         StringRequest sRequest = new StringRequest(Request.Method.GET, URL_MISA + strFechaHoy,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String sResponse) {
                         progressBar.setVisibility(View.INVISIBLE);
-                        mTextView.setText(UtilsOld.fromHtml(sResponse));
-                        strContenido = UtilsOld.fromHtml(sResponse);
+                        mTextView.setText(Utils.fromHtml(sResponse));
+                        strContenido = Utils.fromHtml(sResponse);
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
                 String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
                 progressBar.setVisibility(View.INVISIBLE);
-                mTextView.setText(UtilsOld.fromHtml(sError));
-                strContenido = UtilsOld.fromHtml("Error");
+                mTextView.setText(Utils.fromHtml(sError));
+                strContenido = Utils.fromHtml("Error");
 
             }
         });

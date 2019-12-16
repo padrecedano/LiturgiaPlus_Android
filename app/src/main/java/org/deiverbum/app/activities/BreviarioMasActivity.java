@@ -1,76 +1,38 @@
 package org.deiverbum.app.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.text.Spanned;
-import android.view.View;
-import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import org.deiverbum.app.R;
-import org.deiverbum.app.data.CustomItemClickListener;
-import org.deiverbum.app.data.RVAdapter;
-import org.deiverbum.app.model.Person;
-import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.ZoomTextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class BreviarioMasActivity extends AppCompatActivity {
-    private static final String TAG = "CompletasActivity";
-    Spanned strContenido;
     ZoomTextView mTextView;
-    private UtilsOld utilClass;
-    private RequestQueue requestQueue;
-    private String strFechaHoy;
-    private List<Person> persons;
-    private RecyclerView rv;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mixto);
-        setContentView(R.layout.recyclerview_activity);
+        setContentView(R.layout.activity_breviario_mas);
 
-        rv = findViewById(R.id.rv);
+        //setContentView(R.layout.activity_breviario_mas);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
-        LinearLayoutManager llm = new LinearLayoutManager(this);
-        rv.setLayoutManager(llm);
-        rv.setHasFixedSize(true);
-
-        initializeData();
-        initializeAdapter();
-    }
-
-    private void initializeData() {
-        persons = new ArrayList<>();
-        persons.add(new Person("Rosario: Misterios Gloriosos", "domingos y miércoles", R.drawable.ic_about));
-        persons.add(new Person("Rosario: Misterios Gozosos", "lunes y sábados", R.drawable.ic_author));
-        persons.add(new Person("Rosario: Misterios Dolorosos", "martes y viernes", R.drawable.ic_about));
-        persons.add(new Person("Rosario: Misterios Luminosos", "jueves", R.drawable.ic_help));
-    }
-
-    private void initializeAdapter() {
-        RVAdapter adapter = new RVAdapter(persons, new CustomItemClickListener() {
+        mTextView = findViewById(R.id.tv_Zoomable);
+        mTextView.setText("La idea de este módulo es dar la posibilidad de elegir una hora del breviario basándonos en el día, por ejemplo: «Laudes del Martes II del Tiempo Ordinario», para los laudes de ese día, independientemente de la memoria o fiesta que se celebre.\n\nEstará disponible en próximas versiones de la App, DM");
+        /*
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemClick(View v, int position) {
-                Toast.makeText(BreviarioMasActivity.this, "Clicked Item: " + position, Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(getApplicationContext(), RosarioActivity.class);
-                i.putExtra("EXTRA_PAGE", 2);
-                startActivity(i);
-
-                //Intent i = new Intent(getApplicationContext(), RosarioActivity.class);
-                //startActivity(i);
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
             }
         });
-        rv.setAdapter(adapter);
+        */
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
-
 
 }

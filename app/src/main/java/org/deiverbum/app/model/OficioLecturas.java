@@ -10,20 +10,46 @@ public class OficioLecturas {
     private Patristica patristica;
     private TeDeum teDeum;
 
-    public SpannableStringBuilder getResponsorio() {
-        String[] textParts = responsorio.split("\\|");
+
+    public OficioLecturas() {
+    }
+
+    public String getResponsorio() {
+        return responsorio;
+    }
+
+    public SpannableStringBuilder getResponsorioForRead() {
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
-        if (textParts.length == 2) {
-            ssb.append(Utils.toRed("V. "));
-            ssb.append(textParts[0]);
-            ssb.append(Utils.LS);
-            ssb.append(Utils.toRed("R. "));
-            ssb.append(textParts[1]);
+
+        String r = "";
+        if (responsorio.contains("|")) {
+            r = responsorio.replaceAll("\\|", "<br>");
+        } else {
+            r = responsorio;
+        }
+        ssb.append(Utils.fromHtml("<p>" + r + "</p>"));
+
+        return ssb;
+    }
+
+    public SpannableStringBuilder getResponsorioSpan() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+
+        if (responsorio.contains("|")) {
+            String[] textParts = responsorio.split("\\|");
+            if (textParts.length == 2) {
+                ssb.append(Utils.toRed("V. "));
+                ssb.append(textParts[0]);
+                ssb.append(Utils.LS);
+                ssb.append(Utils.toRed("R. "));
+                ssb.append(textParts[1]);
+            } else {
+                ssb.append(responsorio);
+
+            }
         } else {
             ssb.append(responsorio);
-
         }
-
 
         return ssb;//responsorio;
     }

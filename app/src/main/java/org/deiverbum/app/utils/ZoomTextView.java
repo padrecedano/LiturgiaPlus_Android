@@ -1,45 +1,39 @@
 package org.deiverbum.app.utils;
 
 
-import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.annotation.NonNull;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-import android.view.ScaleGestureDetector;
 import android.view.View;
-import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 // Created by cedano on 19/1/18.
 
 
-public class ZoomTextView extends android.support.v7.widget.AppCompatTextView implements View.OnTouchListener {
+public class ZoomTextView extends androidx.appcompat.widget.AppCompatTextView implements View.OnTouchListener {
     final static float STEP = 200;
     private static final String TAG = "ZoomTextView";
-    TextView mTextView, mtxtRatio2, mtxtRatio3, mtxtRatio4;
     float mRatio = 13.0f;
     int mBaseDist;
     float mBaseRatio;
-    float fontsize = 13;
-    private ScaleGestureDetector mScaleDetector;
-    private float mScaleFactor = 1.f;
-    private float defaultSize;
     private float zoomLimit = 7.0f;
 
 
     public ZoomTextView(Context context) {
         super(context);
-        //    initialize();
+        this.setTextIsSelectable(true);
     }
 
     public ZoomTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        //     initialize();
+        this.setTextIsSelectable(true);
     }
 
     public ZoomTextView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        //       initialize();
+        this.setTextIsSelectable(true);
     }
 
     /*
@@ -63,24 +57,8 @@ public class ZoomTextView extends android.support.v7.widget.AppCompatTextView im
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
-//
 
-    //@Override
-
-    //public boolean onTouchEvent(@NonNull MotionEvent ev) {
-
-    //super.onTouchEvent(ev);
-
-    //mScaleDetector.onTouchEvent(ev);
-
-    //return true;
-
-    //}
-
-    @SuppressLint("ClickableViewAccessibility")
-    @Override
     public boolean onTouchEvent(@NonNull MotionEvent event) {
-        //Log.d(TAG,"----------ok: "+this.getTextSize());
         if (event.getPointerCount() == 2) {
             int action = event.getAction();
             int pureaction = action & MotionEvent.ACTION_MASK;
@@ -93,9 +71,10 @@ public class ZoomTextView extends android.support.v7.widget.AppCompatTextView im
                 mRatio = Math.min(1024.0f, Math.max(0.1f, mBaseRatio * multi));
                 this.setTextSize(mRatio + 13);
             }
+        } else {
+            return super.onTouchEvent(event);
         }
         return true;
-
     }
 
     int getDistance(MotionEvent event) {
@@ -105,9 +84,22 @@ public class ZoomTextView extends android.support.v7.widget.AppCompatTextView im
     }
 
     public boolean onTouch(View v, MotionEvent event) {
-        // TODO Auto-generated method stub
         return false;
     }
 
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+    }
+
+
+    @Override
+    public void setTextIsSelectable(boolean selectable) {
+        super.setTextIsSelectable(selectable);
+    }
+
+    @Override
+    public boolean isTextSelectable() {
+        return super.isTextSelectable();
+    }
 
 }

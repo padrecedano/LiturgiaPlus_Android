@@ -8,8 +8,8 @@ import org.deiverbum.app.utils.Utils;
 public class Biblica {
     private String libro;
     private String capitulo;
-    private String vInicial;
-    private String vFinal;
+    private String versoInicial;
+    private String versoFinal;
     private String tema;
     private String texto;
     private String ref;
@@ -31,20 +31,22 @@ public class Biblica {
         this.capitulo = capitulo;
     }
 
-    public String getInicial() {
-        return vInicial;
+    public String getVersoInicial() {
+        return versoInicial;
+    }
+    //@PropertyName("v_Inicial")
+
+    public void setVersoInicial(String versoInicial) {
+        this.versoInicial = versoInicial;
     }
 
-    public void setInicial(String vInicial) {
-        this.vInicial = vInicial;
+    public String getVersoFinal() {
+        return versoFinal;
     }
+    //@PropertyName("v_Final")
 
-    public String getFinal() {
-        return vFinal;
-    }
-
-    public void setFinal(String vFinal) {
-        this.vFinal = vFinal;
+    public void setVersoFinal(String versoFinal) {
+        this.versoFinal = versoFinal;
     }
 
     public String getTema() {
@@ -55,7 +57,7 @@ public class Biblica {
         this.tema = tema;
     }
 
-    public Spanned getTexto() {
+    public Spanned getTextoSpan() {
         Spanned str = Utils.fromHtml(Utils.getFormato(texto));
 
         return str;
@@ -65,6 +67,13 @@ public class Biblica {
     public void setTexto(String texto) {
         this.texto = texto;
     }
+
+    public String getTexto() {
+
+
+        return texto;
+    }
+
 
     public String getRef() {
         return ref;

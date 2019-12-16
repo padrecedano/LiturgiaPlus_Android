@@ -9,6 +9,8 @@ public class TeDeum {
     public boolean status;
     public String texto;
 
+    public TeDeum() {
+    }
     public boolean isStatus() {
         return status;
     }
@@ -17,13 +19,18 @@ public class TeDeum {
         this.status = status;
     }
 
-    public Spanned getTexto() {
+    public String getTexto() {
+        return texto;
+    }
+
+    public Spanned getTextoSpan() {
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
         if (status) {
             ssb.append(getHeader());
             ssb.append(Utils.LS2);
 
             ssb.append(Utils.getTeDeum());
+
             //String teDeum = !isStatus() ? Utils.getTeDeum() : "";
         }
         return ssb;//Utils.sbHtml(ssb);//Utils.fromHtml(teDeum);

@@ -30,7 +30,9 @@ public class TTS {
         tts = new TextToSpeech(context, new TextToSpeech.OnInitListener() {
             @Override
             public void onInit(int status) {
-                MAXIMO = TextToSpeech.getMaxSpeechInputLength();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+                    MAXIMO = TextToSpeech.getMaxSpeechInputLength();
+                }
                 if (status == TextToSpeech.SUCCESS) {
                     final Locale locSpanish = new Locale("spa", "ESP");
                     int result = tts.setLanguage(locSpanish);

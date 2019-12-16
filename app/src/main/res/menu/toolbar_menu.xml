@@ -9,6 +9,7 @@ tools:context=".activities.BreviarioActivity">
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:icon="@drawable/ic_play"
+    android:visible="false"
     android:title="@string/leer"
     app:showAsAction="ifRoom" />
 <item

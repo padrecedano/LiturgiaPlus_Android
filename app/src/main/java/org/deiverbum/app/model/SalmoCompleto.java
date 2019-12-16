@@ -38,6 +38,7 @@ public class SalmoCompleto {
         this.antifona = antifona;
     }
 
+
     public SpannableStringBuilder getRef() {
         SpannableStringBuilder ssb = new SpannableStringBuilder(Utils.fromHtml(ref));
         return Utils.ssbRed(ssb);

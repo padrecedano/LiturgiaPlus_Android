@@ -6,13 +6,29 @@ import android.text.Spanned;
 import org.deiverbum.app.utils.Utils;
 
 public class Oficio {
-    public Invitatorio invitatorio;
-    public Himno himno;
-    public Salmodia salmodia;
-    public String oracion;
+    private Invitatorio invitatorio;
+    private Himno himno;
+    private Salmodia salmodia;
+    private String oracion;
+    private String responsorio;
+    private OficioLecturas oficioLecturas;
+    private TeDeum teDeum;
 
-    public String responsorio;
-    public OficioLecturas oficioLecturas;
+    public Oficio() {
+    }
+    //public Oficio (Himno himno) {}
+
+    public Himno getHimno() {
+        return himno;
+    }
+
+    public void setHimno(Himno himno) {
+        this.himno = himno;
+    }
+
+    public String getResponsorio() {
+        return responsorio;
+    }
 
     public Invitatorio getInvitatorio() {
         return invitatorio;
@@ -22,7 +38,7 @@ public class Oficio {
         this.invitatorio = invitatorio;
     }
 
-    public SpannableStringBuilder getResponsorio() {
+    public SpannableStringBuilder getResponsorioSpan() {
         String[] textParts = responsorio.split("\\|");
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
         if (textParts.length == 2) {
@@ -40,17 +56,14 @@ public class Oficio {
         return ssb;//responsorio;
     }
 
+    public Spanned getOracionSpan() {
+        return Utils.fromHtml(oracion);
+    }
+
     public void setResponsorio(String responsorio) {
         this.responsorio = responsorio;
     }
 
-    public Himno getHimno() {
-        return himno;
-    }
-
-    public void setHimno(Himno himno) {
-        this.himno = himno;
-    }
 
     public Salmodia getSalmodia() {
         return salmodia;
@@ -68,12 +81,19 @@ public class Oficio {
         this.oficioLecturas = oficioLecturas;
     }
 
-    public Spanned getOracion() {
-        return Utils.fromHtml(oracion);
+    public String getOracion() {
+        return oracion;
+    }
+
+    public TeDeum getTeDeum() {
+        return teDeum;
     }
 
     public void setOracion(String oracion) {
         this.oracion = oracion;
     }
 
+    public void setTeDeum(TeDeum teDeum) {
+        this.teDeum = teDeum;
+    }
 }

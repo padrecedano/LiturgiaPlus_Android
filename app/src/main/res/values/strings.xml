@@ -2,43 +2,25 @@
     <string name="app_name">Liturgia+</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Liturgia+</string>
-    <string name="nav_header_subtitle">padre.cedano@gmail.com</string>
+    <string name="nav_header_subtitle">v. 2019.2 [Leviticus]\npadre.cedano@gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
 
-
-    <string name="e_mail">padre.cedano@gmail.com</string>
-    <string name="ol">Oficio de Lecturas</string>
     <string name="la">Laudes</string>
-    <string name="hi">Hora Intermedia</string>
-    <string name="vi">Vísperas</string>
-    <string name="co">Completas</string>
-    <string name="lbl_misa">Misa</string>
     <string name="lbl_misa_hoy">Misa de hoy</string>
     <string name="lbl_homilias_hoy">Homilías para hoy</string>
     <string name="lbl_comentarios_hoy">Comentarios Evangelio</string>
     <string name="lbl_santo_hoy">Santo del día</string>
-    <string name="lbl_rituales">Rituales</string>
     <string name="all_calendar">Calendario</string>
-    <string name="ot">Otras</string>
     <string name="title_activity_misa">Misa</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="title_activity_homilias">Homilías</string>
     <string name="title_activity_oficio">Oficio</string>
     <string name="title_activity_laudes">Laudes</string>
     <string name="title_activity_tercia">Tercia</string>
     <string name="title_activity_visperas">Vísperas</string>
-    <string name="title_activity_breviario2">Breviario</string>
-    <string name="title_activity_evangelio">Comentarios Evangelio</string>
     <string name="generic_server_down">El servidor está fuera de servicio. Intenta más tarde.</string>
-    <string name="no_internet">No estás <![CDATA[<font color="Red">conectado</font>]]> a internet</string>
     <string name="generic_error">Ha ocurrido un error desconocido. Intenta más tarde.</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="title_activity_santo">Santo del Día</string>
     <string name="title_activity_oraciones">Oraciones</string>
-    <string name="default_notification_channel_id">ch22</string>
     <string name="leer">Leer</string>
     <string name="title_activity_breviario">Breviario</string>
     <string name="title_activity_calendario">Calendario</string>
@@ -52,10 +34,8 @@
     <string name="title_activity_lecturas">Lecturas</string>
     <string name="title_activity_comentarios">Comentarios</string>
     <string name="title_activity_menu">info</string>
-    <string name="himno">HIMNO</string>
     <string name="ant"><![CDATA[<font color="#A52A2A">Ant. </font>]]></string>
     <string name="title_activity_rosario">Santo Rosario</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="title_activity_settings">Configuración</string>
 
     <!-- Strings related to Settings -->
@@ -63,64 +43,64 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
 
-    <string name="pref_title_social_recommendations">Enable social recommendations</string>
-    <string name="pref_description_social_recommendations">Recommendations for people to contact
-        based on your message history
+    <string name="pref_title_invitatorio">Múltiples Invitatorios</string>
+    <string name="pref_description_invitatorio">Activar para usar el Invitatorio alternando entre los salmos 94, 99, 66 y 23
     </string>
+    <string name="pref_title_theme">Tema simple (sin colores) *</string>
+    <string name="pref_description_theme">Activar para usar en tema monocolor en la pantalla principal</string>
+    <string name="pref_title_bible">Textos de la Biblia de Jerusalén *</string>
+    <string name="pref_description_bible">Activar para mostrar los textos bíblicos de la Biblia de Jerusalén</string>
+    <string name="pref_title_himno">Himnos de Liturgia Horarum traducidos por F. Arocena *</string>
+    <string name="pref_description_himno">Activar para usar los himnos de Liturgia Horarum, traducidos al castellano por Félix Arocena.</string>
 
-    <string name="pref_title_display_name">Display name</string>
-    <string name="pref_default_display_name">John Smith</string>
-
-    <string name="pref_title_add_friends_to_messages">Add friends to messages</string>
-    <string-array name="pref_example_list_titles">
-        <item>Always</item>
-        <item>When possible</item>
-        <item>Never</item>
+    <!--
+        <string name="pref_title_display_name">Display name</string>
+        <string name="pref_default_display_name">John Smith</string>
+ -->
+    <string name="pref_title_font_size">Tamaño de letra por defecto</string>
+    <string-array name="pref_font_size_list_titles">
+        <item>Pequeño</item>
+        <item>Normal</item>
+        <item>Mediano</item>
+        <item>Grande</item>
+        <item>Extra Grande</item>
+        <item>Enorme</item>
+        <item>Gigante</item>
     </string-array>
-    <string-array name="pref_example_list_values">
-        <item>1</item>
-        <item>0</item>
-        <item>-1</item>
-    </string-array>
-
-    <!-- Example settings for Data & Sync -->
-    <string name="pref_header_data_sync">Data &amp; sync</string>
-
-    <string name="pref_title_sync_frequency">Sync frequency</string>
-    <string-array name="pref_sync_frequency_titles">
-        <item>15 minutes</item>
-        <item>30 minutes</item>
-        <item>1 hour</item>
-        <item>3 hours</item>
-        <item>6 hours</item>
-        <item>Never</item>
-    </string-array>
-    <string-array name="pref_sync_frequency_values">
-        <item>15</item>
-        <item>30</item>
-        <item>60</item>
-        <item>180</item>
-        <item>360</item>
-        <item>-1</item>
+    <string-array name="pref_font_size_list_values">
+        <item>14</item>
+        <item>18</item>
+        <item>22</item>
+        <item>26</item>
+        <item>32</item>
+        <item>40</item>
+        <item>50</item>
     </string-array>
 
-    <string-array name="list_preference_entries">
-        <item>Entry 1</item>
-        <item>Entry 2</item>
-        <item>Entry 3</item>
-    </string-array>
+    <!-- Example settings for Data & Sync
+<string name="pref_header_data_sync">Data &amp; sync</string>
 
-    <string-array name="list_preference_entry_values">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-    </string-array>
+<string name="pref_title_sync_frequency">Sync frequency</string>
+<string-array name="pref_sync_frequency_titles">
+    <item>15 minutes</item>
+    <item>30 minutes</item>
+    <item>1 hour</item>
+    <item>3 hours</item>
+    <item>6 hours</item>
+    <item>Never</item>
+</string-array>
+<string-array name="pref_sync_frequency_values">
+    <item>15</item>
+    <item>30</item>
+    <item>60</item>
+    <item>180</item>
+    <item>360</item>
+    <item>-1</item>
+</string-array>
 
-    <string-array name="multi_select_list_preference_default_value" />
-
-    <string name="pref_title_system_sync_settings">System sync settings</string>
-
-    <!-- Example settings for Notifications -->
+<string name="pref_title_system_sync_settings">System sync settings</string>
+-->
+    <!-- Example settings for Notifications
     <string name="pref_header_notifications">Notifications</string>
 
     <string name="pref_title_new_message_notifications">New message notifications</string>
@@ -131,8 +111,16 @@
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="action_add_favourite">Add to Favourites</string>
     <string name="action_play_next">Play Next</string>
-    <string name="backdrop_title">LOVE MUSIC</string>
-    <string name="backdrop_subtitle">This season top 20 albums</string>
+-->
+    <string name="title_activity_about">Sobre Liturgia+</string>
+    <string name="title_activity_thanks">Agradecimientos</string>
+    <string name="title_activity_help">Ayuda</string>
+    <string name="title_activity_otras_oraciones">Otras Oraciones</string>
+    <string name="title_activity_what_is_new">Novedades</string>
+    <string name="title_activity_privacy">Política de Privacidad</string>
+    <string name="title_activity_terms">Términos y Condiciones</string>
+    <string name="title_activity_author">Autor</string>
+    <string name="title_activity_preferences">Preferencias</string>
 
 
 </resources>

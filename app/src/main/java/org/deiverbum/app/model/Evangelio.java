@@ -7,6 +7,22 @@ public class Evangelio {
     public String ref;
     public String texto;
 
+    public String getRef() {
+        return ref;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
+    }
+
+    public String getTexto() {
+        return texto;
+    }
+
+    public void setTexto(String texto) {
+        this.texto = texto;
+    }
+
     public String getLibro() {
         return libro;
     }

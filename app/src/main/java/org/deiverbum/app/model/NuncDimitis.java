@@ -2,21 +2,26 @@ package org.deiverbum.app.model;
 
 import android.text.SpannableStringBuilder;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import org.deiverbum.app.utils.Utils;
 
 public class NuncDimitis {
 
-    @SerializedName("antifona")
-    @Expose
+    //@SerializedName("antifona")
+    //@Expose
     private String antifona;
-    @SerializedName("texto")
-    @Expose
+    //@SerializedName("texto")
+    //@Expose
     private String texto;
 
-    public SpannableStringBuilder getAntifona() {
+    public NuncDimitis() {
+    }
+
+    public String getAntifona() {
+        return antifona;
+
+    }
+
+    public SpannableStringBuilder getAntifonaSpan() {
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
 
         String preAnt = "Ant. ";

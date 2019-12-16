@@ -14,6 +14,8 @@ public class Patristica {
     public String ref;
     public String responsorio;
 
+    public Patristica() {
+    }
     public String getPadre() {
         return padre;
     }
@@ -46,9 +48,12 @@ public class Patristica {
         this.tema = tema;
     }
 
-    public Spanned getTexto() {
-        Spanned str = Utils.fromHtml(Utils.getFormato(texto));
+    public String getTexto() {
+        return texto;
+    }
 
+    public Spanned getTextoSpan() {
+        Spanned str = Utils.fromHtml(Utils.getFormato(texto));
         return str;
     }
 
@@ -64,7 +69,12 @@ public class Patristica {
         this.ref = ref;
     }
 
-    public Spanned getResponsorio() {
+    public String getResponsorio() {
+        return responsorio;
+    }
+
+
+    public Spanned getResponsorioSpan() {
         String r = "";
         if (responsorio != null && !responsorio.isEmpty() && !responsorio.equals("null")) {
 

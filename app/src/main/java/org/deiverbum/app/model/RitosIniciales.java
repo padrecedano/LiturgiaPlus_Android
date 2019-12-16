@@ -1,17 +1,16 @@
 package org.deiverbum.app.model;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 public class RitosIniciales {
 
-    @SerializedName("invocacion")
-    @Expose
+    //    @SerializedName("invocacion")
+//    @Expose
     private String invocacion;
-    @SerializedName("kyrie")
-    @Expose
+    //    @SerializedName("kyrie")
+//    @Expose
     private Kyrie kyrie;
 
+    public RitosIniciales() {
+    }
     public String getInvocacion() {
         return invocacion;
     }

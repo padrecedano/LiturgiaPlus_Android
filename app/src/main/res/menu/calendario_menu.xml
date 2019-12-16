@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group
-        android:id="@+id/menu_liturgia"
         android:checkableBehavior="single"
         android:title="file"
         >
@@ -20,9 +19,7 @@
             android:title="@string/lbl_comentarios_hoy" />
 
     </group>
-    <group
-        android:id="@+id/menu_santo"
-        android:checkableBehavior="single">
+    <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_santo"
             android:title="@string/lbl_santo_hoy" />

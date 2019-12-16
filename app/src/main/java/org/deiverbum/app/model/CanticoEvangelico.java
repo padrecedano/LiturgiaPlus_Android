@@ -9,7 +9,19 @@ public class CanticoEvangelico {
     private String antifona;
     private String magnificat;
     private String benedictus;
+    private String texto;
 
+    public String getTexto() {
+        return texto;
+    }
+
+    public void setTexto(String texto) {
+        this.texto = texto;
+    }
+
+    public void setMagnificat(String magnificat) {
+        this.magnificat = magnificat;
+    }
     public SpannableStringBuilder getAntifona() {
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
 
@@ -30,7 +42,6 @@ public class CanticoEvangelico {
         //String s=Utils.getFormato(ss);
         Spanned sp = Utils.fromHtml(ss);
         return Utils.fromHtml(ss);//Utils.getFormato(ss);
-
 
     }
 

@@ -1,10 +1,9 @@
 package org.deiverbum.app.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.NavUtils;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.util.Log;
 import android.util.TypedValue;
@@ -14,45 +13,57 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.NavUtils;
+
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.model.Breviario;
 import org.deiverbum.app.model.Himno;
 import org.deiverbum.app.model.Intermedia;
 import org.deiverbum.app.model.LecturaBreve;
+import org.deiverbum.app.model.Liturgia;
 import org.deiverbum.app.model.MetaLiturgia;
 import org.deiverbum.app.model.Salmodia;
 import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
-import org.deiverbum.app.utils.UtilsOld;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import static org.deiverbum.app.utils.Constants.CALENDAR_PATH;
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
-import static org.deiverbum.app.utils.Constants.URL_NONA;
+import static org.deiverbum.app.utils.Constants.URL_TERCIA;
+import static org.deiverbum.app.utils.Utils.LS;
 import static org.deiverbum.app.utils.Utils.LS2;
 
 public class NonaActivity extends AppCompatActivity {
     private static final String TAG = "NonaActivity";
     JsonObjectRequest jsonObjectRequest;
-    ZoomTextView mTextView;
-    private UtilsOld utilClass;
+    private ZoomTextView mTextView;
     private RequestQueue requestQueue;
     private String strFechaHoy;
     private TTS tts;
     private StringBuilder sbReader;
+    private ProgressBar progressBar;
+    private Breviario mBreviario;
+    private Menu menu;
+    private Liturgia mLiturgia;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,36 +72,66 @@ public class NonaActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mTextView = findViewById(R.id.tv_Zoomable);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
+        mTextView.setText(Utils.fromHtml(PACIENCIA));
+        progressBar = findViewById(R.id.progressBar);
+        strFechaHoy = (getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : Utils.getHoy();
+        launchFirestore();
 
-        mTextView =  findViewById(R.id.tv_Zoomable);
+    }
 
-        utilClass = new UtilsOld();
-        strFechaHoy = (getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : utilClass.getHoy();
-        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, 18);
+
+    public void launchFirestore() {
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String fechaDD = strFechaHoy.substring(6, 8);
+        String fechaMM = strFechaHoy.substring(4, 6);
+        String fechaYY = strFechaHoy.substring(0, 4);
+        DocumentReference calRef = db.collection(CALENDAR_PATH).document(fechaYY).collection(fechaMM).document(fechaDD);
+        calRef.addSnapshotListener((calSnapshot, e) -> {
+            if ((calSnapshot != null) && calSnapshot.exists()) {
+                Gson gson = new Gson();
+                JsonElement jsonElement = gson.toJsonTree(calSnapshot.get("meta"));
+                Log.d(TAG, calSnapshot.toString());
+
+                mLiturgia = new Liturgia();
+                mLiturgia.setMetaLiturgia(gson.fromJson(jsonElement, MetaLiturgia.class));
+                DocumentReference dataRef = calSnapshot.getDocumentReference("lh.5");
+                if (e != null || dataRef == null) {
+                    launchVolley();
+                    return;
+                }
+                dataRef.get().addOnSuccessListener((DocumentSnapshot dataSnapshot) -> {
+                    mLiturgia.setBreviario(dataSnapshot.toObject(Breviario.class));
+                    //Log.d(TAG,dataSnapshot.toString());
+                    showData();
+                });
+            } else {
+                launchVolley();
+            }
+        });
+    }
+
+    public void launchVolley() {
         requestQueue = Volley.newRequestQueue(this);
-        final ProgressBar progressBar = findViewById(R.id.progressBar);
-
-        mTextView.setText(UtilsOld.fromHtml(PACIENCIA));
         jsonObjectRequest = new JsonObjectRequest(
-
-                Request.Method.GET, URL_NONA + strFechaHoy,null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        SpannableStringBuilder resp = getResponseData(response);
-                        mTextView.setText(resp, TextView.BufferType.SPANNABLE);
-                        progressBar.setVisibility(View.INVISIBLE);
+                Request.Method.GET, URL_TERCIA + strFechaHoy, null,
+                response -> {
+                    try {
+                        Gson gson = new Gson();
+                        String jsonBreviario = String.valueOf(new JSONObject(String.valueOf(response.getJSONObject("liturgia"))));
+                        mLiturgia = gson.fromJson(jsonBreviario, Liturgia.class);
+                        showData();
+                    } catch (JSONException e) {
+                        mTextView.setText(e.getMessage());
                     }
                 },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        VolleyErrorHelper errorVolley = new VolleyErrorHelper();
-                        String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
-                        Log.d(TAG, "Error: " + sError);
-                        mTextView.setText(UtilsOld.fromHtml(sError));
-                        progressBar.setVisibility(View.INVISIBLE);
-                    }
+                error -> {
+                    String sError = VolleyErrorHelper.getMessage(error, getApplicationContext());
+                    mTextView.setText(Utils.fromHtml(sError));
+                    progressBar.setVisibility(View.INVISIBLE);
                 }
         );
 
@@ -100,19 +141,16 @@ public class NonaActivity extends AppCompatActivity {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         requestQueue.add(jsonObjectRequest);
         progressBar.setVisibility(View.VISIBLE);
-
     }
 
-    protected SpannableStringBuilder getResponseData(JSONObject jsonDatos) {
-        sbReader = new StringBuilder();
-        Gson gson = new Gson();
-        SpannableStringBuilder sb = new SpannableStringBuilder();
 
-        try {
-            JSONObject jsonBreviario = jsonDatos.getJSONObject("breviario");
-            Breviario breviario = gson.fromJson(String.valueOf(jsonBreviario), Breviario.class);
-            MetaLiturgia meta = breviario.getMetaLiturgia();
-            Intermedia hi = breviario.getIntermedia();
+    protected void showData() {
+        sbReader = new StringBuilder();
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        Breviario mBreviario = mLiturgia.getBreviario();
+
+        MetaLiturgia meta = mLiturgia.getMetaLiturgia();
+        Intermedia hi = mBreviario.getIntermedia();
             Himno himno = hi.getHimno();
             Salmodia salmodia = hi.getSalmodia();
             LecturaBreve lecturaBreve = hi.getLecturaBreve();
@@ -120,17 +158,16 @@ public class NonaActivity extends AppCompatActivity {
 
             sb.append(meta.getFecha());
             sb.append(Utils.LS2);
-
-            sb.append(Utils.toH2(meta.getTiempo()));
-            sb.append(Utils.LS);
+        sb.append(Utils.toH2(meta.getTiempoNombre()));
+        sb.append(LS);
             sb.append(Utils.toH3(meta.getSemana()));
             sb.append(Utils.LS2);
 
             sb.append(Utils.toH3Red(hora));
-            sb.append(Utils.LS);
+        sb.append(LS);
             sb.append(Utils.LS2);
 
-            sb.append(Utils.fromHtmlToSmallRed(meta.getSalterio()));
+        sb.append(Utils.fromHtmlToSmallRed(mBreviario.getMetaInfo()));
             sb.append(Utils.LS2);
 
             sb.append(Utils.getSaludoDiosMio());
@@ -138,21 +175,22 @@ public class NonaActivity extends AppCompatActivity {
 
             sb.append(himno.getHeader());
             sb.append(Utils.LS2);
-            sb.append(himno.getTexto());
+        sb.append(himno.getTextoSpan());
             sb.append(Utils.LS2);
 
             sb.append(salmodia.getHeader());
             sb.append(Utils.LS2);
             sb.append(salmodia.getSalmoCompleto(2));
 
-            sb.append(Utils.LS);
+        sb.append(LS);
             sb.append(lecturaBreve.getHeaderLectura());
             sb.append(Utils.LS2);
             sb.append(lecturaBreve.getTexto());
             sb.append(Utils.LS2);
             sb.append(lecturaBreve.getHeaderResponsorio());
             sb.append(Utils.LS2);
-            sb.append(lecturaBreve.getResponsorio());
+        sb.append(lecturaBreve.getResponsorioSpan());
+        sb.append(Utils.LS);
             sb.append(Utils.formatTitle("ORACIÓN"));
             sb.append(LS2);
             sb.append(Utils.fromHtml(hi.getOracion()));
@@ -173,9 +211,9 @@ public class NonaActivity extends AppCompatActivity {
             sbReader.append(himno.getTexto());
             sbReader.append(SEPARADOR);
 
-            sbReader.append("Salmodia");
+        sbReader.append(salmodia.getHeaderForRead());
             sbReader.append(SEPARADOR);
-            sbReader.append(salmodia.getSalmosForRead());
+        sbReader.append(salmodia.getSalmoCompletoForRead(2));
             sbReader.append(SEPARADOR);
 
             sbReader.append("Lectura breve");
@@ -192,14 +230,17 @@ public class NonaActivity extends AppCompatActivity {
             sbReader.append(SEPARADOR);
 
             sbReader.append(Utils.getConclusionIntermediaForRead());
-        } catch (JSONException e) {
-            e.printStackTrace();
+
+        mTextView.setText(sb, TextView.BufferType.SPANNABLE);
+        progressBar.setVisibility(View.INVISIBLE);
+        if (sbReader.length() > 0) {
+            menu.findItem(R.id.item_voz).setVisible(true);
         }
-        return sb;
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
     }
@@ -219,7 +260,6 @@ public class NonaActivity extends AppCompatActivity {
                 String html = String.valueOf(Utils.fromHtml(sbReader.toString()));
                 String[] textParts = html.split(SEPARADOR);
                 tts = new TTS(getApplicationContext(), textParts);
-
                 return true;
 
             case R.id.item_calendario:
@@ -234,7 +274,6 @@ public class NonaActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-
         if (tts != null) {
             tts.cerrar();
         }

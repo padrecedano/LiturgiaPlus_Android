@@ -18,7 +18,7 @@ public class Kyrie {
     @SerializedName("conclusion")
     @Expose
     private String conclusion;
-    private int tipo;
+    private String tipo;
 
     public SpannableStringBuilder getIntroduccionForRead() {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -63,7 +63,8 @@ public class Kyrie {
     }
 
     public SpannableStringBuilder getTexto() {
-        return Utils.getKyrie(2);
+        int type = Integer.parseInt(tipo);
+        return Utils.getKyrie(type);
         /*
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         this.texto = Utils.getFormato(texto);
@@ -114,15 +115,15 @@ public class Kyrie {
         this.conclusion = conclusion;
     }
 
-    public int getTipo() {
+    public String getTipo() {
         return tipo;
     }
 
     public SpannableStringBuilder getTextoForRead() {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
 
-        switch (3) {
-            case 1:
+        switch (tipo) {
+            case "1":
                 String text = "<p>Yo confieso ante Dios todopoderoso <br />" +
                         "y ante vosotros, hermanos <br />" +
                         "que he pecado mucho <br />" +
@@ -135,14 +136,14 @@ public class Kyrie {
                 ssb.append(Utils.fromHtml(text));
 
                 break;
-            case 2:
+            case "2":
                 ssb.append(Utils.fromHtml("<p>Señor, ten misericordia de nosotros.</p>"));
                 ssb.append(Utils.fromHtml("<p>Porque hemos pecado contra ti.</p>"));
                 ssb.append(Utils.fromHtml("<p>Muéstranos, Señor, tu misericordia.</p>"));
                 ssb.append(Utils.fromHtml("<p>Y danos tu salvación.</p>"));
 
                 break;
-            case 3:
+            case "3":
                 ssb.append(Utils.fromHtml("<p>Tú que has sido enviado a sanar los corazones afligidos: Señor, ten piedad.</p>"));
                 ssb.append(Utils.fromHtml("<p>Señor, ten piedad.</p>"));
                 ssb.append(Utils.fromHtml("<p>Tú que has venido a llamar a los pecadores: Cristo, ten piedad.</p>"));

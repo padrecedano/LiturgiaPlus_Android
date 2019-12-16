@@ -9,7 +9,10 @@ public class LecturaBreve {
     public String ref;
     public String texto;
     public String responsorio;
-    public int forma;
+    public String forma;
+
+    public LecturaBreve() {
+    }
 
     public String getRef() {
         return ref;
@@ -27,36 +30,59 @@ public class LecturaBreve {
         this.texto = texto;
     }
 
-    public Spanned getResponsorio() {
-        String r = "";
-        if (responsorio != null && !responsorio.isEmpty() && !responsorio.equals("null")) {
-
-            String[] arrPartes = responsorio.split("\\|");
-            r = Utils.getResponsorio(arrPartes, forma);
-        }
-        return Utils.fromHtml(r);
+    public String getResponsorio() {
+        return responsorio;
     }
-
-    public Spanned getResponsorioForRead() {
-        String r = "";
-        if (responsorio != null && !responsorio.isEmpty() && !responsorio.equals("null")) {
-
-            String[] arrPartes = responsorio.split("\\|");
-            r = Utils.getResponsorioForReader(arrPartes, forma);
-        }
-        return Utils.fromHtml(r);
-    }
-
 
     public void setResponsorio(String responsorio) {
         this.responsorio = responsorio;
     }
 
-    public int getForma() {
+    public Spanned getResponsorioSpan() {
+        String r = "Revisar responsorio";
+        if (!forma.isEmpty()) {
+            int nForma = Integer.parseInt(forma);
+            if (responsorio != null && !responsorio.isEmpty()) {
+                if (responsorio.contains("|")) {
+                    String[] arrPartes = responsorio.split("\\|");
+                    r = Utils.getResponsorio(arrPartes, nForma);
+                } else {
+                    r = responsorio;
+                }
+            }
+        }
+
+        return Utils.fromHtml(r);
+    }
+
+    public Spanned getResponsorioForRead() {
+        String r = "Revisar responsorio";
+        if (!forma.isEmpty()) {
+            int nForma = Integer.parseInt(forma);
+            if (responsorio != null && !responsorio.isEmpty()) {
+                if (responsorio.contains("|")) {
+
+                    String[] arrPartes = responsorio.split("\\|");
+                    r = Utils.getResponsorioForReader(arrPartes, nForma);
+                } else {
+                    r = responsorio;
+                }
+            } else {
+                r = "Revisar texto responsorio";
+            }
+        } else {
+
+            r = "Error en forma responsorio";
+        }
+
+        return Utils.fromHtml(r);
+    }
+
+    public String getForma() {
         return forma;
     }
 
-    public void setForma(int forma) {
+    public void setForma(String forma) {
         this.forma = forma;
     }
 
