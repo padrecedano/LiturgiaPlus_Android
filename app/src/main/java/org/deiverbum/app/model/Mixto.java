@@ -56,4 +56,9 @@ public class Mixto {
     public void setMisa(Misa misa) {
         this.misa = misa;
     }
+
+    public String getTituloHora() {
+        return "LAUDES y OFICIO";
+    }
+
 }

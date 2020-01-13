@@ -8,8 +8,8 @@ android {
         applicationId "org.deiverbum.app"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 20190200
-        versionName "2019.2 [Leviticus]"
+        versionCode 20200100
+        versionName "2020.1 [Numeri]"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -20,7 +20,8 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -46,7 +47,8 @@ dependencies {
     implementation 'com.prolificinteractive:material-calendarview:1.4.3'
     implementation 'com.google.firebase:firebase-core:17.2.1'
     implementation 'com.google.firebase:firebase-database:19.2.0'
-    implementation 'com.google.firebase:firebase-firestore:21.3.0'
+    implementation 'com.google.firebase:firebase-inappmessaging-display:19.0.2'
+    implementation 'com.google.firebase:firebase-firestore:21.3.1'
     implementation 'com.google.android.play:core:1.6.4'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'

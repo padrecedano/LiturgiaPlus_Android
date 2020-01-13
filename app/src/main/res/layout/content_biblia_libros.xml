@@ -5,10 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".activities.OtrasOracionesActivity"
-    tools:showIn="@layout/activity_otras_oraciones">
+    tools:context=".activities.BibliaLibrosActivity"
+    tools:showIn="@layout/activity_biblia_libros">
 
-    <include
-        android:id="@+id/include"
-        layout="@layout/tv_zoomable" />
 </androidx.constraintlayout.widget.ConstraintLayout>

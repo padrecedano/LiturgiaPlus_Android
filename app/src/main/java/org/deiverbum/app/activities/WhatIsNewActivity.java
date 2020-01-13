@@ -38,7 +38,7 @@ public class WhatIsNewActivity extends AppCompatActivity {
         String mText = "";
         try {
 
-            int rawId = R.raw.whatisnew_201902;
+            int rawId = R.raw.whatisnew;
             InputStream in = getResources().openRawResource(rawId);
             if (in != null) {
                 byte[] b = new byte[in.available()];

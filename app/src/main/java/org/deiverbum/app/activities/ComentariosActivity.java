@@ -55,6 +55,8 @@ public class ComentariosActivity extends AppCompatActivity {
     private TTS tts;
     private Menu menu;
     private Liturgia mLiturgia;
+    private boolean isVoiceOn;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -68,9 +70,9 @@ public class ComentariosActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.tv_Zoomable);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        isVoiceOn = prefs.getBoolean("voice", true);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
-        sbReader = new StringBuilder();
         launchVolley();
     }
 
@@ -117,16 +119,21 @@ public class ComentariosActivity extends AppCompatActivity {
         ssb.append(Utils.formatSubTitle(mComentario.getPericopa()));
         ssb.append(LS2);
         ssb.append(mComentario.getComentarioCompleto());
-        sbReader.append(Utils.fromHtml("<p>COMENTARIOS AL EVANGELIO.</p>"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(mComentario.getPericopa());
-        sbReader.append(SEPARADOR);
-        sbReader.append(mComentario.getComentarioCompletoForRead());
+
+        if (isVoiceOn) {
+            sbReader = new StringBuilder();
+            sbReader.append(Utils.fromHtml("<p>COMENTARIOS AL EVANGELIO.</p>"));
+            sbReader.append(SEPARADOR);
+            sbReader.append(mComentario.getPericopa());
+            sbReader.append(SEPARADOR);
+            sbReader.append(mComentario.getComentarioCompletoForRead());
+
+            if (sbReader.length() > 0) {
+                menu.findItem(R.id.item_voz).setVisible(true);
+            }
+        }
         progressBar.setVisibility(View.INVISIBLE);
         mTextView.setText(ssb, TextView.BufferType.SPANNABLE);
-        if (sbReader.length() > 0) {
-            menu.findItem(R.id.item_voz).setVisible(true);
-        }
     }
 
     @Override
@@ -155,6 +162,11 @@ public class ComentariosActivity extends AppCompatActivity {
 
             case R.id.item_calendario:
                 Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+                return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
                 return true;
         }

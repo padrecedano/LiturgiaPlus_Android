@@ -7,23 +7,47 @@ import java.util.HashMap;
 public class MetaLiturgia {
     private String fecha;
     private int tiempo;
+    private int iVisperasTime = 0;
+    private int otherID = 0;
     private String semana;
     private String mensaje;
     private String salterio;
     private int color;
     private String meta;
     private String titulo;
+    private String iVisperas = "";
+    private boolean hasSaint;
+
     private int weekDay;
 
     public MetaLiturgia() {
     }
 
+    public String getTituloVisperas() {
+        if (iVisperas.equals("")) {
+            return titulo;
+        } else {
+            return iVisperas;
+        }
+
+    }
     public String getTitulo() {
         return titulo;
     }
-
     public void setTitulo(String titulo) {
         this.titulo = titulo;
+    }
+
+    public String getIVisperas() {
+        return iVisperas;
+    }
+
+    public int getIVisperasTime() {
+        return iVisperasTime;
+    }
+
+    public void setIVisperasTime(int iVisperasTime) {
+        this.iVisperasTime = iVisperasTime;
     }
 
     public String getFecha() {
@@ -34,14 +58,32 @@ public class MetaLiturgia {
         this.fecha = fecha;
     }
 
-    public int getTiempo() {
-        return tiempo;
+    public void setIVispera(String titulo) {
+        this.iVisperas = iVisperas;
     }
 
     public void setTiempo(int tiempo) {
         this.tiempo = tiempo;
     }
 
+    public int getTiempo() {
+        if (iVisperasTime == 0) {
+            return tiempo;
+        } else {
+            return iVisperasTime;
+
+        }
+    }
+
+    public void setOtherID(int otherID) {
+        this.otherID = otherID;
+    }
+
+    public void setTimeForVisperas() {
+        if (this.iVisperasTime != 0) {
+            this.tiempo = iVisperasTime;
+        }
+    }
     public String getTiempoNombre() {
         if (tiempo < 15) {
             HashMap<Integer, String> mapTiempos = new HashMap<>();
@@ -120,5 +162,17 @@ public class MetaLiturgia {
     public void setMeta(String meta) {
         this.meta = meta;
     }
+
+    public boolean getHasSaint() {
+        return hasSaint;
+    }
+
+    public void setHasSaint(boolean hasSaint) {
+        this.hasSaint = hasSaint;
+    }
+
 }
+
+
+
 

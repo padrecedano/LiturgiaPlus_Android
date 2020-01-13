@@ -1,5 +1,9 @@
 package org.deiverbum.app.model;
 
+import android.text.SpannableStringBuilder;
+
+import com.google.firebase.firestore.Exclude;
+
 import java.util.List;
 
 public class Liturgia {
@@ -11,9 +15,11 @@ public class Liturgia {
     private MetaLiturgia meta;
     private Breviario lh;
     private Santo santo;
+    public boolean hasSaint = false;
 
     public Liturgia() {
     }
+
 
     public List<HomiliaCompleta> getHomiliaCompleta() {
         return homiliaCompleta;
@@ -32,6 +38,23 @@ public class Liturgia {
     }
     public void setHomiliaCompleta(List<HomiliaCompleta> homiliaCompleta) {
         this.homiliaCompleta = homiliaCompleta;
+    }
+
+    public String getTitulo() {
+
+        if (hasSaint) {
+            return santo.getNombre() + "\n\n";
+        } else {
+            return meta.getTitulo() + "\n\n";
+        }
+    }
+
+    public SpannableStringBuilder getVida() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        if (meta.getHasSaint()) {
+            ssb.append(santo.getVidaSmall());
+        }
+        return ssb;
     }
 
     public Misa getMisa() {
@@ -58,6 +81,13 @@ public class Liturgia {
         this.lh = lh;
     }
 
+    @Exclude
+    public void getlh() {
+    }
+
+    public void setlh(Breviario lh) {
+        this.lh = lh;
+    }
     public String toString() {
         return "This is the data: ";
     }
@@ -66,9 +96,13 @@ public class Liturgia {
         return meta;
     }
 
+    public MetaLiturgia getMeta() {
+        return meta;
+    }
     public void setMetaLiturgia(MetaLiturgia meta) {
         this.meta = meta;
     }
+
 
 }
 

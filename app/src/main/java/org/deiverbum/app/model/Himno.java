@@ -34,4 +34,9 @@ public class Himno {
 
         return Utils.formatTitle("HIMNO");
     }
+
+    public Spanned getHeaderForRead() {
+        return Utils.fromHtml("<p>Himno.</p>");
+    }
+
 }

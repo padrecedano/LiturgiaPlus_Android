@@ -2,7 +2,7 @@
     <string name="app_name">Liturgia+</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_subtitle">v. 2019.2 [Leviticus]\npadre.cedano@gmail.com</string>
+    <string name="nav_header_subtitle">v. 2020.1 [Numeri]\npadre.cedano@gmail.com</string>
     <string name="nav_header_desc">Navigation header</string>
 
     <string name="la">Laudes</string>
@@ -52,6 +52,8 @@
     <string name="pref_description_bible">Activar para mostrar los textos bíblicos de la Biblia de Jerusalén</string>
     <string name="pref_title_himno">Himnos de Liturgia Horarum traducidos por F. Arocena *</string>
     <string name="pref_description_himno">Activar para usar los himnos de Liturgia Horarum, traducidos al castellano por Félix Arocena.</string>
+    <string name="pref_title_voice">Activar lectura de voz</string>
+    <string name="pref_description_voice">Al desactivar esta opción no aparecerá el botón de lectura de voz.</string>
 
     <!--
         <string name="pref_title_display_name">Display name</string>
@@ -121,6 +123,8 @@
     <string name="title_activity_terms">Términos y Condiciones</string>
     <string name="title_activity_author">Autor</string>
     <string name="title_activity_preferences">Preferencias</string>
+    <string name="title_activity_biblia">Biblia</string>
+    <string name="title_activity_biblia_libros">BibliaLibrosActivity</string>
 
 
 </resources>

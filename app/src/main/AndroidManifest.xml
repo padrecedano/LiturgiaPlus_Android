@@ -12,6 +12,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".activities.BibliaLibrosActivity"
+            android:label="@string/title_activity_biblia_libros"
+            android:parentActivityName=".activities.BibliaActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.BibliaActivity" />
+        </activity>
+        <activity
+            android:name=".activities.BibliaActivity"
+            android:label="@string/title_activity_biblia"
+            android:parentActivityName=".activities.MainActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="org.deiverbum.app.activities.MainActivity" />
+        </activity>
+        <activity
             android:name=".activities.OracionesGenericActivity"
             android:label="@string/title_activity_oraciones"
             android:parentActivityName=".activities.OracionesActivity"
@@ -252,11 +270,6 @@
             android:name="io.fabric.ApiKey"
             android:value="ce5bc56c5381caf9528a87baaa5684e08461b836" />
 
-        <activity
-            android:name=".activities.RosarioActivity"
-            android:label="@string/title_activity_rosario"
-            android:parentActivityName=".activities.OracionesActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"

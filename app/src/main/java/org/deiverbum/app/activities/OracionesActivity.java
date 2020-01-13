@@ -1,7 +1,6 @@
 package org.deiverbum.app.activities;
 
 import android.os.Bundle;
-import android.text.Spanned;
 import android.view.Menu;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,7 +18,6 @@ import java.util.List;
 
 public class OracionesActivity extends AppCompatActivity {
     private static final String TAG = "OracionesActivity";
-    Spanned strContenido;
     ZoomTextView mTextView;
     List<Oraciones> oracionesList;
     RecyclerView oracionesRecyclerView;
@@ -52,48 +50,48 @@ public class OracionesActivity extends AppCompatActivity {
 
 
     private void createPrayersList() {
-        oracionesList = new ArrayList<Oraciones>();
+        oracionesList = new ArrayList<>();
         Oraciones oracionesListItem1 = new Oraciones();
         oracionesListItem1.setName("Misterios Gloriosos");
         oracionesListItem1.setDescription("Domingos y Miércoles");
-        oracionesListItem1.setImageId(R.drawable.ic_letter_d);
+        //oracionesListItem1.setImageId(R.drawable.ic_letter_d);
         oracionesListItem1.setCaseID(1);
         oracionesList.add(oracionesListItem1);
 
         Oraciones oracionesListItem2 = new Oraciones();
         oracionesListItem2.setName("Misterios Gozosos");
         oracionesListItem2.setDescription("Lunes y Sábados");
-        oracionesListItem2.setImageId(R.drawable.ic_letter_l);
+        //oracionesListItem2.setImageId(R.drawable.ic_letter_l);
         oracionesList.add(oracionesListItem2);
 
         Oraciones oracionesListItem3 = new Oraciones();
         oracionesListItem3.setName("Misterios Dolorosos");
         oracionesListItem3.setDescription("Martes y Viernes");
-        oracionesListItem3.setImageId(R.drawable.ic_letter_m);
+        //oracionesListItem3.setImageId(R.drawable.ic_letter_m);
         oracionesList.add(oracionesListItem3);
 
         Oraciones oracionesListItem4 = new Oraciones();
         oracionesListItem4.setName("Misterios Luminosos");
         oracionesListItem4.setDescription("Jueves");
-        oracionesListItem4.setImageId(R.drawable.ic_letter_j);
+        //oracionesListItem4.setImageId(R.drawable.ic_letter_j);
         oracionesList.add(oracionesListItem4);
 
         Oraciones oracionesListItem5 = new Oraciones();
         oracionesListItem5.setName("Letanías");
         oracionesListItem5.setDescription("Solamente las Letanías");
-        oracionesListItem5.setImageId(R.drawable.ic_letter_t);
+        //oracionesListItem5.setImageId(R.drawable.ic_letter_t);
         oracionesList.add(oracionesListItem5);
 
         Oraciones oracionesListItem6 = new Oraciones();
         oracionesListItem6.setName("Ángelus");
         oracionesListItem6.setDescription("Recuerda la Encarnación de Cristo");
-        oracionesListItem6.setImageId(R.drawable.ic_letter_a);
+        //oracionesListItem6.setImageId(R.drawable.ic_letter_a);
         oracionesList.add(oracionesListItem6);
 
         Oraciones oracionesListItem7 = new Oraciones();
         oracionesListItem7.setName("Regina Coeli");
         oracionesListItem7.setDescription("En el Tiempo de Pascua");
-        oracionesListItem7.setImageId(R.drawable.ic_letter_r);
+        //oracionesListItem7.setImageId(R.drawable.ic_letter_r);
         oracionesList.add(oracionesListItem7);
     }
 

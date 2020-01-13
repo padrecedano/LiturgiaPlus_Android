@@ -25,7 +25,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.model.Breviario;
@@ -64,6 +63,7 @@ public class VisperasActivity extends AppCompatActivity {
     private Liturgia mLiturgia;
     private ProgressBar progressBar;
     private Menu menu;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +75,7 @@ public class VisperasActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.tv_Zoomable);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        isVoiceOn = prefs.getBoolean("voice", true);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         progressBar = findViewById(R.id.progressBar);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
@@ -90,10 +91,7 @@ public class VisperasActivity extends AppCompatActivity {
         DocumentReference calRef = db.collection(CALENDAR_PATH).document(fechaYY).collection(fechaMM).document(fechaDD);
         calRef.addSnapshotListener((calSnapshot, e) -> {
             if ((calSnapshot != null) && calSnapshot.exists()) {
-                Gson gson = new Gson();
-                JsonElement jsonElement = gson.toJsonTree(calSnapshot.get("meta"));
-                mLiturgia = new Liturgia();
-                mLiturgia.setMetaLiturgia(gson.fromJson(jsonElement, MetaLiturgia.class));
+                mLiturgia = calSnapshot.toObject(Liturgia.class);
                 DocumentReference dataRef = calSnapshot.getDocumentReference("lh.6");
                 if (e != null || dataRef == null) {
                     launchVolley();
@@ -110,6 +108,7 @@ public class VisperasActivity extends AppCompatActivity {
     }
 
     public void launchVolley() {
+        //strFechaHoy="20200104/?";
         requestQueue = Volley.newRequestQueue(this);
         jsonObjectRequest = new JsonObjectRequest(
                 Request.Method.GET, URL_VISPERAS + strFechaHoy, null,
@@ -141,8 +140,7 @@ public class VisperasActivity extends AppCompatActivity {
 
     private void showData() {
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        sbReader = new StringBuilder();
-        MetaLiturgia meta = mLiturgia.getMetaLiturgia();
+        MetaLiturgia mMeta = mLiturgia.getMetaLiturgia();
         Breviario mBreviario = mLiturgia.getBreviario();
         Santo santo = mBreviario.getSanto();
         Visperas visperas = mBreviario.getVisperas();
@@ -151,18 +149,17 @@ public class VisperasActivity extends AppCompatActivity {
         LecturaBreve lecturaBreve = visperas.getLecturaBreve();
         CanticoEvangelico ce = visperas.getCanticoEvangelico();
         Preces preces = visperas.getPreces();
-        CharSequence santoNombre = (santo.getNombre().equals("")) ? "" : Utils.toH3(santo.getNombre() + LS2);
-        String hora = "VÍSPERAS";//meta.getTitulo().toUpperCase();
-        sb.append(meta.getFecha());
+        //CharSequence santoNombre = (santo.getNombre().equals("")) ? "" : Utils.toH3(santo.getNombre() + LS2);
+        String hora = (mMeta.getIVisperasTime() == 0) ? "VÍSPERAS" : "I VÍSPERAS";
+
+        sb.append(mMeta.getFecha());
         sb.append(Utils.LS2);
-        sb.append(Utils.toH2(meta.getTiempoNombre()));
-        sb.append(Utils.LS);
-        sb.append(Utils.toH3(meta.getSemana()));
+        sb.append(Utils.toH2(mMeta.getTiempoNombre()));
         sb.append(Utils.LS2);
+        sb.append(Utils.toH3(mLiturgia.getTitulo()));
         sb.append(Utils.toH3Red(hora));
-        sb.append(Utils.LS);
-        sb.append(santoNombre);
         sb.append(Utils.fromHtmlToSmallRed(mBreviario.getMetaInfo()));
+
         sb.append(Utils.LS2);
         sb.append(Utils.getSaludoDiosMio());
         sb.append(Utils.LS2);
@@ -208,57 +205,38 @@ public class VisperasActivity extends AppCompatActivity {
         sb.append(Utils.fromHtml(visperas.getOracion()));
         sb.append(LS2);
         sb.append(Utils.getConclusionHorasMayores());
+        if (isVoiceOn) {
+            sbReader = new StringBuilder();
+            sbReader.append(Utils.fromHtml("<p>" + mMeta.getFecha() + ".</p>"));
+            sbReader.append(mLiturgia.getTitulo() + "." + BR);
+            sbReader.append(Utils.fromHtml("<p>" + hora + ".</p>"));
+            sbReader.append(Utils.getSaludoDiosMioForReader());
+            sbReader.append(himno.getHeaderForRead());
+            sbReader.append(himno.getTexto());
+            sbReader.append(salmodia.getHeaderForRead());
+            sbReader.append(salmodia.getSalmoCompletoForRead());
+            sbReader.append(lecturaBreve.getHeaderForRead());
+            sbReader.append(lecturaBreve.getTexto());
+            sbReader.append(lecturaBreve.getHeaderResponsorioForRead());
+            sbReader.append(lecturaBreve.getResponsorioForRead());
+            sbReader.append(Utils.fromHtml("<p>Cántico evangélico.</p><br />"));
+            sbReader.append(ce.getAntifonaForRead());
+            sbReader.append(ce.getMagnificat());
+            sbReader.append(Utils.getFinSalmoForRead());
+            sbReader.append(ce.getAntifonaForRead());
+            sbReader.append(Utils.fromHtml("<p>Preces.</p><br />"));
+            sbReader.append(preces.getPreces());
+            sbReader.append(Utils.getPadreNuestro());
+            sbReader.append(Utils.fromHtml("<p>Oración.</p><br />"));
+            sbReader.append(visperas.getOracion());
+            sbReader.append(Utils.getConclusionHorasMayoresForRead());
 
-        /*Texto para TTS*/
-        sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>" + hora + "</p>"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(santo.getNombre() + "." + BR);
-        sbReader.append(santo.getVida() + BR);
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getSaludoDiosMioForReader());
-        sbReader.append(SEPARADOR);
-        sbReader.append("HIMNO.");
-        sbReader.append(SEPARADOR);
-        sbReader.append(himno.getTexto());
-        sbReader.append(SEPARADOR);
-        sbReader.append(salmodia.getHeaderForRead());
-        sbReader.append(salmodia.getSalmoCompletoForRead());
-        sbReader.append(Utils.fromHtml("<p>Lectura breve.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(lecturaBreve.getTexto());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Responsorio breve.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(lecturaBreve.getResponsorioForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Cántico evangélico.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(ce.getAntifonaForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(ce.getMagnificat());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getFinSalmoForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(ce.getAntifonaForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Preces.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(preces.getPreces());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getPadreNuestro());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Oración.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(visperas.getOracion());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getConclusionHorasMayoresForRead());
+            if (sbReader.length() > 0) {
+                menu.findItem(R.id.item_voz).setVisible(true);
+            }
+        }
         mTextView.setText(sb, TextView.BufferType.SPANNABLE);
         progressBar.setVisibility(View.INVISIBLE);
-        if (sbReader.length() > 0) {
-            menu.findItem(R.id.item_voz).setVisible(true);
-        }
     }
 
     @Override
@@ -266,7 +244,6 @@ public class VisperasActivity extends AppCompatActivity {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         launchFirestore();
-
         return true;
     }
 
@@ -289,6 +266,11 @@ public class VisperasActivity extends AppCompatActivity {
 
             case R.id.item_calendario:
                 Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+                return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
                 return true;
         }

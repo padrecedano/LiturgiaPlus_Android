@@ -1,6 +1,6 @@
 package org.deiverbum.app.model;
 
-import android.text.SpannableStringBuilder;
+import android.text.Spanned;
 
 import org.deiverbum.app.utils.Utils;
 
@@ -19,8 +19,13 @@ public class Santo {
         this.nombre = nombre;
     }
 
-    public SpannableStringBuilder getVidaSpan() {
-        return Utils.fromHtmlSmall(vida);
+    public Spanned getVidaSmall() {
+        if (!vida.equals("")) {
+            return Utils.fromHtml("<p><small>" + vida + "</small></p>");
+        } else {
+
+            return Utils.fromHtml("");
+        }
     }
 
     public String getVida() {

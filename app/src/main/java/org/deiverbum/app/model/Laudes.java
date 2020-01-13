@@ -55,4 +55,8 @@ public class Laudes {
     public void setOracion(String oracion) {
         this.oracion = oracion;
     }
+
+    public String getTituloHora() {
+        return "LAUDES";
+    }
 }

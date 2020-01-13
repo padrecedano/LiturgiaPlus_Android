@@ -39,7 +39,8 @@
 
     <color name="color_fondo_grupo1">#263238</color>
     <color name="color_fondo_grupo2">#424242</color>
-    <color name="background_material_light">#6f1919</color>
+    <color name="color_fondo_rv">#EB424242</color>
+    <color name="background_material_light">#BCFFAB40</color>
 
 
 </resources>

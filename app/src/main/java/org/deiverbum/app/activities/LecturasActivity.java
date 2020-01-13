@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +51,7 @@ public class LecturasActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private Liturgia mLiturgia;
     private TTS tts;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,10 +66,10 @@ public class LecturasActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.tv_Zoomable);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        isVoiceOn = prefs.getBoolean("voice", true);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
         mTextView.setTextIsSelectable(true);
-        Log.d(TAG, "lect_" + URL_LECTURAS + strFechaHoy);
         launchVolley();
     }
 
@@ -83,7 +83,6 @@ public class LecturasActivity extends AppCompatActivity {
                         JSONObject mJson = response.getJSONObject("liturgia");
                         mLiturgia = gson.fromJson(mJson.toString(), Liturgia.class);
                         Misa m = mLiturgia.getMisa();
-                        Log.d(TAG, "L__" + mJson.toString());
                         showData();
                     } catch (JSONException e) {
                         mTextView.setText(e.getMessage());
@@ -131,6 +130,11 @@ public class LecturasActivity extends AppCompatActivity {
                 Intent i = new Intent(this, CalendarioActivity.class);
                 startActivity(i);
                 return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -145,7 +149,6 @@ public class LecturasActivity extends AppCompatActivity {
     }
 
     protected void showData() {
-        sbReader = new StringBuilder();
         SpannableStringBuilder sb = new SpannableStringBuilder();
         Misa misa = mLiturgia.getMisa();
         MetaLiturgia meta = mLiturgia.getMetaLiturgia();
@@ -162,9 +165,12 @@ public class LecturasActivity extends AppCompatActivity {
         sb.append(lp.getLiturgiaPalabra());
         sb.append(Utils.LS2);
         sb.append(Utils.toSmallSize("Versión bíblica oficial \n \u00a9Conferencia Episcopal Española"));
-        sbReader.append(lp.getLiturgiaPalabraforRead());
-        if (sbReader.length() > 0) {
-            menu.findItem(R.id.item_voz).setVisible(true);
+        if (isVoiceOn) {
+            sbReader = new StringBuilder();
+            sbReader.append(lp.getLiturgiaPalabraforRead());
+            if (sbReader.length() > 0) {
+                menu.findItem(R.id.item_voz).setVisible(true);
+            }
         }
         progressBar.setVisibility(View.INVISIBLE);
         mTextView.setText(sb, TextView.BufferType.SPANNABLE);

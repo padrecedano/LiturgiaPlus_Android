@@ -5,42 +5,39 @@ import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.deiverbum.app.R;
+import org.deiverbum.app.activities.BibliaLibrosActivity;
 import org.deiverbum.app.activities.OracionesGenericActivity;
-import org.deiverbum.app.model.Oraciones;
+import org.deiverbum.app.model.BibliaLibros;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.OracionViewHolder> {
-    List<Oraciones> oracionesList;
+public class BibliaAdapter extends RecyclerView.Adapter<BibliaAdapter.BibliaViewHolder> {
+    List<BibliaLibros> booksList;
     Context context;
 
-    public OracionesAdapter(List<Oraciones> oracionesList) {
-        this.oracionesList = oracionesList;
+    public BibliaAdapter(List<BibliaLibros> booksList) {
+        this.booksList = booksList;
     }
 
     @Override
-    public OracionViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public BibliaViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
         View itemView = inflater.inflate(R.layout.rv_rosario, parent, false);
-        OracionViewHolder viewHolder = new OracionViewHolder(itemView);
+        BibliaViewHolder viewHolder = new BibliaViewHolder(itemView);
         return viewHolder;
     }
 
     @Override
-    public void onBindViewHolder(final OracionViewHolder holder, final int position) {
-        Oraciones oraciones = oracionesList.get(position);
-        holder.oracionName.setText(oraciones.getName());
-        holder.description.setText(oraciones.getDescription());
-        //holder.poster.setImageResource(oraciones.getImageId());
+    public void onBindViewHolder(final BibliaViewHolder holder, final int position) {
+        BibliaLibros oraciones = booksList.get(position);
+        holder.bookName.setText(oraciones.getName());
+        holder.bookDescription.setText(oraciones.getDescription());
 
 
 //        holder.ratingBar.setRating(movies.getRating());
@@ -72,44 +69,31 @@ public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.Orac
 
     @Override
     public int getItemCount() {
-        return oracionesList.size();
+        return booksList.size();
     }
 
-    public class OracionViewHolder extends RecyclerView.ViewHolder {
-        public TextView oracionName, description;
-        public ImageView poster, popmemu;
+    public class BibliaViewHolder extends RecyclerView.ViewHolder {
+        public TextView bookName, bookDescription;
         public View view;
 
-
-        public OracionViewHolder(final View itemView) {
+        public BibliaViewHolder(final View itemView) {
             super(itemView);
-            oracionName = itemView.findViewById(R.id.tv_title);
-            description = itemView.findViewById(R.id.tv_description);
-            //ratingBar = (RatingBar) itemView.findViewById(R.id.ratingBar);
-            //poster = itemView.findViewById(R.id.iv_poster);
-            //popmemu = itemView.findViewById(R.id.iv_menu);
+            bookName = itemView.findViewById(R.id.tv_title);
+            bookDescription = itemView.findViewById(R.id.tv_description);
             view = itemView;
-            final Map<String, Integer> myMap = new HashMap<>();
-            myMap.put("Misterios Gloriosos", 1);
-            myMap.put("Misterios Gozosos", 2);
-            myMap.put("Misterios Dolorosos", 3);
-            myMap.put("Misterios Luminosos", 4);
-            myMap.put("Letanías", 5);
-            myMap.put("Ángelus", 6);
-            myMap.put("Regina Coeli", 7);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String misterio = oracionName.getText().toString();
-                    int dayCode = myMap.get(misterio);
+                    String misterio = (String) bookName.getText();
+                    int dayCode = 500;// myMap.get(misterio);
                     if (dayCode < -1) {
                         Intent i = new Intent(context, OracionesGenericActivity.class);
                         i.putExtra("EXTRA_PAGE", dayCode);
                         i.putExtra("TITLE", misterio);
                         context.startActivity(i);
                     } else {
-                        Intent i = new Intent(context, OracionesGenericActivity.class);
+                        Intent i = new Intent(context, BibliaLibrosActivity.class);
                         i.putExtra("EXTRA_PAGE", dayCode);
                         i.putExtra("TITLE", misterio);
                         context.startActivity(i);

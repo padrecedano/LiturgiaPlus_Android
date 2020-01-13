@@ -26,7 +26,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import org.deiverbum.app.R;
@@ -73,6 +72,7 @@ public class CompletasActivity extends AppCompatActivity {
     private Completas mCompletas;
     private Liturgia mLiturgia;
     private int weekDay;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,49 +84,14 @@ public class CompletasActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.tv_Zoomable);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        isVoiceOn = prefs.getBoolean("voice", true);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         progressBar = findViewById(R.id.progressBar);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
         strFechaHoy = (getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : Utils.getHoy();
-
         launchFirestore();
-        //launchVolley();
-        //getDataFromJson();
     }
 
-
-    public void launchFirestore2() {
-        final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        String fechaDD = strFechaHoy.substring(6, 8);
-        String fechaMM = strFechaHoy.substring(4, 6);
-        String fechaYY = strFechaHoy.substring(0, 4);
-        DocumentReference calRef = db.collection(CALENDAR_PATH).document(fechaYY).collection(fechaMM).document(fechaDD);
-        calRef.addSnapshotListener((calSnapshot, e) -> {
-            if ((calSnapshot != null) && calSnapshot.exists()) {
-                Gson gson = new Gson();
-                JsonElement jsonElement = gson.toJsonTree(calSnapshot.get("meta"));
-                Log.d(TAG, jsonElement.toString());
-                mLiturgia = new Liturgia();
-                mLiturgia.setMetaLiturgia(gson.fromJson(jsonElement, MetaLiturgia.class));
-                MetaLiturgia m = mLiturgia.getMetaLiturgia();
-                Log.d(TAG, "nodata_" + m.getweekDay());
-                weekDay = m.getweekDay();
-                DocumentReference dataRef = calSnapshot.getDocumentReference("lh.6");
-                if (e != null || dataRef == null) {
-                    //launchVolley();
-                    return;
-                }
-                dataRef.get().addOnSuccessListener((DocumentSnapshot dataSnapshot) -> {
-                    mLiturgia.setBreviario(dataSnapshot.toObject(Breviario.class));
-                    //showData();
-                });
-            } else {
-                //launchVolley();
-                Log.d(TAG, "nodata_:");
-
-            }
-        });
-    }
 
     public void launchFirestore() {
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -142,12 +107,7 @@ public class CompletasActivity extends AppCompatActivity {
                     if (document.exists()) {
                         MetaLiturgia m = document.get("meta", MetaLiturgia.class);
                         weekDay = m.getweekDay();
-                        Log.d(TAG, "DocumentSnapshot data: " + m.getweekDay());
-                    } else {
-                        Log.d(TAG, "No such document");
                     }
-                } else {
-                    Log.d(TAG, "get failed with ", task.getException());
                 }
                 showData();
             }
@@ -156,7 +116,6 @@ public class CompletasActivity extends AppCompatActivity {
 
     private void getDataFromJson() {
         String filePath = "res/raw/completas_" + weekDay + ".json";
-        Log.d(TAG, filePath);
         InputStream raw = getClass().getClassLoader().getResourceAsStream(filePath);
         Reader rd = new BufferedReader(new InputStreamReader(raw));
         Gson gson = new Gson();
@@ -173,12 +132,8 @@ public class CompletasActivity extends AppCompatActivity {
             try {
                 c.setTime(df.parse(strFechaHoy));
                 weekDay = c.get(Calendar.DAY_OF_WEEK);
-
             } catch (ParseException e) {
-                //e.printStackTrace();
             }
-
-
         }
         String filePath = "res/raw/completas_" + weekDay + ".json";
         Log.d(TAG, filePath);
@@ -190,7 +145,6 @@ public class CompletasActivity extends AppCompatActivity {
         mBreviario = gson.fromJson(mJson, Breviario.class);
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        //Breviario mBreviario=new Breviario();
         sbReader = new StringBuilder();
         Completas mCompletas = mBreviario.getCompletas();
         RitosIniciales ri = mCompletas.getRitosIniciales();
@@ -246,35 +200,38 @@ public class CompletasActivity extends AppCompatActivity {
         sb.append(LS2);
         sb.append(conclusion.getAntVirgenSpan());
 
-        sbReader.append(Utils.fromHtml("<p>COMPLETAS.</p>"));
-        sbReader.append(Utils.LS);
-        sbReader.append(mBreviario.getInvocacionForRead());
-        sbReader.append(Utils.LS);
-        sbReader.append(Utils.LS);
-        sbReader.append(kyrie.getIntroduccionForRead());
-        sbReader.append(kyrie.getTextoForRead());
-        sbReader.append(kyrie.getConclusionForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>HIMNO.</p>"));
-        sbReader.append(himno.getTexto());
-        sbReader.append(SEPARADOR);
-        sbReader.append(salmodia.getHeaderForRead());
-        sbReader.append(salmodia.getSalmoCompletoForRead());
-        sbReader.append(Utils.fromHtml("<p>LECTURA BREVE.</p>"));
-        sbReader.append(lecturaBreve.getTexto());
-        sbReader.append(Utils.fromHtml("<p>RESPONSORIO.</p>"));
-        sbReader.append(lecturaBreve.getResponsorioForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(nunc.getHeader());
-        sbReader.append(nunc.getAntifonaForRead());
-        sbReader.append(nunc.getTexto());
-        sbReader.append(Utils.getFinSalmo());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>ORACIÓN.</p>"));
-        sbReader.append(mCompletas.getOracion());
-        sbReader.append(conclusion.getBendicionForRead());
-        sbReader.append(Utils.fromHtml("<p>ANTÍFONA FINAL DE LA SANTÍSIMA VIRGEN.</p>"));
-        sbReader.append(conclusion.getAntVirgen());
+        if (isVoiceOn) {
+            sbReader = new StringBuilder();
+            sbReader.append(Utils.fromHtml("<p>COMPLETAS.</p>"));
+            sbReader.append(Utils.LS);
+            sbReader.append(mBreviario.getInvocacionForRead());
+            sbReader.append(Utils.LS);
+            sbReader.append(Utils.LS);
+            sbReader.append(kyrie.getIntroduccionForRead());
+            sbReader.append(kyrie.getTextoForRead());
+            sbReader.append(kyrie.getConclusionForRead());
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>HIMNO.</p>"));
+            sbReader.append(himno.getTexto());
+            sbReader.append(SEPARADOR);
+            sbReader.append(salmodia.getHeaderForRead());
+            sbReader.append(salmodia.getSalmoCompletoForRead());
+            sbReader.append(Utils.fromHtml("<p>LECTURA BREVE.</p>"));
+            sbReader.append(lecturaBreve.getTexto());
+            sbReader.append(Utils.fromHtml("<p>RESPONSORIO.</p>"));
+            sbReader.append(lecturaBreve.getResponsorioForRead());
+            sbReader.append(SEPARADOR);
+            sbReader.append(nunc.getHeader());
+            sbReader.append(nunc.getAntifonaForRead());
+            sbReader.append(nunc.getTexto());
+            sbReader.append(Utils.getFinSalmo());
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>ORACIÓN.</p>"));
+            sbReader.append(mCompletas.getOracion());
+            sbReader.append(conclusion.getBendicionForRead());
+            sbReader.append(Utils.fromHtml("<p>ANTÍFONA FINAL DE LA SANTÍSIMA VIRGEN.</p>"));
+            sbReader.append(conclusion.getAntVirgen());
+        }
         mTextView.setText(sb, TextView.BufferType.SPANNABLE);
         progressBar.setVisibility(View.INVISIBLE);
         /*
@@ -289,10 +246,6 @@ public class CompletasActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         //getDataFromJson();
         menu.findItem(R.id.item_voz).setVisible(true);
-
-
-
-
         return true;
     }
 
@@ -317,6 +270,12 @@ public class CompletasActivity extends AppCompatActivity {
                 Intent i = new Intent(this, CalendarioActivity.class);
                 startActivity(i);
                 return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

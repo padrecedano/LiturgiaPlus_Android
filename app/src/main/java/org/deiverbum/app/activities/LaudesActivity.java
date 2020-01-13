@@ -25,7 +25,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.model.Benedictus;
@@ -39,7 +38,6 @@ import org.deiverbum.app.model.MetaLiturgia;
 import org.deiverbum.app.model.Oficio;
 import org.deiverbum.app.model.Preces;
 import org.deiverbum.app.model.Salmodia;
-import org.deiverbum.app.model.Santo;
 import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
 import org.deiverbum.app.utils.VolleyErrorHelper;
@@ -68,6 +66,7 @@ public class LaudesActivity extends AppCompatActivity {
     private Menu menu;
     private int idInvitatorio = 1;
     private boolean isInvitatorio;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +80,7 @@ public class LaudesActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
         isInvitatorio = prefs.getBoolean("invitatorio", false);
+        isVoiceOn = prefs.getBoolean("voice", true);
 
         strFechaHoy = (getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : Utils.getHoy();
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
@@ -99,10 +99,7 @@ public class LaudesActivity extends AppCompatActivity {
         DocumentReference calRef = db.collection(CALENDAR_PATH).document(fechaYY).collection(fechaMM).document(fechaDD);
         calRef.addSnapshotListener((calSnapshot, e) -> {
             if ((calSnapshot != null) && calSnapshot.exists()) {
-                Gson gson = new Gson();
-                JsonElement jsonElement = gson.toJsonTree(calSnapshot.get("meta"));
-                mLiturgia = new Liturgia();
-                mLiturgia.setMetaLiturgia(gson.fromJson(jsonElement, MetaLiturgia.class));
+                mLiturgia = calSnapshot.toObject(Liturgia.class);
                 DocumentReference dataRef = calSnapshot.getDocumentReference("lh.2");
                 if (e != null || dataRef == null) {
                     launchVolley();
@@ -149,10 +146,8 @@ public class LaudesActivity extends AppCompatActivity {
 
     protected void showData() {
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        sbReader = new StringBuilder();
-        MetaLiturgia meta = mLiturgia.getMetaLiturgia();
+        MetaLiturgia mMeta = mLiturgia.getMetaLiturgia();
         Breviario mBreviario = mLiturgia.getBreviario();
-        Santo santo = mBreviario.getSanto();
         Oficio oficio = mBreviario.getOficio();
         Invitatorio invitatorio = oficio.getInvitatorio();
         idInvitatorio = (isInvitatorio) ? invitatorio.getId() : 1;
@@ -163,24 +158,17 @@ public class LaudesActivity extends AppCompatActivity {
         LecturaBreve lecturaBreve = laudes.getLecturaBreve();
         Benedictus benedictus = laudes.getBenedictus();
         Preces preces = laudes.getPreces();
-        CharSequence santoNombre = (santo.getNombre().equals("")) ? "" : Utils.toH3(santo.getNombre() + LS2);
         SpannableStringBuilder titleInvitatorio = Utils.formatSubTitle("invitatorio");
-        CharSequence santoVida = (santo.getVida().equals("")) ? "" : Utils.toSmallSize(santo.getVida() + Utils.LS);
+
         String ant = getString(R.string.ant);
-        String hora = "LAUDES";
-        sb.append(meta.getFecha());
+
+        sb.append(mMeta.getFecha());
         sb.append(Utils.LS2);
-
-        sb.append(Utils.toH2(meta.getTiempoNombre()));
-        sb.append(Utils.LS);
-        sb.append(Utils.toH3(meta.getSemana()));
+        sb.append(Utils.toH2(mMeta.getTiempoNombre()));
         sb.append(Utils.LS2);
-
-        sb.append(Utils.toH3Red(hora));
-        sb.append(Utils.LS);
-
-        sb.append(santoNombre);
-        sb.append(santoVida);
+        sb.append(Utils.toH3(mLiturgia.getTitulo()));
+        sb.append(mLiturgia.getVida());
+        sb.append(Utils.toH3Red(laudes.getTituloHora()));
         sb.append(Utils.fromHtmlToSmallRed(mBreviario.getMetaInfo()));
 
         sb.append(Utils.LS2);
@@ -250,73 +238,44 @@ public class LaudesActivity extends AppCompatActivity {
         sb.append(LS2);
         sb.append(Utils.getConclusionHorasMayores());
 
-        /*Texto para TTS*/
-
-        sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>" + hora + "</p>"));
-        sbReader.append(SEPARADOR);
-
-
-        sbReader.append(santo.getNombre() + "." + BR);
-        sbReader.append(santo.getVida() + BR);
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getSaludoOficioForReader());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(Utils.fromHtml("<p>Invitatorio.</p>"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(invitatorio.getAntifonaForRead());
-        sbReader.append(invitatorio.getTextoSpan());
-        sbReader.append(Utils.getFinSalmoForRead());
-        sbReader.append(invitatorio.getAntifonaForRead());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append("HIMNO.");
-        sbReader.append(SEPARADOR);
-        sbReader.append(himno.getTexto());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(salmodia.getHeaderForRead());
-        sbReader.append(salmodia.getSalmoCompletoForRead());
-
-        sbReader.append(Utils.fromHtml("<p>Lectura breve.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(lecturaBreve.getTexto());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Responsorio breve.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(lecturaBreve.getResponsorioForRead());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(Utils.fromHtml("<p>Cántico evangélico.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(benedictus.getAntifonaForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(benedictus.getTexto());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getFinSalmoForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(benedictus.getAntifonaForRead());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(Utils.fromHtml("<p>Preces.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(preces.getPreces());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(Utils.getPadreNuestro());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Oración.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(laudes.getOracion());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getConclusionHorasMayoresForRead());
+        if (isVoiceOn) {
+            sbReader = new StringBuilder();
+            sbReader.append(Utils.fromHtml("<p>" + mMeta.getFecha() + ".</p>"));
+            sbReader.append(mLiturgia.getTitulo() + "." + BR);
+            sbReader.append(mLiturgia.getVida() + BR);
+            sbReader.append(Utils.fromHtml("<p>" + laudes.getTituloHora() + ".</p>"));
+            sbReader.append(Utils.getSaludoOficioForReader());
+            sbReader.append(Utils.fromHtml("<p>Invitatorio.</p>"));
+            sbReader.append(invitatorio.getAntifonaForRead());
+            sbReader.append(invitatorio.getTextoSpan());
+            sbReader.append(Utils.getFinSalmoForRead());
+            sbReader.append(invitatorio.getAntifonaForRead());
+            sbReader.append(himno.getHeaderForRead());
+            sbReader.append(himno.getTexto());
+            sbReader.append(salmodia.getHeaderForRead());
+            sbReader.append(salmodia.getSalmoCompletoForRead());
+            sbReader.append(Utils.fromHtml("<p>Lectura breve.</p><br />"));
+            sbReader.append(lecturaBreve.getTexto());
+            sbReader.append(Utils.fromHtml("<p>Responsorio breve.</p><br />"));
+            sbReader.append(lecturaBreve.getResponsorioForRead());
+            sbReader.append(Utils.fromHtml("<p>Cántico evangélico.</p><br />"));
+            sbReader.append(benedictus.getAntifonaForRead());
+            sbReader.append(benedictus.getTexto());
+            sbReader.append(Utils.getFinSalmoForRead());
+            sbReader.append(benedictus.getAntifonaForRead());
+            sbReader.append(Utils.fromHtml("<p>Preces.</p><br />"));
+            sbReader.append(preces.getPreces());
+            sbReader.append(Utils.getPadreNuestro());
+            sbReader.append(Utils.fromHtml("<p>Oración.</p><br />"));
+            sbReader.append(laudes.getOracion());
+            sbReader.append(Utils.getConclusionHorasMayoresForRead());
+            if (sbReader.length() > 0) {
+                menu.findItem(R.id.item_voz).setVisible(true);
+            }
+        }
         progressBar.setVisibility(View.INVISIBLE);
         mTextView.setText(sb, TextView.BufferType.SPANNABLE);
-        if (sbReader.length() > 0) {
-            menu.findItem(R.id.item_voz).setVisible(true);
-        }
+
     }
 
 
@@ -351,6 +310,11 @@ public class LaudesActivity extends AppCompatActivity {
 
             case R.id.item_calendario:
                 Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+                return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
                 return true;
         }

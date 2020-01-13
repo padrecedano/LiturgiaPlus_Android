@@ -3,24 +3,23 @@ package org.deiverbum.app.data;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.deiverbum.app.R;
-import org.deiverbum.app.model.MainItem;
+import org.deiverbum.app.model.BibliaLibros;
 
 import java.util.List;
 
 
-public class MainItemsAdapter extends RecyclerView.Adapter<MainItemsAdapter.MyViewHolder> {
+public class BibliaLibrosItemsAdapter extends RecyclerView.Adapter<BibliaLibrosItemsAdapter.MyViewHolder> {
 
-    private List<MainItem> mainList;
-    private MainItemsAdapter.ItemListener mListener;
+    private List<BibliaLibros> mainList;
+    private BibliaLibrosItemsAdapter.ItemListener mListener;
 
-    public MainItemsAdapter(List<MainItem> mainList, MainItemsAdapter.ItemListener itemListener) {
+    public BibliaLibrosItemsAdapter(List<BibliaLibros> mainList, BibliaLibrosItemsAdapter.ItemListener itemListener) {
         this.mainList = mainList;
         mListener = itemListener;
 
@@ -29,15 +28,17 @@ public class MainItemsAdapter extends RecyclerView.Adapter<MainItemsAdapter.MyVi
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View itemView = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.album_card, parent, false);
+                .inflate(R.layout.rv_rosario, parent, false);
         return new MyViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(final MyViewHolder holder, final int position) {
-        MainItem album = mainList.get(position);
+        BibliaLibros album = mainList.get(position);
         holder.title.setText(album.getName());
-        holder.thumbnail.setImageResource(album.getThumbnail());
+        holder.description.setText(album.getDescription());
+
+        //holder.thumbnail.setImageResource(album.getThumbnail());
         holder.setData(mainList.get(position));
     }
 
@@ -47,28 +48,28 @@ public class MainItemsAdapter extends RecyclerView.Adapter<MainItemsAdapter.MyVi
     }
 
     public interface ItemListener {
-        void onItemClick(MainItem item);
+        void onItemClick(BibliaLibros item);
     }
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView title;
-        public ImageView thumbnail;
-        MainItem item;
+        public TextView title, description;
+        BibliaLibros item;
         RelativeLayout relativeLayout;
 
         public MyViewHolder(View view) {
             super(view);
             view.setOnClickListener(this);
-            title = view.findViewById(R.id.title);
-            thumbnail = view.findViewById(R.id.thumbnail);
+            title = view.findViewById(R.id.tv_title);
+            description = view.findViewById(R.id.tv_description);
+
             relativeLayout = view.findViewById(R.id.mainCardRelativeLayout);
 
         }
 
-        public void setData(MainItem item) {
+        public void setData(BibliaLibros item) {
             this.item = item;
-            relativeLayout.setBackgroundColor(item.getColor());
+            //relativeLayout.setBackgroundColor(item.getColor());
         }
 
         @Override

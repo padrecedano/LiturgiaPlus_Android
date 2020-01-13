@@ -96,4 +96,8 @@ public class Oficio {
     public void setTeDeum(TeDeum teDeum) {
         this.teDeum = teDeum;
     }
+
+    public String getTituloHora() {
+        return "OFICIO DE LECTURA";
+    }
 }

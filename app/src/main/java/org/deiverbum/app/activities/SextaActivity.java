@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,7 +25,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.model.Breviario;
@@ -61,6 +59,7 @@ public class SextaActivity extends AppCompatActivity {
     private Liturgia mLiturgia;
     private ProgressBar progressBar;
     private Menu menu;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +72,7 @@ public class SextaActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        isVoiceOn = prefs.getBoolean("voice", true);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
         progressBar.setVisibility(View.VISIBLE);
@@ -88,12 +88,7 @@ public class SextaActivity extends AppCompatActivity {
         DocumentReference calRef = db.collection(CALENDAR_PATH).document(fechaYY).collection(fechaMM).document(fechaDD);
         calRef.addSnapshotListener((calSnapshot, e) -> {
             if ((calSnapshot != null) && calSnapshot.exists()) {
-                Gson gson = new Gson();
-                JsonElement jsonElement = gson.toJsonTree(calSnapshot.get("meta"));
-                Log.d(TAG, calSnapshot.toString());
-
-                mLiturgia = new Liturgia();
-                mLiturgia.setMetaLiturgia(gson.fromJson(jsonElement, MetaLiturgia.class));
+                mLiturgia = calSnapshot.toObject(Liturgia.class);
                 DocumentReference dataRef = calSnapshot.getDocumentReference("lh.4");
                 if (e != null || dataRef == null) {
                     launchVolley();
@@ -101,7 +96,6 @@ public class SextaActivity extends AppCompatActivity {
                 }
                 dataRef.get().addOnSuccessListener((DocumentSnapshot dataSnapshot) -> {
                     mLiturgia.setBreviario(dataSnapshot.toObject(Breviario.class));
-                    //Log.d(TAG,dataSnapshot.toString());
                     showData();
                 });
             } else {
@@ -141,26 +135,20 @@ public class SextaActivity extends AppCompatActivity {
 
     protected void showData() {
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        sbReader = new StringBuilder();
         Breviario mBreviario = mLiturgia.getBreviario();
         Intermedia hi = mBreviario.getIntermedia();
-        MetaLiturgia meta = mLiturgia.getMetaLiturgia();
+        MetaLiturgia mMeta = mLiturgia.getMetaLiturgia();
         Himno himno = hi.getHimno();
         Salmodia salmodia = hi.getSalmodia();
         LecturaBreve lecturaBreve = hi.getLecturaBreve();
-        String hora = "HORA INTERMEDIA: SEXTA";
+        String tituloHora = "HORA INTERMEDIA: SEXTA";
 
-        sb.append(meta.getFecha());
+        sb.append(mMeta.getFecha());
         sb.append(Utils.LS2);
-        sb.append(Utils.toH2(meta.getTiempoNombre()));
-        sb.append(Utils.LS);
-        sb.append(Utils.toH3(meta.getSemana()));
+        sb.append(Utils.toH2(mMeta.getTiempoNombre()));
         sb.append(Utils.LS2);
-
-        sb.append(Utils.toH3Red(hora));
-        sb.append(Utils.LS);
-        sb.append(Utils.LS2);
-
+        sb.append(Utils.toH3(mLiturgia.getTitulo()));
+        sb.append(Utils.toH3Red(tituloHora));
         sb.append(Utils.fromHtmlToSmallRed(mBreviario.getMetaInfo()));
         sb.append(Utils.LS2);
 
@@ -181,8 +169,6 @@ public class SextaActivity extends AppCompatActivity {
         sb.append(Utils.LS2);
         sb.append(lecturaBreve.getTexto());
         sb.append(Utils.LS2);
-        sb.append(lecturaBreve.getHeaderResponsorio());
-        sb.append(Utils.LS2);
         sb.append(lecturaBreve.getResponsorioSpan());
         sb.append(Utils.LS);
         sb.append(Utils.formatTitle("ORACIÓN"));
@@ -190,46 +176,29 @@ public class SextaActivity extends AppCompatActivity {
         sb.append(Utils.fromHtml(hi.getOracion()));
         sb.append(LS2);
         sb.append(Utils.getConclusionIntermedia());
-        /*For TTS*/
 
-        sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>" + hora + "</p>"));
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(Utils.getSaludoDiosMioForReader());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append("Himno");
-        sbReader.append(SEPARADOR);
-        sbReader.append(himno.getTexto());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(salmodia.getHeaderForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(salmodia.getSalmoCompletoForRead(1));
-        sbReader.append(SEPARADOR);
-
-        sbReader.append("Lectura breve");
-        sbReader.append(SEPARADOR);
-        sbReader.append(lecturaBreve.getTexto());
-        sbReader.append(SEPARADOR);
-        sbReader.append("Responsorio breve");
-        sbReader.append(SEPARADOR);
-        sbReader.append(lecturaBreve.getResponsorioForRead());
-
-        sbReader.append(Utils.formatTitle("ORACIÓN"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml(hi.getOracion()));
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(Utils.getConclusionIntermediaForRead());
-
+        if (isVoiceOn) {
+            sbReader = new StringBuilder();
+            sbReader.append(Utils.fromHtml("<p>" + mMeta.getFecha() + ".</p>"));
+            sbReader.append(Utils.fromHtml("<p>" + tituloHora + ".</p>"));
+            sbReader.append(Utils.getSaludoDiosMioForReader());
+            sbReader.append(himno.getHeaderForRead());
+            sbReader.append(himno.getTexto());
+            sbReader.append(salmodia.getHeaderForRead());
+            sbReader.append(salmodia.getSalmoCompletoForRead(0));
+            sbReader.append(lecturaBreve.getHeaderForRead());
+            sbReader.append(lecturaBreve.getTexto());
+            sbReader.append(lecturaBreve.getHeaderResponsorioForRead());
+            sbReader.append(lecturaBreve.getResponsorioForRead());
+            sbReader.append(Utils.fromHtml("<p>Oración.</p>"));
+            sbReader.append(Utils.fromHtml(hi.getOracion()));
+            sbReader.append(Utils.getConclusionIntermediaForRead());
+            if (sbReader.length() > 0) {
+                menu.findItem(R.id.item_voz).setVisible(true);
+            }
+        }
         mTextView.setText(sb, TextView.BufferType.SPANNABLE);
         progressBar.setVisibility(View.INVISIBLE);
-        if (sbReader.length() > 0) {
-            menu.findItem(R.id.item_voz).setVisible(true);
-        }
     }
 
     @Override
@@ -258,6 +227,11 @@ public class SextaActivity extends AppCompatActivity {
 
             case R.id.item_calendario:
                 Intent i = new Intent(this, CalendarioActivity.class);
+                startActivity(i);
+                return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
                 return true;
         }

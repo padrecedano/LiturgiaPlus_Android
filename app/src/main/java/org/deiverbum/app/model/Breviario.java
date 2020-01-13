@@ -18,6 +18,7 @@ public class Breviario {
     private Misa misa;
     private String metaInfo;
 
+
     public Breviario() {
     }
     public MetaLiturgia getMetaLiturgia() {
@@ -25,7 +26,12 @@ public class Breviario {
     }
 
     public String getMetaInfo() {
-        return metaInfo;
+
+        if (!metaInfo.equals("")) {
+            return "<br><br>" + metaInfo;
+        } else {
+            return "";
+        }
     }
 
     public SpannableStringBuilder getInvocacion() {

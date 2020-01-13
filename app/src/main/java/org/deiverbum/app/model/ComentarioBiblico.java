@@ -1,21 +1,40 @@
 package org.deiverbum.app.model;
 
 public class ComentarioBiblico {
-    private Obra obra;
+    private Obra obras;
     private String tema;
     private String refBiblia;
     private String refFuente;
     private String texto;
     private String padre;
+    private String obra;
+    private String cita;
+    private String ref;
 
     public ComentarioBiblico() {
     }
 
-    public Obra getObra() {
+    public String getCita() {
+        return this.cita;
+    }
+
+    public void setCita(String cita) {
+        this.cita = cita;
+    }
+
+    public String getRef() {
+        return this.ref;
+    }
+
+    public void setRef(String ref) {
+        this.ref = ref;
+    }
+
+    public String getObra() {
         return this.obra;
     }
 
-    public void setObra(Obra obra) {
+    public void setObra(String obra) {
         this.obra = obra;
     }
 

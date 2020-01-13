@@ -33,7 +33,7 @@ public class TeDeum {
 
             //String teDeum = !isStatus() ? Utils.getTeDeum() : "";
         }
-        return ssb;//Utils.sbHtml(ssb);//Utils.fromHtml(teDeum);
+        return ssb;
     }
 
     public void setTexto(String texto) {

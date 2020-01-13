@@ -25,7 +25,6 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 
 import org.deiverbum.app.R;
 import org.deiverbum.app.model.Benedictus;
@@ -40,13 +39,11 @@ import org.deiverbum.app.model.Liturgia;
 import org.deiverbum.app.model.MetaLiturgia;
 import org.deiverbum.app.model.Misa;
 import org.deiverbum.app.model.MisaLecturas;
-import org.deiverbum.app.model.Mixto;
 import org.deiverbum.app.model.Oficio;
 import org.deiverbum.app.model.OficioLecturas;
 import org.deiverbum.app.model.Patristica;
 import org.deiverbum.app.model.Preces;
 import org.deiverbum.app.model.Salmodia;
-import org.deiverbum.app.model.Santo;
 import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
 import org.deiverbum.app.utils.VolleyErrorHelper;
@@ -75,6 +72,7 @@ public class MixtoActivity extends AppCompatActivity {
     private int idInvitatorio = 1;
     private boolean isInvitatorio;
     private Liturgia mLiturgia;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +86,7 @@ public class MixtoActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
         isInvitatorio = prefs.getBoolean("invitatorio", false);
+        isVoiceOn = prefs.getBoolean("voice", true);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
         progressBar = findViewById(R.id.progressBar);
@@ -107,10 +106,7 @@ public class MixtoActivity extends AppCompatActivity {
         DocumentReference calRef = db.collection(CALENDAR_PATH).document(fechaYY).collection(fechaMM).document(fechaDD);
         calRef.addSnapshotListener((calSnapshot, e) -> {
             if ((calSnapshot != null) && calSnapshot.exists()) {
-                Gson gson = new Gson();
-                JsonElement jsonElement = gson.toJsonTree(calSnapshot.get("meta"));
-                mLiturgia = new Liturgia();
-                mLiturgia.setMetaLiturgia(gson.fromJson(jsonElement, MetaLiturgia.class));
+                mLiturgia = calSnapshot.toObject(Liturgia.class);
                 DocumentReference dataRef = calSnapshot.getDocumentReference("lh.0");
                 if (e != null || dataRef == null) {
                     launchVolley();
@@ -159,12 +155,9 @@ public class MixtoActivity extends AppCompatActivity {
     private void showData() {
 
         SpannableStringBuilder sb = new SpannableStringBuilder();
-        sbReader = new StringBuilder();
         String ant = getString(R.string.ant);
-        MetaLiturgia meta = mLiturgia.getMetaLiturgia();
+        MetaLiturgia mMeta = mLiturgia.getMetaLiturgia();
         Breviario mBreviario = mLiturgia.getBreviario();
-        Santo santo = mBreviario.getSanto();
-        Mixto mixto = mBreviario.getMixto();
 
         Oficio oficio = mBreviario.getOficio();
         Invitatorio invitatorio = oficio.getInvitatorio();
@@ -184,24 +177,18 @@ public class MixtoActivity extends AppCompatActivity {
         MisaLecturas misaLecturas = misa.getMisaLecturas();
         Evangelio misaEvangelio = misaLecturas.getEvangelio();
 
-        String hora = "LAUDES y OFICIO";
-
-        CharSequence santoNombre = (santo.getNombre().equals("")) ? "" : Utils.toH3(santo.getNombre() + LS2);
         SpannableStringBuilder titleInvitatorio = Utils.formatSubTitle("invitatorio");
-        CharSequence santoVida = (santo.getVida().equals("")) ? "" : Utils.toSmallSize(santo.getVida() + Utils.LS);
+        String tituloHora = "LAUDES y OFICIO";
 
-        sb.append(meta.getFecha());
-        sb.append(Utils.LS2);
-        sb.append(Utils.toH2(meta.getTiempoNombre()));
-        sb.append(Utils.LS);
-        sb.append(Utils.toH3(meta.getSemana()));
+        sb.append(mMeta.getFecha());
         sb.append(Utils.LS2);
 
-        sb.append(Utils.toH3Red(hora));
-        sb.append(Utils.LS);
+        sb.append(Utils.toH2(mMeta.getTiempoNombre()));
+        sb.append(Utils.LS2);
+        sb.append(Utils.toH3(mLiturgia.getTitulo()));
+        sb.append(mLiturgia.getVida());
 
-        sb.append(santoNombre);
-        sb.append(santoVida);
+        sb.append(Utils.toH3Red(tituloHora));
         sb.append(Utils.fromHtmlToSmallRed(mBreviario.getMetaInfo()));
 
         sb.append(Utils.LS2);
@@ -237,7 +224,6 @@ public class MixtoActivity extends AppCompatActivity {
         sb.append(Utils.LS2);
         sb.append(lecturaBreve.getResponsorioSpan());
         sb.append(Utils.LS);
-        sb.append(Utils.LS2);
 
         sb.append(Utils.formatSubTitle("lecturas del oficio"));
         sb.append(Utils.LS2);
@@ -331,117 +317,77 @@ public class MixtoActivity extends AppCompatActivity {
         sb.append(Utils.fromHtml(laudes.getOracion()));
         sb.append(LS2);
         sb.append(Utils.getConclusionHorasMayores());
-        /*Texto para el TTS*/
 
-        sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
-        sbReader.append(hora + BR);
-        sbReader.append(SEPARADOR);
+        if (isVoiceOn) {
+            sbReader = new StringBuilder();
+            sbReader.append(Utils.fromHtml("<p>" + mMeta.getFecha() + "</p>"));
+            sbReader.append(mLiturgia.getTitulo() + "." + BR);
+            sbReader.append(mLiturgia.getVida() + BR);
+            sbReader.append(Utils.fromHtml("<p>" + tituloHora + ".</p>"));
+            sbReader.append(Utils.getSaludoOficioForReader());
 
-        sbReader.append(santoNombre + BR);
-        sbReader.append(santoVida + BR);
-        sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>Invitatorio.</p>"));
+            sbReader.append(invitatorio.getAntifonaForRead());
+            sbReader.append(invitatorio.getTextoSpan());
+            sbReader.append(Utils.getFinSalmoForRead());
+            sbReader.append(invitatorio.getAntifona());
 
-        sbReader.append(Utils.getSaludoOficioForReader());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Invitatorio.</p>"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(invitatorio.getAntifonaForRead());
-        sbReader.append(invitatorio.getTextoSpan());
+            sbReader.append(himno.getHeaderForRead());
+            sbReader.append(himno.getTexto());
 
-        sbReader.append(Utils.getFinSalmoForRead());
-        sbReader.append(invitatorio.getAntifona());
-        sbReader.append(SEPARADOR);
+            sbReader.append(salmodia.getHeaderForRead());
+            sbReader.append(salmodia.getSalmoCompletoForRead());
 
-        sbReader.append(himno.getHeader());
-        sbReader.append(SEPARADOR);
-        sbReader.append(himno.getTexto());
-        sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>Lectura Breve.</p><br />"));
+            sbReader.append(lecturaBreve.getTexto());
+            sbReader.append(Utils.fromHtml("<p>Responsorio.</p><br />"));
+            sbReader.append(lecturaBreve.getResponsorioForRead());
 
-        sbReader.append(salmodia.getHeaderForRead());
-        sbReader.append(salmodia.getSalmoCompletoForRead());
+            sbReader.append("<p>Lecturas del oficio.</p>");
 
-        sbReader.append(Utils.fromHtml("<p>Lectura Breve.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(lecturaBreve.getTexto());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Responsorio.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(lecturaBreve.getResponsorioForRead());
-        sbReader.append(SEPARADOR);
+            sbReader.append(biblica.getHeader() + ".");
+            sbReader.append(biblica.getLibro() + ".");
+            sbReader.append(biblica.getTema() + ".");
+            sbReader.append(biblica.getTexto());
 
-        sbReader.append("<p>Lecturas del oficio</p>");
-        sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>Responsorio.</p>"));
+            sbReader.append(biblica.getResponsorioForReader());
 
-        sbReader.append(biblica.getHeader());
-        sbReader.append(SEPARADOR);
-        sbReader.append(biblica.getLibro());
-        sbReader.append(SEPARADOR);
-        sbReader.append(biblica.getTema());
-        sbReader.append(SEPARADOR);
-        sbReader.append(biblica.getTexto());
-        sbReader.append(SEPARADOR);
+            sbReader.append(patristica.getHeader() + ".");
+            sbReader.append(patristica.padre + ".");
+            sbReader.append(", ");
+            sbReader.append(patristica.obra + ".");
+            sbReader.append(patristica.tema + ".");
+            sbReader.append(patristica.getTexto());
+            sbReader.append(Utils.fromHtml("<p>Responsorio.</p>"));
+            sbReader.append(patristica.getResponsorioForReader());
 
-        sbReader.append("Responsorio ");
-        sbReader.append(SEPARADOR);
-        sbReader.append(biblica.getResponsorioForReader());
-        sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>Evangelio del día.</p>"));
+            sbReader.append(misaEvangelio.libro);
+            sbReader.append(misaEvangelio.getEvangelioForRead());
 
-        sbReader.append(patristica.getHeader());
-        sbReader.append(SEPARADOR);
-        sbReader.append(patristica.padre);
-        sbReader.append(", ");
-        sbReader.append(patristica.obra);
-        sbReader.append(SEPARADOR);
-        sbReader.append(patristica.tema);
-        sbReader.append(SEPARADOR);
-        sbReader.append(patristica.getTexto());
-        sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>Palabra del Señor.</p><br />"));
+            sbReader.append(Utils.fromHtml("<p>Gloria a ti, Señor Jesús.</p><br />"));
 
-        sbReader.append("Responsorio ");
-        sbReader.append(SEPARADOR);
+            sbReader.append(benedictus.getHeader());
+            sbReader.append(benedictus.getAntifonaForRead());
+            sbReader.append(benedictus.getTexto());
+            sbReader.append(Utils.getFinSalmoForRead());
+            sbReader.append(benedictus.getAntifonaForRead());
 
-        sbReader.append(patristica.getResponsorioForReader());
-        sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>Preces.</p><br />"));
+            sbReader.append(preces.getPreces());
+            sbReader.append(Utils.getPadreNuestro());
+            sbReader.append(Utils.fromHtml("<p>Oración.</p><br />"));
+            sbReader.append(laudes.getOracion());
+            sbReader.append(Utils.getConclusionHorasMayoresForRead());
 
-        sbReader.append("Evangelio del día");
-        sbReader.append(SEPARADOR);
-        sbReader.append(misaEvangelio.libro);
-        sbReader.append(SEPARADOR);
-        sbReader.append(misaEvangelio.getEvangelioForRead());
-
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Palabra del Señor.</p><br />"));
-        sbReader.append(Utils.fromHtml("<p>Gloria a ti, Señor Jesús.</p><br />"));
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(benedictus.getHeader());
-        sbReader.append(SEPARADOR);
-        sbReader.append(benedictus.getAntifonaForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(benedictus.getTexto());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getFinSalmoForRead());
-        sbReader.append(SEPARADOR);
-        sbReader.append(benedictus.getAntifonaForRead());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(Utils.fromHtml("<p>Preces.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(preces.getPreces());
-        sbReader.append(SEPARADOR);
-
-        sbReader.append(Utils.getPadreNuestro());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>Oración.</p><br />"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(laudes.getOracion());
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.getConclusionHorasMayoresForRead());
+            if (sbReader.length() > 0) {
+                menu.findItem(R.id.item_voz).setVisible(true);
+            }
+        }
         mTextView.setText(sb, TextView.BufferType.SPANNABLE);
         progressBar.setVisibility(View.INVISIBLE);
-        if (sbReader.length() > 0) {
-            menu.findItem(R.id.item_voz).setVisible(true);
-        }
     }
 
 
@@ -473,6 +419,12 @@ public class MixtoActivity extends AppCompatActivity {
                 Intent i = new Intent(this, CalendarioActivity.class);
                 startActivity(i);
                 return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

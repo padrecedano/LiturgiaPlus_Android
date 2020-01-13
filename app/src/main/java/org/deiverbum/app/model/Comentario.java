@@ -32,10 +32,27 @@ public class Comentario {
             Obra o=c.getObra();
             Padre p=o.getPadre();
             */
-            ssb.append(Utils.toH3Red(c.getPadre()));
-//            ssb.append(LS);
-//            ssb.append(c.getTema());
-            ssb.append(LS2);
+            ssb.append(Utils.toH2Red(c.getPadre()));
+            ssb.append(Utils.LS);
+            ssb.append(Utils.toH3Red(c.getObra()));
+            if (!c.getRef().equals("")) {
+                ssb.append(Utils.LS);
+                ssb.append(Utils.toSmallSizeRed(c.getRef()));
+            } else {
+                ssb.append(LS2);
+            }
+
+            if (!c.getTema().equals("")) {
+                ssb.append(LS2);
+                ssb.append(Utils.toH4Red(c.getTema()));
+            }
+
+            if (!c.getCita().equals("")) {
+                ssb.append(LS2);
+                ssb.append(Utils.toMediumSize(c.getCita()));
+            } else {
+                ssb.append(LS2);
+            }
             ssb.append(Utils.fromHtml(c.getTexto().replaceAll(SEPARADOR, "")));
             ssb.append(LS2);
         }

@@ -1,10 +1,12 @@
 package org.deiverbum.app.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.util.Log;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -29,41 +31,44 @@ import java.io.Reader;
 
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
 
-public class OtrasOracionesActivity extends AppCompatActivity {
-    private static final String TAG = "OtrasOracionesActivity";
+public class OracionesGenericActivity extends AppCompatActivity {
     ZoomTextView mTextView;
     private StringBuilder sbReader;
     private SpannableStringBuilder ssb;
     private TTS tts;
+    private static final String TAG = "OracionesGenericActivity";
     private Menu mMenu;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_otras_oraciones);
+        setContentView(R.layout.activity_oraciones_generic);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         mTextView = findViewById(R.id.tv_Zoomable);
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        isVoiceOn = prefs.getBoolean("voice", true);
+        mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        String mStatus = "";
+        sbReader = new StringBuilder();
 
         int dayCode = 0;
+        String mTitle = "";
         Bundle extras = getIntent().getExtras();
 
         if (extras != null) {
             dayCode = extras.getInt("EXTRA_PAGE");
+            mTitle = extras.getString("TITLE");
         }
         ssb = new SpannableStringBuilder();
-        sbReader = new StringBuilder();
         int rawId = 0;
         Spanned titulo = null;
 
         if (dayCode < 5) {
-            Log.d(TAG, "alf" + dayCode);
-//            mTextView.setText(dayCode);
+            getSupportActionBar().setTitle("Rosario: " + mTitle);
             ssb = new SpannableStringBuilder();
-            sbReader = new StringBuilder();
-
             InputStream raw = getResources().openRawResource(R.raw.rosario);
             Reader rd = new BufferedReader(new InputStreamReader(raw));
             Gson gson = new Gson();
@@ -95,25 +100,29 @@ public class OtrasOracionesActivity extends AppCompatActivity {
 
             ssb.append(mRosario.getOracion());
 
-            sbReader.append(mRosario.getSaludo());
-            sbReader.append(SEPARADOR);
+            if (isVoiceOn) {
+                sbReader.append(mRosario.getSaludo());
+                sbReader.append(SEPARADOR);
 
-            sbReader.append(misterios);
-            sbReader.append(SEPARADOR);
+                sbReader.append(misterios);
+                sbReader.append(SEPARADOR);
 
-            sbReader.append("LETANÍAS DE NUESTRA SEÑORA");
-            sbReader.append(mRosario.getLetanias());
+                sbReader.append("LETANÍAS DE NUESTRA SEÑORA");
+                sbReader.append(mRosario.getLetanias());
 
-            sbReader.append(SEPARADOR);
-            sbReader.append("SALVE.");
-            sbReader.append(mRosario.getSalve());
+                sbReader.append(SEPARADOR);
+                sbReader.append("SALVE.");
+                sbReader.append(mRosario.getSalve());
 
-            sbReader.append(SEPARADOR);
-            sbReader.append("ORACIÓN.");
-            sbReader.append(mRosario.getOracion());
+                sbReader.append(SEPARADOR);
+                sbReader.append("ORACIÓN.");
+                sbReader.append(mRosario.getOracion());
+            }
             showData();
 
         } else {
+            getSupportActionBar().setTitle(mTitle);
+
             switch (dayCode) {
 
                 case 5:
@@ -121,24 +130,32 @@ public class OtrasOracionesActivity extends AppCompatActivity {
                     titulo = Utils.toH3Red("LETANÍAS DE NUESTRA SEÑORA");
                     ssb.append(titulo);
                     ssb.append("<br><br>");
-                    sbReader.append(titulo);
-                    sbReader.append(SEPARADOR);
+                    if (isVoiceOn) {
+
+                        sbReader.append(titulo);
+                        sbReader.append(SEPARADOR);
+                    }
                     break;
                 case 6:
                     titulo = Utils.toH3Red("ÁNGELUS");
                     ssb.append(titulo);
                     ssb.append("<br><br>");
-                    sbReader.append(titulo);
-                    sbReader.append(SEPARADOR);
+                    if (isVoiceOn) {
+                        sbReader.append(titulo);
+                        sbReader.append(SEPARADOR);
+                    }
                     rawId = R.raw.angelus;
+
                     break;
 
                 case 7:
                     titulo = Utils.toH3Red("REGINA COELI");
                     ssb.append(titulo);
                     ssb.append("<br><br>");
-                    sbReader.append(titulo);
-                    sbReader.append(SEPARADOR);
+                    if (isVoiceOn) {
+                        sbReader.append(titulo);
+                        sbReader.append(SEPARADOR);
+                    }
                     rawId = R.raw.regina;
                     break;
             }
@@ -157,12 +174,12 @@ public class OtrasOracionesActivity extends AppCompatActivity {
 
                 Spanned text = Utils.fromHtml(new String(b));
                 ssb.append(redString);
-                sbReader.append(readString);
+                if (isVoiceOn) {
+                    sbReader.append(readString);
+                }
                 mTextView.setText(Utils.fromHtml(ssb.toString()), TextView.BufferType.SPANNABLE);
                 in_s.close();
-                if (sbReader.length() > 0) {
-                    //mMenu.findItem(R.id.item_voz).setVisible(true);
-                }
+
             } catch (Exception e) {
                 mTextView.setText("Error: " + e.getMessage());
             }
@@ -171,17 +188,12 @@ public class OtrasOracionesActivity extends AppCompatActivity {
 
     protected void showData() {
         mTextView.setText(ssb, TextView.BufferType.SPANNABLE);
-        if (mMenu != null) {
-
-            mMenu.findItem(R.id.item_voz).setVisible(true);
-        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        this.mMenu = menu;
-        Log.d(TAG, "*menu_*" + menu.toString());
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
+        menu.findItem(R.id.item_voz).setVisible(true);
         return true;
     }
 
@@ -207,6 +219,12 @@ public class OtrasOracionesActivity extends AppCompatActivity {
                 Intent i = new Intent(this, CalendarioActivity.class);
                 startActivity(i);
                 return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+
         }
 
         return super.onOptionsItemSelected(item);

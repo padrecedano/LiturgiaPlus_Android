@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.OtrasOracionesActivity">
+    tools:context=".activities.BibliaLibrosActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -20,6 +20,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_otras_oraciones" />
+    <include layout="@layout/tv_clickable" />
+
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

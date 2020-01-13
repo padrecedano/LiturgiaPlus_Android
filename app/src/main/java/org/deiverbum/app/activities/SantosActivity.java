@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -32,18 +31,20 @@ import org.deiverbum.app.utils.Utils;
 import java.util.HashMap;
 
 import static org.deiverbum.app.utils.Constants.BRS;
+import static org.deiverbum.app.utils.Constants.PACIENCIA;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
 
 public class SantosActivity extends AppCompatActivity {
     private static final String TAG = "SantosActivity";
     String strFechaHoy;
     String santoMMDD;
+    String textoVida;
     private TTS tts;
     private StringBuilder sbReader;
     private ProgressBar progressBar;
     private String santoMM;
-    String textoVida;
     private Menu menu;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,13 +54,15 @@ public class SantosActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final TextView mTextView = findViewById(R.id.tv_Zoomable);
+        mTextView.setText(Utils.fromHtml(PACIENCIA));
+
         progressBar = findViewById(R.id.progressBar);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        isVoiceOn = prefs.getBoolean("voice", true);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         Intent i = getIntent();
         santoMMDD = (i.getExtras() != null) ? getIntent().getStringExtra("FECHA") : Utils.getHoy();
-
         final String santoDD = santoMMDD.substring(santoMMDD.length() - 2);
         santoMM = santoMMDD.substring(4, 6);
         strFechaHoy = Utils.getFecha();
@@ -99,19 +102,20 @@ public class SantosActivity extends AppCompatActivity {
                             sb.append(Utils.LS);
                             sb.append(Utils.toH2Red(nombre));
                             sb.append(Utils.LS2);
-                            sbReader.append(nombre);
-                            sbReader.append(SEPARADOR);
-
+                            if (isVoiceOn) {
+                                sbReader.append(nombre);
+                            }
                         }
                         if (document.contains("martirologio")) {
                             String martirologio = document.getString("martirologio");
                             sb.append(Utils.toSmallSize(martirologio));
                             sb.append(Utils.LS);
                             sb.append(Utils.toSmallSize("(Martirologio Romano)"));
-                            sbReader.append(martirologio);
-                            sbReader.append("\n");
-
-                            sbReader.append("Del martirologio romano.");
+                            if (isVoiceOn) {
+                                sbReader.append(martirologio);
+                                sbReader.append("\n");
+                                sbReader.append("Martirologio romano.");
+                            }
                         }
                         if (document.contains("vida")) {
                             String vida = document.getString("vida");
@@ -119,18 +123,20 @@ public class SantosActivity extends AppCompatActivity {
                             sb.append(Utils.fromHtml("<hr>"));
                             sb.append(Utils.toH3Red("Vida"));
                             sb.append(Utils.LS2);
-                            sbReader.append(SEPARADOR);
                             sb.append(Utils.fromHtml(vida.replaceAll(SEPARADOR, "")));
-                            sbReader.append(vida);
+                            if (isVoiceOn) {
+                                sbReader.append(vida);
+                            }
 
                         }
                         if (sb.toString().equals("")) {
                             sb.append(err);
-                            sbReader.append("No se encontró la vida del santo de hoy");
+                            if (isVoiceOn) {
+                                sbReader.append("No se encontró la vida del santo de hoy");
+                            }
                         } else {
                             textoVida = strFechaHoy + BRS + sb.toString();
                         }
-                        //mTextView.setText(textoVida);
                     } else {
                         sb.append(err);
 
@@ -141,15 +147,17 @@ public class SantosActivity extends AppCompatActivity {
                 }
                 mTextView.setText(sb);
                 progressBar.setVisibility(View.INVISIBLE);
-                if (sbReader.length() > 0) {
-                    menu.findItem(R.id.item_voz).setVisible(true);
+                if (isVoiceOn) {
+
+                    if (sbReader.length() > 0) {
+                        menu.findItem(R.id.item_voz).setVisible(true);
+                    }
                 }
 
             }
         });
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -160,6 +168,7 @@ public class SantosActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        Intent i;
         switch (item.getItemId()) {
             case android.R.id.home:
                 if (tts != null) {
@@ -171,18 +180,23 @@ public class SantosActivity extends AppCompatActivity {
             case R.id.item_voz:
                 String notQuotes = Utils.stripQuotation(sbReader.toString());
                 String html = String.valueOf(Utils.fromHtml(notQuotes));
-                Log.d(TAG, html);
-                String[] textParts = html.split(SEPARADOR);
+                String[] textParts = html.split("\\.");
                 tts = new TTS(getApplicationContext(), textParts);
                 return true;
 
             case R.id.item_calendario:
-                Intent i = new Intent(this, CalendarioActivity.class);
+                i = new Intent(this, CalendarioActivity.class);
                 startActivity(i);
+                return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @Override
     public void onBackPressed() {

@@ -7,8 +7,6 @@ import org.deiverbum.app.utils.Utils;
 
 import java.util.List;
 
-import static org.deiverbum.app.utils.Constants.SEPARADOR;
-
 public class Salmodia {
     private int tipo;
     private List<SalmoCompleto> salmoCompleto;
@@ -45,7 +43,7 @@ public class Salmodia {
                 ssb.append(Utils.getFinSalmo());
             }
             ssb.append(ant);
-            ssb.append(SEPARADOR);
+            //ssb.append(SEPARADOR);
         }
         return ssb;
     }
@@ -118,7 +116,7 @@ public class Salmodia {
             sb.append(Utils.fromHtml(salmo));
 
             if (s.getSalmo().endsWith("∸")) {
-                sb.append(Utils.LS2);
+                sb.append(Utils.LS);
                 sb.append(Utils.getNoGloria());
             } else {
                 sb.append(Utils.LS2);
@@ -172,12 +170,9 @@ public class Salmodia {
             sb.append(Utils.LS2);
             salmo = Utils.getFormato(s.getSalmo());
             sb.append(Utils.fromHtml(salmo));
-            sb.append(SEPARADOR);
+            //sb.append(SEPARADOR);
 
-            if (s.getSalmo().endsWith("∸")) {
-                sb.append(Utils.LS2);
-                sb.append(Utils.getNoGloria());
-            } else {
+            if (!(s.getSalmo().endsWith("∸"))) {
                 sb.append(Utils.getFinSalmo());
             }
             sb.append(Utils.LS2);
@@ -205,7 +200,6 @@ public class Salmodia {
     }
 
     public Spanned getHeaderForRead() {
-
         return Utils.fromHtml("<p>SALMODIA.</p>");
     }
 }

@@ -2,7 +2,6 @@ package org.deiverbum.app.activities;
 
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -32,7 +31,6 @@ import com.google.android.play.core.tasks.OnSuccessListener;
 import com.google.android.play.core.tasks.Task;
 
 import org.deiverbum.app.R;
-import org.deiverbum.app.data.MainDataModel;
 import org.deiverbum.app.data.MainItemsAdapter;
 import org.deiverbum.app.model.MainItem;
 import org.deiverbum.app.utils.Utils;
@@ -43,21 +41,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, MainItemsAdapter.ItemListener {
     RecyclerView recyclerView;
-    ArrayList<MainDataModel> arrayList;
-    String version;
     String strFechaHoy;
     private static final String TAG = "MainActivity";
-    private static final int UPDATE_REQUEST_CODE = 20190200;
-    static boolean calledAlready = false;
+    private static final int UPDATE_REQUEST_CODE = 20200100;
     private MainItemsAdapter adapter;
     private List<MainItem> mainList;
-    private SharedPreferences prefs = null;
     private AppUpdateManager appUpdateManager;
     private InstallStateUpdatedListener installStateUpdatedListener = installState -> {
-        // Show module progress, log state, or install the update.
         if (installState.installStatus() == InstallStatus.DOWNLOADED) {
-            // After the update is downloaded, show a notification
-            // and request user confirmation to restart the app.
             popupAlerter();
         }
     };
@@ -89,13 +80,14 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         recyclerView = findViewById(R.id.recyclerView);
         mainList = new ArrayList<>();
-        adapter = new MainItemsAdapter(this, mainList, this);
+        adapter = new MainItemsAdapter(mainList, this);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(0), true));
         recyclerView.setAdapter(adapter);
         prepareItems();
         checkAppUpdate();
+
     }
 
     @Override
@@ -202,6 +194,10 @@ public class MainActivity extends AppCompatActivity
 
             case 9:
             case 10:
+                i = new Intent(this, BibliaActivity.class);
+                startActivity(i);
+                break;
+
             case 11:
             case 12:
                 Snackbar.make(findViewById(android.R.id.content), "Esta opción estará disponible en próximas versiones de la Liturgia+, DM", Snackbar.LENGTH_LONG)
@@ -235,75 +231,34 @@ public class MainActivity extends AppCompatActivity
         int colorSacramentos = getResources().getColor(R.color.colorSacramentos);
 
 
-        int[] covers = new int[]{
-                R.drawable.ic_breviario,
-                R.drawable.ic_misa,
-                R.drawable.ic_homilias,
-                R.drawable.ic_santos,
-                R.drawable.ic_lecturas,
-                R.drawable.ic_comentarios,
-                R.drawable.ic_calendario,
-                R.drawable.ic_oraciones,
-                R.drawable.ic_mas,
-                R.drawable.ic_biblia,
-                R.drawable.ic_patristica,
-                R.drawable.ic_sacramentos
-
-        };
-
-        MainItem a = new MainItem("Breviario", 1, covers[0], colorBreviario);
-        mainList.add(a);
-        a = new MainItem("Misa", 2, covers[1], colorMisa);
-        mainList.add(a);
-        a = new MainItem("Homilías", 3, covers[2], colorHomilias);
-        mainList.add(a);
-
-        a = new MainItem("Santo de hoy", 4, covers[3], colorSantos);
-        mainList.add(a);
-        a = new MainItem("Lecturas de hoy", 5, covers[4], colorLecturas);
-        mainList.add(a);
-        a = new MainItem("Comentarios Evangelio", 6, covers[5], colorEvangelio);
-        mainList.add(a);
-
-        a = new MainItem("Calendario", 7, covers[6], colorCalendario);
-        mainList.add(a);
-        a = new MainItem("Oraciones", 8, covers[7], colorOraciones);
-        mainList.add(a);
-        a = new MainItem("Más...", 9, covers[8], colorMas);
-        mainList.add(a);
-
-        a = new MainItem("Biblia", 10, covers[9], colorBiblia);
-        mainList.add(a);
-        a = new MainItem("Patrística", 11, covers[10], colorPadres);
-        mainList.add(a);
-        a = new MainItem("Sacramentos", 12, covers[11], colorSacramentos);
-        mainList.add(a);
-
+        mainList.add(new MainItem("Breviario", 1, R.drawable.ic_breviario, colorBreviario));
+        mainList.add(new MainItem("Misa", 2, R.drawable.ic_misa, colorMisa));
+        mainList.add(new MainItem("Homilías", 3, R.drawable.ic_homilias, colorHomilias));
+        mainList.add(new MainItem("Santo de hoy", 4, R.drawable.ic_santos, colorSantos));
+        mainList.add(new MainItem("Lecturas de hoy", 5, R.drawable.ic_lecturas, colorLecturas));
+        mainList.add(new MainItem("Comentarios Evangelio", 6, R.drawable.ic_comentarios, colorEvangelio));
+        mainList.add(new MainItem("Calendario", 7, R.drawable.ic_calendario, colorCalendario));
+        mainList.add(new MainItem("Oraciones", 8, R.drawable.ic_oraciones, colorOraciones));
+        mainList.add(new MainItem("Más...", 9, R.drawable.ic_mas, colorMas));
+        mainList.add(new MainItem("Biblia", 10, R.drawable.ic_biblia, colorBiblia));
+        mainList.add(new MainItem("Patrística", 11, R.drawable.ic_patristica, colorPadres));
+        mainList.add(new MainItem("Sacramentos", 12, R.drawable.ic_sacramentos, colorSacramentos));
 
         adapter.notifyDataSetChanged();
     }
 
     private void checkAppUpdate() {
-        // Creates instance of the manager.
         appUpdateManager = AppUpdateManagerFactory.create(this);
         appUpdateManager.registerListener(installStateUpdatedListener);
-        // Returns an intent object that you use to check for an update.
         Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
-        // Checks that the platform will allow the specified type of update.
         appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-                    // For a flexible update, use AppUpdateType.FLEXIBLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
-                // Request the update.
                 try {
                     appUpdateManager.startUpdateFlowForResult(
-                            // Pass the intent that is returned by 'getAppUpdateInfo()'.
                             appUpdateInfo,
-                            // Or 'AppUpdateType.FLEXIBLE' for flexible updates.
                             AppUpdateType.FLEXIBLE,
-                            // The current activity making the update request.
                             this,
-                            // Include a request code to later monitor this update request.
                             UPDATE_REQUEST_CODE);
                 } catch (IntentSender.SendIntentException e) {
                     e.printStackTrace();
@@ -330,8 +285,7 @@ public class MainActivity extends AppCompatActivity
         if (requestCode == UPDATE_REQUEST_CODE) {
             if (resultCode != RESULT_OK) {
                 Log.d(TAG, "Update flow failed! Result code: " + resultCode);
-                // If the update is cancelled or fails,
-                // you can request to start the update again.
+
             }
         }
     }
@@ -345,9 +299,6 @@ public class MainActivity extends AppCompatActivity
                 .addOnSuccessListener(new OnSuccessListener<AppUpdateInfo>() {
                     @Override
                     public void onSuccess(AppUpdateInfo appUpdateInfo) {
-                        //FLEXIBLE:
-                        // If the update is downloaded but not installed,
-                        // notify the user to complete the update.
                         if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
                             popupAlerter();
                             Log.d(TAG, "checkNewAppVersionState(): resuming flexible update. Code: " + appUpdateInfo.updateAvailability());
@@ -411,5 +362,4 @@ public class MainActivity extends AppCompatActivity
             }
         }
     }
-
 }

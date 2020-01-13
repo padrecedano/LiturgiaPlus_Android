@@ -92,7 +92,14 @@ public class LecturaBreve {
     }
 
     public SpannableStringBuilder getHeaderResponsorio() {
-
         return Utils.formatTitle("RESPONSORIO BREVE");
+    }
+
+    public Spanned getHeaderForRead() {
+        return Utils.fromHtml("<p>Lectura Breve.</p>");
+    }
+
+    public Spanned getHeaderResponsorioForRead() {
+        return Utils.fromHtml("<p>Responsorio Breve.</p>");
     }
 }

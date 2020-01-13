@@ -44,15 +44,16 @@ import static org.deiverbum.app.utils.Constants.URL_HOMILIAS;
 public class HomiliasActivity extends AppCompatActivity {
     private static final String TAG = "HomiliasActivity";
     ZoomTextView mTextView;
+    JsonObjectRequest jsonObjectRequest;
     private RequestQueue requestQueue;
     private String strFechaHoy;
     private TTS tts;
     private StringBuilder sbReader;
     private SpannableStringBuilder ssb;
-    JsonObjectRequest jsonObjectRequest;
     private Liturgia mLiturgia;
     private ProgressBar progressBar;
     private Menu menu;
+    private boolean isVoiceOn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +71,9 @@ public class HomiliasActivity extends AppCompatActivity {
         mTextView = findViewById(R.id.tv_Zoomable);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         float fontSize = Float.parseFloat(prefs.getString("font_size", "18"));
+        isVoiceOn = prefs.getBoolean("voice", true);
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
-        sbReader = new StringBuilder();
         launchVolley();
     }
 
@@ -132,6 +133,14 @@ public class HomiliasActivity extends AppCompatActivity {
             case R.id.item_calendario:
                 Intent i = new Intent(this, CalendarioActivity.class);
                 startActivity(i);
+                return true;
+
+            case R.id.item_settings:
+                i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+
+
         }
         return super.onOptionsItemSelected(item);
     }
@@ -148,10 +157,7 @@ public class HomiliasActivity extends AppCompatActivity {
         ssb = new SpannableStringBuilder();
         List<HomiliaCompleta> a = mLiturgia.getHomiliaCompleta();
         MetaLiturgia meta = mLiturgia.getMetaLiturgia();
-        sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
-        sbReader.append(SEPARADOR);
-        sbReader.append(Utils.fromHtml("<p>HOMILÍAS</p>"));
-        sbReader.append(SEPARADOR);
+
 
         ssb.append(meta.getFecha());
         ssb.append(Utils.LS2);
@@ -161,24 +167,40 @@ public class HomiliasActivity extends AppCompatActivity {
         ssb.append(Utils.LS2);
         ssb.append(Utils.toH3Red("HOMILÍAS"));
         ssb.append(Utils.LS2);
-
+        if (isVoiceOn) {
+            sbReader = new StringBuilder();
+            sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
+            sbReader.append(SEPARADOR);
+            sbReader.append(Utils.fromHtml("<p>HOMILÍAS</p>"));
+            sbReader.append(SEPARADOR);
+        }
         for (HomiliaCompleta s : a) {
             ssb.append(Utils.toH3Red(s.padre));
             ssb.append(Utils.LS2);
-            //String text=s.getTexto();
+            ssb.append(s.getObraSpan());
+            ssb.append(Utils.LS);
+            ssb.append(s.getTemaSpan());
+            ssb.append(s.getFechaSpan());
+            ssb.append(Utils.LS2);
+
             ssb.append(s.getTextoLimpio());
             ssb.append(Utils.LS2);
-            sbReader.append(s.padre);
-            sbReader.append(SEPARADOR);
-            sbReader.append(s.getTexto());
-            sbReader.append(SEPARADOR);
+            if (isVoiceOn) {
 
+                sbReader.append(s.padre);
+                sbReader.append(SEPARADOR);
+                sbReader.append(s.getTexto());
+                sbReader.append(SEPARADOR);
+            }
+        }
+
+        if (isVoiceOn) {
+
+            if (sbReader.length() > 0) {
+                menu.findItem(R.id.item_voz).setVisible(true);
+            }
         }
         progressBar.setVisibility(View.INVISIBLE);
         mTextView.setText(ssb, TextView.BufferType.SPANNABLE);
-
-        if (sbReader.length() > 0) {
-            menu.findItem(R.id.item_voz).setVisible(true);
-        }
     }
 }

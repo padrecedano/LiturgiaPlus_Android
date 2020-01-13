@@ -19,6 +19,11 @@
         android:summary="Selecciona el tamaño de letra por defecto"
         android:title="@string/pref_title_font_size" />
 
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="voice"
+        android:summary="@string/pref_description_voice"
+        android:title="@string/pref_title_voice" />
 
     <SwitchPreference
         android:defaultValue="true"
