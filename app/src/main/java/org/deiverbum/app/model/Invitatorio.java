@@ -83,6 +83,6 @@ public class Invitatorio {
     }
 
     public Spanned getAntifonaForRead() {
-        return Utils.fromHtml("<p>" + antifona + ".</p>");
+        return Utils.fromHtml("<p>" + antifona + "</p>");
     }
 }

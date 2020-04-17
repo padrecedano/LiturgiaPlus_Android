@@ -76,7 +76,6 @@ public class Breviario {
     public void setLaudes(Laudes laudes) {
         this.laudes = laudes;
     }
-
     public Intermedia getIntermedia() {
         return intermedia;
     }

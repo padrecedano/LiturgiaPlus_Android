@@ -3,12 +3,14 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -38,12 +40,11 @@ import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static org.deiverbum.app.utils.Constants.CALENDAR_PATH;
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
+import static org.deiverbum.app.utils.Constants.SCREEN_TIME_OFF;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
 import static org.deiverbum.app.utils.Constants.URL_TERCIA;
 import static org.deiverbum.app.utils.Utils.LS;
@@ -78,6 +79,15 @@ public class TerciaActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
         progressBar.setVisibility(View.VISIBLE);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        };
+        handler.postDelayed(r, SCREEN_TIME_OFF);
         launchFirestore();
 
     }
@@ -113,10 +123,9 @@ public class TerciaActivity extends AppCompatActivity {
                 response -> {
                     try {
                         Gson gson = new Gson();
-                        String jsonBreviario = String.valueOf(new JSONObject(String.valueOf(response.getJSONObject("liturgia"))));
-                        mLiturgia = gson.fromJson(jsonBreviario, Liturgia.class);
+                        mLiturgia = gson.fromJson(response.getJSONObject("liturgia").toString(), Liturgia.class);
                         showData();
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         mTextView.setText(e.getMessage());
                     }
                 },

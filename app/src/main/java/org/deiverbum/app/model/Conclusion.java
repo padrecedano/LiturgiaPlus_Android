@@ -8,14 +8,25 @@ import com.google.gson.annotations.SerializedName;
 
 import org.deiverbum.app.utils.Utils;
 
+import java.util.List;
+import java.util.Random;
+
 public class Conclusion {
 
     @SerializedName("bendicion")
     @Expose
     private String bendicion;
-    @SerializedName("antVirgen")
-    @Expose
-    private String antVirgen;
+
+    List<String> antVirgen;
+    private String antVirgenOld;
+
+    public List<String> getAntVirgen() {
+        return this.antVirgen;
+    }
+
+    public void setAntVirgen(List<String> antVirgen) {
+        this.antVirgen = antVirgen;
+    }
 
     public Conclusion() {
     }
@@ -43,15 +54,21 @@ public class Conclusion {
     }
 
     public Spanned getAntVirgenSpan() {
-        return Utils.fromHtml(antVirgen);
+        return Utils.fromHtml("");
     }
 
-    public String getAntVirgen() {
-        return antVirgen;
+    public String getAntifonaVirgen(int timeID) {
+        int mIndex = 4;
+        if (timeID != 6) {
+            int[] intArray = {0, 1, 2};
+            mIndex = new Random().nextInt(intArray.length);
+        }
+        return antVirgen.get(mIndex);
+
     }
 
-    public void setAntVirgen(String antVirgen) {
-        this.antVirgen = antVirgen;
+    public void setAntVirgenOld(String antVirgen) {
+        this.antVirgenOld = "";
     }
 
 }

@@ -31,7 +31,7 @@ public class Salmodia {
      */
     @Deprecated
     public SpannableStringBuilder getSalmosForRead() {
-        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
         for (SalmoCompleto s : salmoCompleto) {
             String ant = "<p>" + s.getAntifona() + ".</p>";
             ssb.append(ant);
@@ -58,6 +58,136 @@ public class Salmodia {
 
     public void setSalmoCompleto(List<SalmoCompleto> salmoCompleto) {
         this.salmoCompleto = salmoCompleto;
+    }
+
+    public SpannableStringBuilder getSalmoCompletas(int timeID) {
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        String salmo = "";
+        String preAntifona = "Ant. ";
+        String antUnica = "";
+
+        if (timeID == 6) {
+            sb.append(Utils.toRed(preAntifona));
+            antUnica = "Aleluya, aleluya, aleluya.";
+            sb.append(antUnica);
+        }
+
+        for (SalmoCompleto s : salmoCompleto) {
+            SpannableStringBuilder tema = new SpannableStringBuilder();
+            SpannableStringBuilder parte = new SpannableStringBuilder();
+            SpannableStringBuilder intro = new SpannableStringBuilder();
+            SpannableStringBuilder ref = new SpannableStringBuilder();
+            String preRef = String.valueOf(s.getRef());
+
+            if (timeID != 6) {
+                sb.append(Utils.toRed(preAntifona + s.getOrden() + ". "));
+                sb.append(Utils.fromHtml(s.getAntifona()));
+            }
+            if (!s.getTema().equals("")) {
+                tema.append(Utils.toRed(s.getTema()));
+                tema.append(Utils.LS2);
+            }
+
+            if (!s.getIntro().equals("")) {
+                intro.append(Utils.fromHtmlSmall(s.getIntro()));
+                intro.append(Utils.LS2);
+            }
+            if (!s.getParte().equals("")) {
+                parte.append(Utils.toRed(s.getParte()));
+                parte.append(Utils.LS2);
+            }
+            if (preRef != null && !preRef.isEmpty()) {
+                ref.append(Utils.LS);
+                ref.append(s.getRef());
+                ref.append(Utils.LS2);
+            }
+
+            sb.append(Utils.LS2);
+            sb.append(ref);
+            sb.append(tema);
+            sb.append(intro);
+            sb.append(parte);
+            salmo = Utils.getFormato(s.getSalmo());
+            sb.append(Utils.fromHtml(salmo));
+
+            if (s.getSalmo().endsWith("∸")) {
+                sb.append(Utils.LS);
+                sb.append(Utils.getNoGloria());
+            } else {
+                sb.append(Utils.LS2);
+                sb.append(Utils.getFinSalmo());
+            }
+
+
+            if (timeID != 6) {
+                sb.append(Utils.LS2);
+                sb.append(Utils.toRed(preAntifona));
+                sb.append(Utils.getAntifonaLimpia(s.getAntifona()));
+                sb.append(Utils.LS2);
+            }
+        }
+        if (timeID == 6) {
+            sb.append(Utils.LS2);
+            sb.append(Utils.toRed(preAntifona));
+            sb.append(antUnica);
+            sb.append(Utils.LS2);
+        }
+
+        return sb;
+    }
+
+
+    public SpannableStringBuilder getSalmoCompletasForRead(int timeID) {
+        SpannableStringBuilder sb = new SpannableStringBuilder();
+        String salmo = "";
+        String antUnica = "";
+
+        if (timeID == 6) {
+            antUnica = "Aleluya, aleluya, aleluya.";
+            sb.append(antUnica);
+        }
+
+        for (SalmoCompleto s : salmoCompleto) {
+            SpannableStringBuilder tema = new SpannableStringBuilder();
+            SpannableStringBuilder parte = new SpannableStringBuilder();
+            SpannableStringBuilder intro = new SpannableStringBuilder();
+            SpannableStringBuilder ref = new SpannableStringBuilder();
+            String preRef = String.valueOf(s.getRef());
+
+            if (timeID != 6) {
+                sb.append(Utils.fromHtml(s.getAntifona()));
+            }
+
+
+            sb.append(Utils.LS2);
+            sb.append(ref);
+            sb.append(tema);
+            sb.append(intro);
+            sb.append(parte);
+            //salmo = Utils.getFormato(s.getSalmo());
+            sb.append(Utils.fromHtml(s.getSalmo()));
+
+            if (s.getSalmo().endsWith("∸")) {
+                sb.append(Utils.LS);
+                sb.append(Utils.getNoGloria());
+            } else {
+                sb.append(Utils.LS2);
+                sb.append(Utils.getFinSalmo());
+            }
+
+
+            if (timeID != 6) {
+                sb.append(Utils.LS2);
+                sb.append(Utils.getAntifonaLimpia(s.getAntifona()));
+                sb.append(Utils.LS2);
+            }
+        }
+        if (timeID == 6) {
+            sb.append(antUnica);
+            sb.append(Utils.LS2);
+        }
+
+        return sb;
     }
 
     public SpannableStringBuilder getSalmoCompleto(int hourIndex) {
@@ -149,7 +279,7 @@ public class Salmodia {
     }
 
     public SpannableStringBuilder getSalmoCompletoForRead(int hourIndex) {
-        SpannableStringBuilder sb = new SpannableStringBuilder("");
+        SpannableStringBuilder sb = new SpannableStringBuilder();
         String salmo = "";
         String antUnica = "";
 

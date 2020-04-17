@@ -4,10 +4,7 @@ import android.text.SpannableStringBuilder;
 
 import org.deiverbum.app.utils.Utils;
 
-import java.util.HashMap;
 import java.util.List;
-
-import static org.deiverbum.app.utils.Constants.SEPARADOR;
 
 public class LiturgiaPalabra {
 
@@ -37,25 +34,16 @@ public class LiturgiaPalabra {
     public SpannableStringBuilder getEvangelio() {
         int tipo = this.tipo;
         String txtLectura = "";
-        //SpannableStringBuilder entireRef="";
         SpannableStringBuilder sb = new SpannableStringBuilder("");
         for (Lectura l : lecturas) {
             if (l.getOrden() == 40) {
-                //entireRef=Utils.toH4Red(l.getLibro()+NBSP_4+l.getRef());
-
                 sb.append(Utils.toH4Red(l.getLibro() + "       " + l.getRef()));
                 sb.append(Utils.LS2);
-                sb.append(SEPARADOR);
-
-                //sb.append(Utils.toRed(l.getRef()));
-                //sb.append(Utils.LS2);
                 sb.append(Utils.toRed(l.getTema()));
                 sb.append(Utils.LS2);
-                sb.append(SEPARADOR);
                 txtLectura = Utils.getFormato(l.getTexto());
                 sb.append(Utils.fromHtml(txtLectura));
                 sb.append(Utils.LS2);
-                sb.append(SEPARADOR);
             }
         }
 
@@ -64,21 +52,14 @@ public class LiturgiaPalabra {
 
 
     public SpannableStringBuilder getLiturgiaPalabra() {
-        int tipo = this.tipo;
         String txtLectura = "";
-        //SpannableStringBuilder entireRef="";
         SpannableStringBuilder sb = new SpannableStringBuilder("");
         for (Lectura l : lecturas) {
-            //entireRef=Utils.toH4Red(l.getLibro()+NBSP_4+l.getRef());
             sb.append(Utils.LS2);
             sb.append(Utils.toH3Red(findOrden(l.getOrden())));
             sb.append(Utils.LS2);
-
             sb.append(Utils.toH4Red(l.getLibro() + "       " + l.getRef()));
             sb.append(Utils.LS2);
-
-            //sb.append(Utils.toRed(l.getRef()));
-            //sb.append(Utils.LS2);
             sb.append(Utils.toRed(l.getTema()));
             sb.append(Utils.LS2);
             txtLectura = Utils.getFormato(l.getTexto());
@@ -90,23 +71,16 @@ public class LiturgiaPalabra {
     }
 
     public SpannableStringBuilder getLiturgiaPalabraforRead() {
-        int tipo = this.tipo;
         String txtLectura = "";
-        //SpannableStringBuilder entireRef="";
         SpannableStringBuilder sb = new SpannableStringBuilder("");
         for (Lectura l : lecturas) {
-            //entireRef=Utils.toH4Red(l.getLibro()+NBSP_4+l.getRef());
             sb.append(findOrden(l.getOrden()));
             sb.append(Utils.LS2);
-            sb.append(SEPARADOR);
             sb.append(l.getLibro());
             sb.append(Utils.LS2);
-            sb.append(SEPARADOR);
-
             sb.append(Utils.LS2);
             sb.append(l.getTema());
             sb.append(Utils.LS2);
-            sb.append(SEPARADOR);
             txtLectura = l.getTexto();
             sb.append(Utils.fromHtml(txtLectura));
             sb.append(Utils.LS2);
@@ -115,8 +89,20 @@ public class LiturgiaPalabra {
         return sb;
     }
 
+    /*Bug fixed on v. 2020.1.3*/
     public String findOrden(int orden) {
+        String orderText;
 
+        if (orden <= 19) {
+            orderText = "Primera Lectura";
+        } else if (orden <= 29) {
+            orderText = "Salmo Responsorial";
+        } else if (orden <= 39) {
+            orderText = "Primera Lectura";
+        } else {
+            orderText = "Evangelio";
+        }
+/*
         HashMap<Integer, String> orderMap = new HashMap<Integer, String>();
         orderMap.put(1, "Primera Lectura");
         orderMap.put(10, "Primera Lectura");
@@ -126,9 +112,14 @@ public class LiturgiaPalabra {
         orderMap.put(30, "Segunda Lectura");
         orderMap.put(4, "Evangelio");
         orderMap.put(40, "Evangelio");
+        orderMap.put(41, "Evangelio");
+        orderMap.put(42, "Evangelio");
+        orderMap.put(44, "Evangelio");
+        orderMap.put(45, "Evangelio");
+        orderMap.put(46, "Evangelio");
 
-        String orderText = orderMap.get(orden);
-
+       // String orderText = orderMap.get(orden);
+*/
         return orderText;
 
 

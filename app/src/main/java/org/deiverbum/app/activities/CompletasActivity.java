@@ -56,7 +56,6 @@ import java.util.Calendar;
 import static org.deiverbum.app.utils.Constants.CALENDAR_PATH;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
-import static org.deiverbum.app.utils.Utils.LS2;
 
 public class CompletasActivity extends AppCompatActivity {
     private static final String TAG = "CompletasActivity";
@@ -72,6 +71,8 @@ public class CompletasActivity extends AppCompatActivity {
     private Completas mCompletas;
     private Liturgia mLiturgia;
     private int weekDay;
+    private int timeID;
+
     private boolean isVoiceOn;
 
     @Override
@@ -107,6 +108,7 @@ public class CompletasActivity extends AppCompatActivity {
                     if (document.exists()) {
                         MetaLiturgia m = document.get("meta", MetaLiturgia.class);
                         weekDay = m.getweekDay();
+                        timeID = m.getTiempo();
                     }
                 }
                 showData();
@@ -114,16 +116,6 @@ public class CompletasActivity extends AppCompatActivity {
         });
     }
 
-    private void getDataFromJson() {
-        String filePath = "res/raw/completas_" + weekDay + ".json";
-        InputStream raw = getClass().getClassLoader().getResourceAsStream(filePath);
-        Reader rd = new BufferedReader(new InputStreamReader(raw));
-        Gson gson = new Gson();
-        JsonObject jsonObject = gson.fromJson(rd, JsonObject.class);
-        JsonObject mJson = jsonObject.getAsJsonObject("breviario");
-        mBreviario = gson.fromJson(mJson, Breviario.class);
-        showData();
-    }
 
     private void showData() {
         if (weekDay == 0) {
@@ -135,7 +127,8 @@ public class CompletasActivity extends AppCompatActivity {
             } catch (ParseException e) {
             }
         }
-        String filePath = "res/raw/completas_" + weekDay + ".json";
+        weekDay = (weekDay == 7) ? 0 : weekDay;
+        String filePath = "res/raw/completas.json";
         Log.d(TAG, filePath);
         InputStream raw = getClass().getClassLoader().getResourceAsStream(filePath);
         Reader rd = new BufferedReader(new InputStreamReader(raw));
@@ -149,8 +142,9 @@ public class CompletasActivity extends AppCompatActivity {
         Completas mCompletas = mBreviario.getCompletas();
         RitosIniciales ri = mCompletas.getRitosIniciales();
         Kyrie kyrie = ri.getKyrie();
-        Himno himno = mCompletas.getHimno();
-        Salmodia salmodia = mCompletas.getSalmodia();
+        Himno mHimno = mCompletas.getCompletasHimno(timeID, weekDay);
+        Salmodia mSalmodia = mCompletas.getCompletasDias().get(weekDay).getSalmodia();
+
         LecturaBreve lecturaBreve = mCompletas.getLecturaBreve();
         NuncDimitis nunc = mCompletas.getNuncDimitis();
         Conclusion conclusion = mCompletas.getConclusion();
@@ -164,73 +158,64 @@ public class CompletasActivity extends AppCompatActivity {
         sb.append(Utils.LS2);
         sb.append(kyrie.getConclusion());
         sb.append(Utils.LS2);
-        sb.append(himno.getHeader());
+
+        sb.append(mHimno.getTextoSpan());
         sb.append(Utils.LS2);
-        sb.append(himno.getTextoSpan());
+        sb.append(mSalmodia.getHeader());
         sb.append(Utils.LS2);
-        sb.append(salmodia.getHeader());
-        sb.append(Utils.LS2);
-        sb.append(salmodia.getSalmoCompleto());
+
+        sb.append(mSalmodia.getSalmoCompletas(3));
         sb.append(Utils.LS);
-        sb.append(lecturaBreve.getHeaderLectura());
-        sb.append(Utils.LS2);
-        sb.append(lecturaBreve.getTexto());
-        sb.append(Utils.LS2);
-        sb.append(lecturaBreve.getHeaderResponsorio());
-        sb.append(Utils.LS2);
-        sb.append(lecturaBreve.getResponsorioSpan());
+
+        sb.append(mCompletas.getLecturaSpan(timeID, weekDay));
         sb.append(Utils.LS2);
         sb.append(nunc.getHeader());
         sb.append(Utils.LS2);
-        sb.append(nunc.getAntifona());
+        sb.append(Utils.replaceByTime(nunc.getAntifona(), timeID));
         sb.append(Utils.LS2);
         sb.append(Utils.fromHtml(nunc.getTexto()));
         sb.append(Utils.LS2);
         sb.append(Utils.getFinSalmo());
-        sb.append(LS2);
+        sb.append(Utils.LS2);
         sb.append(Utils.formatTitle("ORACIÓN"));
-        sb.append(LS2);
-        sb.append(Utils.fromHtml(mCompletas.getOracion()));
-        sb.append(LS2);
+        sb.append(Utils.LS2);
+        sb.append(Utils.fromHtml(mCompletas.getOracion(weekDay)));
+        sb.append(Utils.LS2);
         sb.append(Utils.formatTitle("CONCLUSIÓN"));
-        sb.append(LS2);
+        sb.append(Utils.LS2);
         sb.append(conclusion.getBendicion());
-        sb.append(LS2);
+        sb.append(Utils.LS2);
         sb.append(Utils.formatTitle("ANTÍFONA FINAL DE LA SANTÍSIMA VIRGEN"));
-        sb.append(LS2);
-        sb.append(conclusion.getAntVirgenSpan());
+        sb.append(Utils.LS2);
+        Spanned antVirgen = Utils.fromHtml(conclusion.getAntifonaVirgen(timeID));
+        sb.append(antVirgen);
 
         if (isVoiceOn) {
             sbReader = new StringBuilder();
-            sbReader.append(Utils.fromHtml("<p>COMPLETAS.</p>"));
-            sbReader.append(Utils.LS);
+            sbReader.append("Completas.");
             sbReader.append(mBreviario.getInvocacionForRead());
-            sbReader.append(Utils.LS);
-            sbReader.append(Utils.LS);
             sbReader.append(kyrie.getIntroduccionForRead());
             sbReader.append(kyrie.getTextoForRead());
             sbReader.append(kyrie.getConclusionForRead());
-            sbReader.append(SEPARADOR);
-            sbReader.append(Utils.fromHtml("<p>HIMNO.</p>"));
-            sbReader.append(himno.getTexto());
-            sbReader.append(SEPARADOR);
-            sbReader.append(salmodia.getHeaderForRead());
-            sbReader.append(salmodia.getSalmoCompletoForRead());
-            sbReader.append(Utils.fromHtml("<p>LECTURA BREVE.</p>"));
-            sbReader.append(lecturaBreve.getTexto());
-            sbReader.append(Utils.fromHtml("<p>RESPONSORIO.</p>"));
-            sbReader.append(lecturaBreve.getResponsorioForRead());
-            sbReader.append(SEPARADOR);
-            sbReader.append(nunc.getHeader());
+            sbReader.append("Himno.");
+            //sbReader.append(himno.getTexto());
+            sbReader.append(mHimno.getTextoSpan());
+            sbReader.append("Salmodia.");
+            sbReader.append(mSalmodia.getSalmoCompletasForRead(timeID));
+            sbReader.append(mCompletas.getLecturaForRead(timeID, weekDay));
+
+
+            sbReader.append("Cántico evangélico.");
             sbReader.append(nunc.getAntifonaForRead());
             sbReader.append(nunc.getTexto());
             sbReader.append(Utils.getFinSalmo());
-            sbReader.append(SEPARADOR);
-            sbReader.append(Utils.fromHtml("<p>ORACIÓN.</p>"));
-            sbReader.append(mCompletas.getOracion());
+            sbReader.append("Oración.");
+            sbReader.append(mCompletas.getOracion(weekDay));
             sbReader.append(conclusion.getBendicionForRead());
-            sbReader.append(Utils.fromHtml("<p>ANTÍFONA FINAL DE LA SANTÍSIMA VIRGEN.</p>"));
-            sbReader.append(conclusion.getAntVirgen());
+            sbReader.append("Antífona final de la Santísima Virgen.");
+            sbReader.append(antVirgen);
+
+
         }
         mTextView.setText(sb, TextView.BufferType.SPANNABLE);
         progressBar.setVisibility(View.INVISIBLE);
@@ -245,7 +230,10 @@ public class CompletasActivity extends AppCompatActivity {
         this.menu = menu;
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         //getDataFromJson();
-        menu.findItem(R.id.item_voz).setVisible(true);
+        if (isVoiceOn) {
+
+            menu.findItem(R.id.item_voz).setVisible(true);
+        }
         return true;
     }
 

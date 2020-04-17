@@ -6,7 +6,6 @@ import org.deiverbum.app.utils.Utils;
 
 import java.util.List;
 
-import static org.deiverbum.app.utils.Constants.SEPARADOR;
 import static org.deiverbum.app.utils.Utils.LS2;
 
 public class Comentario {
@@ -50,10 +49,13 @@ public class Comentario {
             if (!c.getCita().equals("")) {
                 ssb.append(LS2);
                 ssb.append(Utils.toMediumSize(c.getCita()));
+                ssb.append(LS2);
+
             } else {
                 ssb.append(LS2);
             }
-            ssb.append(Utils.fromHtml(c.getTexto().replaceAll(SEPARADOR, "")));
+            //ssb.append(Utils.fromHtml(c.getTexto().replaceAll(SEPARADOR, "")));
+            ssb.append(Utils.fromHtml(c.getTexto()));
             ssb.append(LS2);
         }
         return ssb;
@@ -68,7 +70,7 @@ public class Comentario {
 //            ssb.append(c.getTema());
             sb.append(LS2);
             sb.append(Utils.fromHtml(c.getTexto()));
-            sb.append(SEPARADOR);
+            //sb.append(SEPARADOR);
 
 //            ssb.append(LS2);
         }

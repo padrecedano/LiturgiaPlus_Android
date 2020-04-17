@@ -19,7 +19,7 @@ public class OficioLecturas {
     }
 
     public SpannableStringBuilder getResponsorioForRead() {
-        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
 
         String r = "";
         if (responsorio.contains("|")) {
@@ -33,7 +33,7 @@ public class OficioLecturas {
     }
 
     public SpannableStringBuilder getResponsorioSpan() {
-        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
 
         if (responsorio.contains("|")) {
             String[] textParts = responsorio.split("\\|");

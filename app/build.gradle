@@ -8,8 +8,8 @@ android {
         applicationId "org.deiverbum.app"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 20200100
-        versionName "2020.1 [Numeri]"
+        versionCode 202001030
+        versionName "2020.1.3 [Numeri]"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -20,8 +20,7 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         debug {

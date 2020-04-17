@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity
     RecyclerView recyclerView;
     String strFechaHoy;
     private static final String TAG = "MainActivity";
-    private static final int UPDATE_REQUEST_CODE = 20200100;
+    private static final int UPDATE_REQUEST_CODE = 202001030;
     private MainItemsAdapter adapter;
     private List<MainItem> mainList;
     private AppUpdateManager appUpdateManager;
@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         adapter = new MainItemsAdapter(mainList, this);
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(mLayoutManager);
-        recyclerView.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(0), true));
+        recyclerView.addItemDecoration(new MainActivity.GridSpacingItemDecoration(3, dpToPx(1), true));
         recyclerView.setAdapter(adapter);
         prepareItems();
         checkAppUpdate();
@@ -252,6 +252,7 @@ public class MainActivity extends AppCompatActivity
         appUpdateManager.registerListener(installStateUpdatedListener);
         Task<AppUpdateInfo> appUpdateInfoTask = appUpdateManager.getAppUpdateInfo();
         appUpdateInfoTask.addOnSuccessListener(appUpdateInfo -> {
+            Log.d(TAG, "testUpdate" + appUpdateInfo.toString());
             if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
                     && appUpdateInfo.isUpdateTypeAllowed(AppUpdateType.FLEXIBLE)) {
                 try {

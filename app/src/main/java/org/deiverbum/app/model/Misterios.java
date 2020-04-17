@@ -11,6 +11,7 @@ public class Misterios {
     public Gozosos gozosos;
     public Luminosos luminosos;
     public Dolorosos dolorosos;
+    public String titulo;
 
     public Gloriosos getGloriosos() {
         return gloriosos;
@@ -44,10 +45,11 @@ public class Misterios {
         this.dolorosos = dolorosos;
     }
 
-    public SpannableStringBuilder getContenido(Rosario r, int dayCode) {
+
+    public SpannableStringBuilder getContenido(int dayCode) {
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
         List<String> list = null;
-        Rosario rosario = new Rosario();
+        //Rosario rosario = new Rosario();
         switch (dayCode) {
             case 1:
                 list = gloriosos.contenido;
@@ -69,7 +71,7 @@ public class Misterios {
         for (String s : list) {
             ssb.append(Utils.toH3Red(s));
             ssb.append(Utils.LS2);
-            ssb.append(r.misterioCompleto());
+            //ssb.append(r.misterioCompleto());
             ssb.append(Utils.LS2);
             //return "a";//contenido;
         }

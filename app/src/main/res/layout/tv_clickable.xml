@@ -19,7 +19,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:linksClickable="true"
-            android:text="..."
+            android:text=""
+            android:textColor="#272626"
             android:textIsSelectable="true"
             android:textSize="@dimen/default_font" />
     </ScrollView>

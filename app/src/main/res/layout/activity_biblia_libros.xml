@@ -20,7 +20,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/tv_clickable" />
+    <include layout="@layout/content_breviario_general" />
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

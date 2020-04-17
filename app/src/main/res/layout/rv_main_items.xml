@@ -26,8 +26,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:adjustViewBounds="true"
-                android:maxHeight="82dp"
                 android:maxWidth="82dp"
+                android:maxHeight="82dp"
                 android:padding="5dp"
                 android:scaleType="fitCenter"
                 android:tint="@color/color_mainrecycler_bg" />
@@ -39,22 +39,21 @@
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="-50dp"
+                android:fontFamily="sans-serif-medium"
                 android:gravity="top|center_horizontal"
                 android:paddingTop="-50dp"
                 android:scaleType="fitStart"
                 android:textColor="@color/transparent"
-                android:fontFamily="sans-serif-medium"
-                android:textSize="85dp"
-                />
+                android:textSize="85dp" />
 
             <TextView
                 android:id="@+id/tv_Elemento"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:layout_alignParentBottom="true"
                 android:layout_below="@+id/tv_Material"
-                android:inputType="textCapWords"
+                android:layout_alignParentBottom="true"
                 android:gravity="bottom|center_horizontal"
+                android:inputType="textCapWords"
                 android:textColor="@color/color_mainrecycler_text"
                 android:textStyle="bold" />
 

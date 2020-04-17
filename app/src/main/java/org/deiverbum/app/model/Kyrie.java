@@ -7,6 +7,8 @@ import com.google.gson.annotations.SerializedName;
 
 import org.deiverbum.app.utils.Utils;
 
+import java.util.Random;
+
 public class Kyrie {
 
     @SerializedName("introduccion")
@@ -19,6 +21,7 @@ public class Kyrie {
     @Expose
     private String conclusion;
     private String tipo;
+    private int kyrieType;
 
     public SpannableStringBuilder getIntroduccionForRead() {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
@@ -51,7 +54,6 @@ public class Kyrie {
             ssb.append(Utils.toSmallSizeRed(introArray[2]));
 
         } else {
-            //ssb.append(String.valueOf(introArray.length));
             ssb.append(introduccion);
 
         }
@@ -63,8 +65,11 @@ public class Kyrie {
     }
 
     public SpannableStringBuilder getTexto() {
-        int type = Integer.parseInt(tipo);
-        return Utils.getKyrie(type);
+        int[] intArray = {0, 1, 2};
+        kyrieType = new Random().nextInt(intArray.length);
+
+        //int type = Integer.parseInt(tipo);
+        return Utils.getKyrie(kyrieType);
         /*
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         this.texto = Utils.getFormato(texto);
@@ -121,9 +126,10 @@ public class Kyrie {
 
     public SpannableStringBuilder getTextoForRead() {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
-
-        switch (tipo) {
-            case "1":
+        int[] intArray = {0, 1, 2};
+        int mIndex = new Random().nextInt(intArray.length);
+        switch (kyrieType) {
+            case 0:
                 String text = "<p>Yo confieso ante Dios todopoderoso <br />" +
                         "y ante vosotros, hermanos <br />" +
                         "que he pecado mucho <br />" +
@@ -136,14 +142,14 @@ public class Kyrie {
                 ssb.append(Utils.fromHtml(text));
 
                 break;
-            case "2":
+            case 1:
                 ssb.append(Utils.fromHtml("<p>Señor, ten misericordia de nosotros.</p>"));
                 ssb.append(Utils.fromHtml("<p>Porque hemos pecado contra ti.</p>"));
                 ssb.append(Utils.fromHtml("<p>Muéstranos, Señor, tu misericordia.</p>"));
                 ssb.append(Utils.fromHtml("<p>Y danos tu salvación.</p>"));
 
                 break;
-            case "3":
+            case 2:
                 ssb.append(Utils.fromHtml("<p>Tú que has sido enviado a sanar los corazones afligidos: Señor, ten piedad.</p>"));
                 ssb.append(Utils.fromHtml("<p>Señor, ten piedad.</p>"));
                 ssb.append(Utils.fromHtml("<p>Tú que has venido a llamar a los pecadores: Cristo, ten piedad.</p>"));

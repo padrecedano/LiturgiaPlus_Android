@@ -3,6 +3,7 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -10,6 +11,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -31,8 +33,9 @@ import org.deiverbum.app.utils.Utils;
 import java.util.HashMap;
 
 import static org.deiverbum.app.utils.Constants.BRS;
+import static org.deiverbum.app.utils.Constants.OLD_SEPARATOR;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
-import static org.deiverbum.app.utils.Constants.SEPARADOR;
+import static org.deiverbum.app.utils.Constants.SCREEN_TIME_OFF;
 
 public class SantosActivity extends AppCompatActivity {
     private static final String TAG = "SantosActivity";
@@ -67,6 +70,16 @@ public class SantosActivity extends AppCompatActivity {
         santoMM = santoMMDD.substring(4, 6);
         strFechaHoy = Utils.getFecha();
         sbReader = new StringBuilder();
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        };
+        handler.postDelayed(r, SCREEN_TIME_OFF);
+
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference messageRef = db
@@ -107,8 +120,8 @@ public class SantosActivity extends AppCompatActivity {
                             }
                         }
                         if (document.contains("martirologio")) {
-                            String martirologio = document.getString("martirologio");
-                            sb.append(Utils.toSmallSize(martirologio));
+                            Spanned martirologio = Utils.fromHtml("<small>" + document.getString("martirologio") + "</small>");
+                            sb.append(martirologio);
                             sb.append(Utils.LS);
                             sb.append(Utils.toSmallSize("(Martirologio Romano)"));
                             if (isVoiceOn) {
@@ -123,7 +136,7 @@ public class SantosActivity extends AppCompatActivity {
                             sb.append(Utils.fromHtml("<hr>"));
                             sb.append(Utils.toH3Red("Vida"));
                             sb.append(Utils.LS2);
-                            sb.append(Utils.fromHtml(vida.replaceAll(SEPARADOR, "")));
+                            sb.append(Utils.fromHtml(vida.replaceAll(OLD_SEPARATOR, "")));
                             if (isVoiceOn) {
                                 sbReader.append(vida);
                             }

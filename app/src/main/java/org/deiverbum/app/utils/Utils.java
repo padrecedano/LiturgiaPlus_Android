@@ -198,9 +198,9 @@ public final class Utils {
     }
 
     public static SpannableStringBuilder toRed(String sOrigen) {
-        SpannableStringBuilder ssb = new SpannableStringBuilder(sOrigen);
-        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return ssb;
+        SpannableString s = new SpannableString(sOrigen);
+        s.setSpan(CharacterStyle.wrap(liturgicalRed), 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return new SpannableStringBuilder(s);
     }
 
     public static SpannableStringBuilder toRedNew(SpannableStringBuilder sOrigen) {
@@ -208,9 +208,11 @@ public final class Utils {
         return sOrigen;
     }
 
-    public static SpannableStringBuilder ssbRed(SpannableStringBuilder ssb) {
-        ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 0, ssb.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-        return ssb;
+    public static SpannableStringBuilder toRedHtml(String sOrigen) {
+        SpannableString s = new SpannableString(fromHtml(sOrigen));
+
+        s.setSpan(CharacterStyle.wrap(liturgicalRed), 0, s.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        return new SpannableStringBuilder(s);
     }
 
     public static SpannableStringBuilder getSaludoOficio() {
@@ -224,6 +226,18 @@ public final class Utils {
         ssb.append(ssbPartial);
         ssb.append(LS2);
         ssb.append(Utils.getFinSalmo());
+        return ssb;
+    }
+
+    public static SpannableStringBuilder getSaludoEnElNombre() {
+        SpannableStringBuilder ssb = new SpannableStringBuilder("");
+        SpannableStringBuilder ssbPartial = new SpannableStringBuilder("V/. En el nombre del Padre, y del Hijo, y del Espíritu Santo.");
+        ssbPartial.append(LS);
+        ssbPartial.append("R/. Amén.");
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 0, 3, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssbPartial.setSpan(CharacterStyle.wrap(liturgicalRed), 62, 65, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+        ssb.append(ssbPartial);
+        ssb.append(LS2);
         return ssb;
     }
 
@@ -305,7 +319,7 @@ public final class Utils {
         SpannableStringBuilder ssb = new SpannableStringBuilder();
 
         switch (type) {
-            case 1:
+            case 0:
                 String text = "Yo confieso ante Dios todopoderoso " + LS +
                         "y ante vosotros, hermanos " + LS +
                         "que he pecado mucho" + LS +
@@ -318,7 +332,7 @@ public final class Utils {
                 ssb.append(text);
 
                 break;
-            case 2:
+            case 1:
                 ssb.append("V. Señor, ten misericordia de nosotros.");
                 ssb.append(LS);
                 ssb.append("R. Porque hemos pecado contra ti.");
@@ -332,7 +346,7 @@ public final class Utils {
                 ssb.setSpan(CharacterStyle.wrap(liturgicalRed), 113, 115, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
                 break;
-            case 3:
+            case 2:
                 ssb.append("V. Tú que has sido enviado a sanar los corazones afligidos: Señor, ten piedad.");
                 ssb.append(LS);
                 ssb.append("R. Señor, ten piedad.");
@@ -402,6 +416,7 @@ public final class Utils {
         u2280: ⊀ ⊁ ⊂ ⊃ ⊄ ⊅ ⊆ ⊇ ⊈ ⊉ ⊊ ⊋ ⊌ ⊍ ⊎ ⊏ ⊐ ⊑ ⊒ ⊓ ⊔ ⊕ ⊖ ⊗ ⊘ ⊙ ⊚ ⊛ ⊜ ⊝ ⊞ ⊟
 
         u22A0: ⊠ ⊡ ⊢ ⊣ ⊤ ⊥ ⊦ ⊧ ⊨ ⊩ ⊪ ⊫ ⊬ ⊭ ⊮ ⊯ ⊰ ⊱ ⊲ ⊳ ⊴ ⊵ ⊶ ⊷ ⊸ ⊹ ⊺ ⊻ ⊼ ⊽ ⊾ ⊿
+        Lectua de la Pasión: τ : Jesús  ν : Cronista ς : S
 
 */
         sFormateado = sOrigen
@@ -428,8 +443,30 @@ public final class Utils {
                 .replace("~", BR)
                 .replace("§", BRS)
                 .replace("∸", BRS)
-                .replace("¦", NBSP_4);
+                .replace("¦", NBSP_4)
+                .replace("ς", CSS_RED_A + "S. " + CSS_RED_Z)
+                .replace("ν", CSS_RED_A + "C. " + CSS_RED_Z)
+                .replace("τ", CSS_RED_A + "✚. " + CSS_RED_Z)
+                .replace("[rubrica]", CSS_RED_A)
+                .replace("[/rubrica]", CSS_RED_Z)
 
+        ;
+
+
+        return sFormateado;
+    }
+
+    public static String replaceByTime(String mText, int timeID) {
+        String sFormateado = "";
+        if (timeID == 6) {
+            sFormateado = mText
+                    .replace("Ƥ", "Aleluya")
+                    .replace("α", "Aleluya, aleluya");
+        } else {
+            sFormateado = mText
+                    .replace("Ƥ.", "")
+                    .replace("α.", "");
+        }
 
         return sFormateado;
     }
@@ -461,6 +498,16 @@ public final class Utils {
         return toSmallSizes(ssb);
     }
 
+    /**
+     * Este método es un ayudador para la lectura de voz,
+     * que intenta quitar ciertas combinaciones de caracteres que distraerían la atención
+     * durante la lectura de voz, porque son pronunciables.
+     * Remueve también ciertos delimitadores que se usan
+     * para dar formato al texto en la vista
+     *
+     * @param sOrigen
+     * @return
+     */
     public static String stripQuotation(String sOrigen) {
         String sFormateado;
         sFormateado = sOrigen
@@ -474,7 +521,12 @@ public final class Utils {
                 .replace("(", "")
                 .replace(")", "")
                 .replace("...", ".")
-                .replace("[...]", "");
+                .replace("[...]", "")
+                .replace("ς", "")
+                .replace("ν", "")
+                .replace("τ", "")
+                .replaceAll("(?s)[\\[rubrica].*?/rubrica]", "")
+        ;
 
 
         return sFormateado;
@@ -534,7 +586,7 @@ public final class Utils {
                                     RESP_V + respArray[1] + BR +
                                     RESP_R + respArray[2] + BRS +
                                     RESP_V + respArray[3] + BR +
-                                    RESP_R + respArray[0] + BRS;
+                                    RESP_R + respArray[0] + BR;
                 }
                 break;
 
@@ -548,7 +600,7 @@ public final class Utils {
                                     RESP_V + respArray[1] + BR +
                                     RESP_R + respArray[0] + BRS +
                                     RESP_V + respArray[2] + BR +
-                                    RESP_R + respArray[0] + BRS;
+                                    RESP_R + respArray[0] + BR;
                 }
                 break;
 
@@ -560,13 +612,13 @@ public final class Utils {
                                 RESP_V + respArray[1] + BR +
                                 RESP_R + respArray[0] + BRS +
                                 RESP_V + respArray[2] + BR +
-                                RESP_R + respArray[0] + BRS;
+                                RESP_R + respArray[0] + BR;
                 break;
 
             case 201:
                 sResponsorio =
                         RESP_V + respArray[0] + BR +
-                                RESP_R + respArray[1] + BRS;
+                                RESP_R + respArray[1] + BR;
                 break;
 
 

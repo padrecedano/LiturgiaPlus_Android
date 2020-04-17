@@ -3,12 +3,14 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -48,14 +50,13 @@ import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static org.deiverbum.app.utils.Constants.BR;
 import static org.deiverbum.app.utils.Constants.CALENDAR_PATH;
 import static org.deiverbum.app.utils.Constants.MIXTO_URL;
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
+import static org.deiverbum.app.utils.Constants.SCREEN_TIME_OFF;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
 import static org.deiverbum.app.utils.Utils.LS2;
 
@@ -73,11 +74,13 @@ public class MixtoActivity extends AppCompatActivity {
     private boolean isInvitatorio;
     private Liturgia mLiturgia;
     private boolean isVoiceOn;
+    private static final int OLD_SEPARATOR = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tercia);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -92,6 +95,14 @@ public class MixtoActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
 
         strFechaHoy = (getIntent().getExtras() != null) ? getIntent().getStringExtra("FECHA") : Utils.getHoy();
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        };
+        handler.postDelayed(r, SCREEN_TIME_OFF);
         //launchVolley();
         launchFirestore();
 
@@ -129,10 +140,9 @@ public class MixtoActivity extends AppCompatActivity {
                 response -> {
                     try {
                         Gson gson = new Gson();
-                        String jsonBreviario = String.valueOf(new JSONObject(String.valueOf(response.getJSONObject("liturgia"))));
-                        mLiturgia = gson.fromJson(jsonBreviario, Liturgia.class);
+                        mLiturgia = gson.fromJson(response.getJSONObject("liturgia").toString(), Liturgia.class);
                         showData();
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         mTextView.setText(e.getMessage());
                     }
                 },
@@ -220,10 +230,10 @@ public class MixtoActivity extends AppCompatActivity {
         sb.append(Utils.LS2);
         sb.append(lecturaBreve.getTexto());
         sb.append(Utils.LS2);
-        sb.append(lecturaBreve.getHeaderResponsorio());
-        sb.append(Utils.LS2);
+        //sb.append(lecturaBreve.getHeaderResponsorio());
+        //sb.append(Utils.LS2);
         sb.append(lecturaBreve.getResponsorioSpan());
-        sb.append(Utils.LS);
+        sb.append(Utils.LS2);
 
         sb.append(Utils.formatSubTitle("lecturas del oficio"));
         sb.append(Utils.LS2);
@@ -350,7 +360,7 @@ public class MixtoActivity extends AppCompatActivity {
             sbReader.append(biblica.getTema() + ".");
             sbReader.append(biblica.getTexto());
 
-            sbReader.append(Utils.fromHtml("<p>Responsorio.</p>"));
+            sbReader.append(Utils.fromHtml("<p>Responsorio breve.</p>"));
             sbReader.append(biblica.getResponsorioForReader());
 
             sbReader.append(patristica.getHeader() + ".");

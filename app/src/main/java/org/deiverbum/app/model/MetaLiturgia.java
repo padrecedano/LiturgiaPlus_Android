@@ -84,6 +84,37 @@ public class MetaLiturgia {
             this.tiempo = iVisperasTime;
         }
     }
+
+    public String getTiempoNombre(boolean isVisperas) {
+        int theTime = this.getTiempo();
+        if (theTime < 15) {
+            HashMap<Integer, String> mapTiempos = new HashMap<>();
+            mapTiempos.put(0, "***");
+            mapTiempos.put(1, "Tiempo de Adviento");
+            mapTiempos.put(2, "Tiempo de Navidad");
+            mapTiempos.put(3, "Tiempo de Cuaresma");
+            mapTiempos.put(4, "Semana Santa");
+            mapTiempos.put(5, "Santo Triduo Pascual");
+            mapTiempos.put(6, "Tiempo de Pascua");
+            mapTiempos.put(7, "Tiempo Ordinario");
+            mapTiempos.put(8, "***");
+            mapTiempos.put(9, "Propio de los Santos");
+            mapTiempos.put(10, "Oficios Comunes");
+            mapTiempos.put(11, "Misas Rituales");
+            mapTiempos.put(12, "Diversas Necesidades");
+            mapTiempos.put(13, "Misas Votivas");
+            mapTiempos.put(14, "Oficio de Difuntos");
+            mapTiempos.put(15, "***");
+            mapTiempos.put(16, "***");
+            mapTiempos.put(17, "***");
+            mapTiempos.put(18, "***");
+
+            return mapTiempos.get(theTime);
+        } else {
+            return "***";
+        }
+    }
+
     public String getTiempoNombre() {
         if (tiempo < 15) {
             HashMap<Integer, String> mapTiempos = new HashMap<>();
@@ -111,9 +142,7 @@ public class MetaLiturgia {
         } else {
             return "***";
         }
-
     }
-
     public void setweekDaye(int weekDay) {
         this.weekDay = weekDay;
     }

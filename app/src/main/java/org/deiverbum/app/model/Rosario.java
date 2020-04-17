@@ -5,37 +5,58 @@ import android.text.Spanned;
 
 import org.deiverbum.app.utils.Utils;
 
-import static org.deiverbum.app.utils.Constants.SEPARADOR;
+import java.util.List;
 
 public class Rosario {
     public String saludo;
     public String padrenuestro;
     public String avemaria;
     public String gloria;
-    public Misterios misterios;
+    public Misterios misterioss;
     public String letanias;
     public String oracion;
     public String salve;
+    private List<Misterio> misterios;
 
     public SpannableStringBuilder getMisterios(int dayCode) {
-        //SpannableStringBuilder ssb = new SpannableStringBuilder();
-        return misterios.getContenido(this, dayCode);
-        /*
-        switch (dayCode) {
-            case 1:
-                ssb = misterios.getGloriosos().getContenido();
-                break;
-            case 2:
-                ssb = misterios.getContenido(dayCode);
-                break;
-            default:
-
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        Misterio m = misterios.get(dayCode - 1);
+        for (String s : m.getContenido()) {
+            ssb.append(Utils.fromHtml(getPadrenuestro()));
+            ssb.append(Utils.LS2);
+            ssb.append(Utils.toH2Red(s));
+            ssb.append(Utils.LS2);
+            for (int i = 0; i < 10; i++) {
+                ssb.append(Utils.fromHtml(getAvemaria()));
+                ssb.append(Utils.LS2);
+            }
+            ssb.append(Utils.fromHtml(gloria));
+            ssb.append(Utils.LS2);
         }
-        return ssb;//return misterios;
-        */
+        return ssb;
     }
 
-    public void setMisterios(Misterios misterios) {
+    /*
+      @TODO
+      - Arreglar esto de otro modo
+     */
+    public String getByDay(int dayCode) {
+        switch (dayCode) {
+            case 1:
+                return "Gloriosos";
+            case 2:
+                return "Gosozos";
+            case 3:
+                return "Dolorosos";
+            case 4:
+                return "Luminosos";
+            default:
+                return "*";
+        }
+    }
+
+
+    public void setMisterios(List<Misterio> misterios) {
         this.misterios = misterios;
     }
 
@@ -62,12 +83,10 @@ public class Rosario {
         for (int i = 0; i < 10; i++) {
             ssb.append(Utils.fromHtml(getAvemaria()));
             ssb.append(Utils.LS2);
-            ssb.append(SEPARADOR);
 
         }
         ssb.append(Utils.fromHtml(gloria));
         ssb.append(Utils.LS2);
-
         return ssb;
     }
 
@@ -110,6 +129,5 @@ public class Rosario {
     public void setSalve(String salve) {
         this.salve = salve;
     }
-
 
 }

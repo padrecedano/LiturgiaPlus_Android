@@ -32,7 +32,6 @@ public class OracionesActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         oracionesRecyclerView = findViewById(R.id.rv_menu);
-        //ViewCompat.setNestedScrollingEnabled(oracionesRecyclerView,true);
         createPrayersList();
         layoutManager = new LinearLayoutManager(this);
         oracionesAdapter = new OracionesAdapter(oracionesList);
@@ -43,7 +42,6 @@ public class OracionesActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        //this.menu = menu;
         getMenuInflater().inflate(R.menu.toolbar_menu, menu);
         return true;
     }
@@ -51,49 +49,15 @@ public class OracionesActivity extends AppCompatActivity {
 
     private void createPrayersList() {
         oracionesList = new ArrayList<>();
-        Oraciones oracionesListItem1 = new Oraciones();
-        oracionesListItem1.setName("Misterios Gloriosos");
-        oracionesListItem1.setDescription("Domingos y Miércoles");
-        //oracionesListItem1.setImageId(R.drawable.ic_letter_d);
-        oracionesListItem1.setCaseID(1);
-        oracionesList.add(oracionesListItem1);
-
-        Oraciones oracionesListItem2 = new Oraciones();
-        oracionesListItem2.setName("Misterios Gozosos");
-        oracionesListItem2.setDescription("Lunes y Sábados");
-        //oracionesListItem2.setImageId(R.drawable.ic_letter_l);
-        oracionesList.add(oracionesListItem2);
-
-        Oraciones oracionesListItem3 = new Oraciones();
-        oracionesListItem3.setName("Misterios Dolorosos");
-        oracionesListItem3.setDescription("Martes y Viernes");
-        //oracionesListItem3.setImageId(R.drawable.ic_letter_m);
-        oracionesList.add(oracionesListItem3);
-
-        Oraciones oracionesListItem4 = new Oraciones();
-        oracionesListItem4.setName("Misterios Luminosos");
-        oracionesListItem4.setDescription("Jueves");
-        //oracionesListItem4.setImageId(R.drawable.ic_letter_j);
-        oracionesList.add(oracionesListItem4);
-
-        Oraciones oracionesListItem5 = new Oraciones();
-        oracionesListItem5.setName("Letanías");
-        oracionesListItem5.setDescription("Solamente las Letanías");
-        //oracionesListItem5.setImageId(R.drawable.ic_letter_t);
-        oracionesList.add(oracionesListItem5);
-
-        Oraciones oracionesListItem6 = new Oraciones();
-        oracionesListItem6.setName("Ángelus");
-        oracionesListItem6.setDescription("Recuerda la Encarnación de Cristo");
-        //oracionesListItem6.setImageId(R.drawable.ic_letter_a);
-        oracionesList.add(oracionesListItem6);
-
-        Oraciones oracionesListItem7 = new Oraciones();
-        oracionesListItem7.setName("Regina Coeli");
-        oracionesListItem7.setDescription("En el Tiempo de Pascua");
-        //oracionesListItem7.setImageId(R.drawable.ic_letter_r);
-        oracionesList.add(oracionesListItem7);
+        oracionesList.add(new Oraciones("Misterios Gloriosos", "Domingos y Miércoles"));
+        oracionesList.add(new Oraciones("Misterios Gozosos", "Lunes y Sábados"));
+        oracionesList.add(new Oraciones("Misterios Dolorosos", "Martes y Viernes"));
+        oracionesList.add(new Oraciones("Misterios Luminosos", "Jueves"));
+        oracionesList.add(new Oraciones("Letanías Lauretanas", "Solamente las Letanías"));
+        oracionesList.add(new Oraciones("Ángelus", "Recuerda la Encarnación de Cristo"));
+        oracionesList.add(new Oraciones("Regina Coeli", "En lugar del Àngelus, en el tiempo de Pascua"));
+        oracionesList.add(new Oraciones("Via Crucis 2003", "Con meditaciones de Juan Pablo II"));
+        oracionesList.add(new Oraciones("Via Crucis 2005", "Con meditaciones de Joseph Ratzinger"));
     }
-
 
 }

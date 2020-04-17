@@ -61,7 +61,7 @@ public class BreviarioActivity extends AppCompatActivity
         RecyclerView.LayoutManager mLayoutManager = new GridLayoutManager(this, 3);
         recyclerView.setLayoutManager(mLayoutManager);
 
-        recyclerView.addItemDecoration(new BreviarioActivity.GridSpacingItemDecoration(3, dpToPx(-1), true));
+        recyclerView.addItemDecoration(new BreviarioActivity.GridSpacingItemDecoration(3, dpToPx(0), true));
 
         recyclerView.setLayoutManager(mLayoutManager);
 

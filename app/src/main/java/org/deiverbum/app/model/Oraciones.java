@@ -5,6 +5,11 @@ public class Oraciones {
     private String name, description;
     private int caseID;
 
+    public Oraciones(String name, String description) {
+        this.name = name;
+        this.description = description;
+
+    }
     public int getImageId() {
         return imageId;
     }

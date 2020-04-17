@@ -6,11 +6,7 @@ import org.deiverbum.app.utils.Utils;
 
 public class NuncDimitis {
 
-    //@SerializedName("antifona")
-    //@Expose
     private String antifona;
-    //@SerializedName("texto")
-    //@Expose
     private String texto;
 
     public NuncDimitis() {
@@ -23,7 +19,6 @@ public class NuncDimitis {
 
     public SpannableStringBuilder getAntifonaSpan() {
         SpannableStringBuilder ssb = new SpannableStringBuilder("");
-
         String preAnt = "Ant. ";
         ssb.append(Utils.toRed(preAnt));
         ssb.append(antifona);
@@ -35,12 +30,9 @@ public class NuncDimitis {
 
     public String getAntifonaForRead() {
         return antifona;
-
-
     }
 
     public String getTexto() {
-
         return Utils.getFormato(texto);
     }
 
@@ -49,7 +41,6 @@ public class NuncDimitis {
     }
 
     public SpannableStringBuilder getHeader() {
-
         return Utils.formatTitle("CÁNTICO EVANGÉLICO");
     }
 }

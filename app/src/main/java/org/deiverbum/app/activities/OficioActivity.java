@@ -3,6 +3,7 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.text.Spanned;
@@ -10,6 +11,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -43,14 +45,13 @@ import org.deiverbum.app.utils.TTS;
 import org.deiverbum.app.utils.Utils;
 import org.deiverbum.app.utils.VolleyErrorHelper;
 import org.deiverbum.app.utils.ZoomTextView;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import static org.deiverbum.app.utils.Constants.BR;
 import static org.deiverbum.app.utils.Constants.CALENDAR_PATH;
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
 import static org.deiverbum.app.utils.Constants.OL_URL;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
+import static org.deiverbum.app.utils.Constants.SCREEN_TIME_OFF;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
 import static org.deiverbum.app.utils.Utils.LS2;
 
@@ -73,6 +74,7 @@ public class OficioActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_oficio);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -87,6 +89,15 @@ public class OficioActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
         progressBar.setVisibility(View.VISIBLE);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        };
+        handler.postDelayed(r, SCREEN_TIME_OFF);
+
         launchFirestore();
         //launchVolley();
 
@@ -123,10 +134,9 @@ public class OficioActivity extends AppCompatActivity {
                 response -> {
                     try {
                         Gson gson = new Gson();
-                        String jsonBreviario = String.valueOf(new JSONObject(String.valueOf(response.getJSONObject("liturgia"))));
-                        mLiturgia = gson.fromJson(jsonBreviario, Liturgia.class);
+                        mLiturgia = gson.fromJson(response.getJSONObject("liturgia").toString(), Liturgia.class);
                         showData();
-                    } catch (JSONException e) {
+                    } catch (Exception e) {
                         mTextView.setText(e.getMessage());
                     }
                 },
@@ -164,45 +174,45 @@ public class OficioActivity extends AppCompatActivity {
         TeDeum teDeum = oficio.getTeDeum();
 
         sb.append(mMeta.getFecha());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.toH2(mMeta.getTiempoNombre()));
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.toH3(mLiturgia.getTitulo()));
         sb.append(mLiturgia.getVida());
         sb.append(Utils.toH3Red(oficio.getTituloHora()));
         sb.append(Utils.fromHtmlToSmallRed(mBreviario.getMetaInfo()));
 
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.getSaludoOficio());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(titleInvitatorio);
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.fromHtml(ant));
         sb.append(invitatorio.getAntifona());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(invitatorio.getTextoSpan());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.getFinSalmo());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.fromHtml(ant));
         sb.append(invitatorio.getAntifona());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
 
         sb.append(himno.getHeader());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(himno.getTextoSpan());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
 
         sb.append(salmodia.getHeader());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(salmodia.getSalmoCompleto());
         sb.append(Utils.LS);
         sb.append(Utils.formatSubTitle("lecturas del oficio"));
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(lecturasOficio.getResponsorioSpan());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(biblica.getHeader());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(biblica.getLibro());
         sb.append("    ");
 
@@ -210,35 +220,35 @@ public class OficioActivity extends AppCompatActivity {
         sb.append(", ");
         sb.append(Utils.toRed(biblica.getVersoInicial()));
         sb.append(Utils.toRed(biblica.getVersoFinal()));
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.toRed(biblica.getTema()));
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(biblica.getTextoSpan());
         sb.append(Utils.LS);
         sb.append(Utils.toRed("Responsorio    "));
         sb.append(Utils.toRed(biblica.getRef()));
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(biblica.getResponsorio());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.LS);
 
         sb.append(patristica.getHeader());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(patristica.padre);
         sb.append(", ");
         sb.append(patristica.obra);
         sb.append(Utils.LS);
         sb.append(Utils.toSmallSizeRed(patristica.fuente));
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(Utils.toRed(patristica.tema));
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(patristica.getTextoSpan());
         sb.append(Utils.LS);
         sb.append(Utils.toRed("Responsorio    "));
         sb.append(Utils.toRed(patristica.ref));
-        sb.append(Utils.LS2);
+        sb.append(LS2);
         sb.append(patristica.getResponsorioSpan());
-        sb.append(Utils.LS2);
+        sb.append(LS2);
 
         sb.append(teDeum.getTextoSpan());
         sb.append(Utils.formatTitle("ORACIÓN"));
@@ -291,9 +301,12 @@ public class OficioActivity extends AppCompatActivity {
                 menu.findItem(R.id.item_voz).setVisible(true);
             }
         }
+
         progressBar.setVisibility(View.INVISIBLE);
         mTextView.setText(sb, TextView.BufferType.SPANNABLE);
+
     }
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

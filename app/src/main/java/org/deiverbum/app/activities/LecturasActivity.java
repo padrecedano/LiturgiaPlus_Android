@@ -3,12 +3,14 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -37,6 +39,7 @@ import org.json.JSONObject;
 
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
+import static org.deiverbum.app.utils.Constants.SCREEN_TIME_OFF;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
 import static org.deiverbum.app.utils.Constants.URL_LECTURAS;
 
@@ -70,6 +73,17 @@ public class LecturasActivity extends AppCompatActivity {
         mTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, fontSize);
         mTextView.setText(Utils.fromHtml(PACIENCIA));
         mTextView.setTextIsSelectable(true);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        };
+        handler.postDelayed(r, SCREEN_TIME_OFF);
+
+
         launchVolley();
     }
 

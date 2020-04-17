@@ -2,8 +2,10 @@ package org.deiverbum.app.model;
 
 import android.text.SpannableStringBuilder;
 
-import com.google.firebase.firestore.Exclude;
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
 
+import java.util.HashMap;
 import java.util.List;
 
 public class Liturgia {
@@ -13,7 +15,10 @@ public class Liturgia {
 
     private Misa misa;
     private MetaLiturgia meta;
-    private Breviario lh;
+    @SerializedName("lh")
+    @Expose
+    private Breviario breviario;
+    private HashMap<String, Object> lhFirebase;
     private Santo santo;
     public boolean hasSaint = false;
 
@@ -72,24 +77,28 @@ public class Liturgia {
     public void setSanto(Santo santo) {
         this.santo = santo;
     }
-
     public Breviario getBreviario() {
-        return lh;
+        return breviario;
     }
 
-    public void setBreviario(Breviario lh) {
-        this.lh = lh;
+    public void setBreviario(Breviario breviario) {
+        this.breviario = breviario;
     }
 
-    @Exclude
-    public void getlh() {
+    public HashMap<String, Object> getLh() {
+        return lhFirebase;
     }
 
-    public void setlh(Breviario lh) {
-        this.lh = lh;
+    /*
+        @PropertyName("lh")ListList
+        public void setLh(List<String> lh) {
+            this.lh = lh;public void setLh(HashMap<String,Object> lh) {
+        }*/
+    public void setLh(HashMap<String, Object> lh) {
+        this.lhFirebase = lh;
     }
     public String toString() {
-        return "This is the data: ";
+        return "This is the data: " + meta.getFecha();
     }
 
     public MetaLiturgia getMetaLiturgia() {

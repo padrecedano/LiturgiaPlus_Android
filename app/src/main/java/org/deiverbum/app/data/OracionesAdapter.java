@@ -94,9 +94,11 @@ public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.Orac
             myMap.put("Misterios Gozosos", 2);
             myMap.put("Misterios Dolorosos", 3);
             myMap.put("Misterios Luminosos", 4);
-            myMap.put("Letanías", 5);
+            myMap.put("Letanías Lauretanas", 5);
             myMap.put("Ángelus", 6);
             myMap.put("Regina Coeli", 7);
+            myMap.put("Via Crucis 2003", 8);
+            myMap.put("Via Crucis 2005", 9);
 
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -113,7 +115,6 @@ public class OracionesAdapter extends RecyclerView.Adapter<OracionesAdapter.Orac
                         i.putExtra("EXTRA_PAGE", dayCode);
                         i.putExtra("TITLE", misterio);
                         context.startActivity(i);
-
 
                     }
                 }

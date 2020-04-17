@@ -5,6 +5,8 @@ import android.text.Spanned;
 
 import org.deiverbum.app.utils.Utils;
 
+import static org.deiverbum.app.utils.Utils.LS2;
+
 public class LecturaBreve {
     public String ref;
     public String texto;
@@ -38,46 +40,61 @@ public class LecturaBreve {
         this.responsorio = responsorio;
     }
 
-    public Spanned getResponsorioSpan() {
-        String r = "Revisar responsorio";
-        if (!forma.isEmpty()) {
-            int nForma = Integer.parseInt(forma);
-            if (responsorio != null && !responsorio.isEmpty()) {
-                if (responsorio.contains("|")) {
-                    String[] arrPartes = responsorio.split("\\|");
-                    r = Utils.getResponsorio(arrPartes, nForma);
-                } else {
-                    r = responsorio;
-                }
-            }
-        }
-
-        return Utils.fromHtml(r);
-    }
-
-    public Spanned getResponsorioForRead() {
-        String r = "Revisar responsorio";
-        if (!forma.isEmpty()) {
-            int nForma = Integer.parseInt(forma);
-            if (responsorio != null && !responsorio.isEmpty()) {
-                if (responsorio.contains("|")) {
-
-                    String[] arrPartes = responsorio.split("\\|");
-                    r = Utils.getResponsorioForReader(arrPartes, nForma);
-                } else {
-                    r = responsorio;
-                }
-            } else {
-                r = "Revisar texto responsorio";
-            }
+    public SpannableStringBuilder getResponsorioSpan() {
+        int nForma = Integer.parseInt(forma);
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        if (nForma == 0) {
+            ssb.append(Utils.toRed("En lugar del responsorio breve se dice la siguiente antífona:"));
+            ssb.append(LS2);
+            ssb.append(responsorio);
         } else {
-
-            r = "Error en forma responsorio";
+            String r = "Revisar responsorio";
+            if (!forma.isEmpty()) {
+                if (responsorio != null && !responsorio.isEmpty()) {
+                    if (responsorio.contains("|")) {
+                        String[] arrPartes = responsorio.split("\\|");
+                        r = Utils.getResponsorio(arrPartes, nForma);
+                    } else {
+                        r = responsorio;
+                    }
+                }
+            }
+            ssb.append(getHeaderResponsorio());
+            ssb.append(LS2);
+            ssb.append(Utils.fromHtml(r));
         }
-
-        return Utils.fromHtml(r);
+        return ssb;
     }
 
+    /**
+     * Devuelve el texto del Responsorio Breve con formato
+     * y adaptación adecuada para la lectura de voz
+     *
+     * @return Una cadena formateada con el responsorio
+     */
+
+    public SpannableStringBuilder getResponsorioForRead() {
+        int nForma = Integer.parseInt(forma);
+        SpannableStringBuilder ssb = new SpannableStringBuilder();
+        if (nForma == 0) {
+            ssb.append(responsorio);
+        } else {
+            String r = "Revisar responsorio";
+            if (!forma.isEmpty()) {
+                if (responsorio != null && !responsorio.isEmpty()) {
+                    if (responsorio.contains("|")) {
+                        String[] arrPartes = responsorio.split("\\|");
+                        r = Utils.getResponsorioForReader(arrPartes, nForma);
+                    } else {
+                        r = responsorio;
+                    }
+                }
+            }
+            ssb.append(LS2);
+            ssb.append(Utils.fromHtml(r));
+        }
+        return ssb;
+    }
     public String getForma() {
         return forma;
     }

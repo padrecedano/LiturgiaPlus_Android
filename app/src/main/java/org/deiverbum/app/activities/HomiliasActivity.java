@@ -3,12 +3,14 @@ package org.deiverbum.app.activities;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.text.SpannableStringBuilder;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -38,6 +40,7 @@ import java.util.List;
 
 import static org.deiverbum.app.utils.Constants.MY_DEFAULT_TIMEOUT;
 import static org.deiverbum.app.utils.Constants.PACIENCIA;
+import static org.deiverbum.app.utils.Constants.SCREEN_TIME_OFF;
 import static org.deiverbum.app.utils.Constants.SEPARADOR;
 import static org.deiverbum.app.utils.Constants.URL_HOMILIAS;
 
@@ -59,6 +62,18 @@ public class HomiliasActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homilias);
+
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        Handler handler = new Handler();
+        final Runnable r = new Runnable() {
+            public void run() {
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        };
+        handler.postDelayed(r, SCREEN_TIME_OFF);
+
+
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -170,9 +185,9 @@ public class HomiliasActivity extends AppCompatActivity {
         if (isVoiceOn) {
             sbReader = new StringBuilder();
             sbReader.append(Utils.fromHtml("<p>" + meta.getFecha() + ".</p>"));
-            sbReader.append(SEPARADOR);
+            //sbReader.append(SEPARADOR);
             sbReader.append(Utils.fromHtml("<p>HOMILÍAS</p>"));
-            sbReader.append(SEPARADOR);
+            //sbReader.append(SEPARADOR);
         }
         for (HomiliaCompleta s : a) {
             ssb.append(Utils.toH3Red(s.padre));
@@ -183,14 +198,14 @@ public class HomiliasActivity extends AppCompatActivity {
             ssb.append(s.getFechaSpan());
             ssb.append(Utils.LS2);
 
-            ssb.append(s.getTextoLimpio());
+            ssb.append(s.getTexto());
             ssb.append(Utils.LS2);
             if (isVoiceOn) {
 
                 sbReader.append(s.padre);
-                sbReader.append(SEPARADOR);
+                //sbReader.append(SEPARADOR);
                 sbReader.append(s.getTexto());
-                sbReader.append(SEPARADOR);
+                //sbReader.append(SEPARADOR);
             }
         }
 
